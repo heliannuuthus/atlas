@@ -1,0 +1,25 @@
+.container {
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .form {
+    max-width: 800px;
+  }
+
+  .loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+  }
+}

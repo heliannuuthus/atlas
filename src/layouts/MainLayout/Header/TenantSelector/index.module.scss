@@ -1,0 +1,15 @@
+.selector {
+  :global(.ant-select-selector) {
+    border-radius: 6px;
+  }
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.avatar {
+  flex-shrink: 0;
+}

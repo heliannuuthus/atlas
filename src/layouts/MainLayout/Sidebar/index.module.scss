@@ -1,0 +1,31 @@
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 64px;
+  bottom: 0;
+  width: 200px;
+  background: #fff;
+  border-right: 1px solid #f0f0f0;
+  overflow-y: auto;
+  z-index: 10;
+
+  @media (max-width: 768px) {
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+  }
+}
+
+.menu {
+  border-right: none;
+  height: 100%;
+
+  :global(.ant-menu-item) {
+    margin: 4px 8px;
+    border-radius: 6px;
+  }
+
+  :global(.ant-menu-item-selected) {
+    background-color: #e6f7ff;
+    color: #1890ff;
+  }
+}
