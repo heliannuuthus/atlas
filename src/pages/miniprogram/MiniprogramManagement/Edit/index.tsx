@@ -1,23 +1,24 @@
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useRequest } from 'ahooks'
-import { Form, Input, Select, Button, Card, message, Spin } from 'antd'
-import { ArrowLeftOutlined } from '@ant-design/icons'
+import { Form, Input, Card, message, Spin } from 'antd'
 import {
   getMiniprogramDetail,
   updateMiniprogram,
 } from '@/mock/api/miniprogram'
-import { MiniprogramPlatform } from '@/types/miniprogram'
+import { PageHeader, PlatformSelect, FormActions } from '@/components'
 import styles from './index.module.scss'
 
 const { TextArea } = Input
 
 export function Edit() {
   const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
   const [form] = Form.useForm()
 
-  const { data, loading } = useRequest(
-    () => getMiniprogramDetail(id!),
+  const { loading } = useRequest(
+    async () => {
+      if (!id) throw new Error('ID is required')
+      return await getMiniprogramDetail(id)
+    },
     {
       ready: !!id,
       onSuccess: (data) => {
@@ -27,13 +28,16 @@ export function Edit() {
   )
 
   const { run: handleSubmit, loading: submitting } = useRequest(
-    async (values: any) => {
-      await updateMiniprogram(id!, values)
+    async (values: Record<string, unknown>) => {
+      if (!id) throw new Error('ID is required')
+      await updateMiniprogram(id, values)
       message.success('更新成功')
-      navigate(`/miniprogram/${id}`)
     },
     {
       manual: true,
+      onSuccess: () => {
+        window.location.href = `/miniprogram/${id}`
+      },
       onError: () => {
         message.error('更新失败')
       },
@@ -51,15 +55,7 @@ export function Edit() {
   return (
     <div className={styles.container}>
       <Card>
-        <div className={styles.header}>
-          <Button
-            icon={<ArrowLeftOutlined />}
-            onClick={() => navigate(`/miniprogram/${id}`)}
-          >
-            返回
-          </Button>
-          <div className={styles.title}>编辑小程序</div>
-        </div>
+        <PageHeader title="编辑小程序" backPath={`/miniprogram/${id}`} />
 
         <Form
           form={form}
@@ -88,17 +84,7 @@ export function Edit() {
             label="平台"
             rules={[{ required: true, message: '请选择平台' }]}
           >
-            <Select placeholder="请选择平台">
-              <Select.Option value={MiniprogramPlatform.WECHAT}>
-                微信小程序
-              </Select.Option>
-              <Select.Option value={MiniprogramPlatform.ALIPAY}>
-                支付宝小程序
-              </Select.Option>
-              <Select.Option value={MiniprogramPlatform.BYTEDANCE}>
-                字节跳动小程序
-              </Select.Option>
-            </Select>
+            <PlatformSelect />
           </Form.Item>
 
           <Form.Item
@@ -127,15 +113,11 @@ export function Edit() {
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" loading={submitting}>
-              保存
-            </Button>
-            <Button
-              style={{ marginLeft: 8 }}
-              onClick={() => navigate(`/miniprogram/${id}`)}
-            >
-              取消
-            </Button>
+            <FormActions
+              loading={submitting}
+              submitText="保存"
+              cancelPath={`/miniprogram/${id}`}
+            />
           </Form.Item>
         </Form>
       </Card>

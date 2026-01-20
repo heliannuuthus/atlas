@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import { List } from './List'
 import { Detail } from './Detail'
 import { Create } from './Create'

@@ -6,17 +6,26 @@
   height: 56px;
   background: rgba(255, 255, 255, 0.96);
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 100;
+  left: var(--sider-width, 240px);
+  right: 0;
+  z-index: 99;
   backdrop-filter: blur(20px) saturate(180%);
   transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+.homeHeader {
+  left: 0;
 }
 
 .left {
   display: flex;
   align-items: center;
   gap: 24px;
+  flex: 1;
+  min-width: 0;
 }
 
 .logo {
@@ -24,16 +33,16 @@
   align-items: center;
   gap: 10px;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
 
   &:hover {
-    .logoIcon {
-      transform: scale(1.05);
-    }
+    background-color: rgba(0, 0, 0, 0.04);
   }
 
   &:active {
-    transform: scale(0.98);
+    opacity: 0.8;
   }
 }
 
@@ -43,8 +52,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  flex-shrink: 0;
 
   svg {
     width: 100%;

@@ -1,31 +1,111 @@
 .sidebar {
-  position: fixed;
-  left: 0;
-  top: 64px;
-  bottom: 0;
-  width: 200px;
+  width: 100%;
+  height: 100vh;
   background: #fff;
   border-right: 1px solid #f0f0f0;
-  overflow-y: auto;
-  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
 
-  @media (max-width: 768px) {
-    transform: translateX(-100%);
-    transition: transform 0.3s;
+  &:hover .collapseButton {
+    opacity: 1;
+    visibility: visible;
   }
 }
 
-.menu {
-  border-right: none;
-  height: 100%;
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 56px;
+  padding: 0 16px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: all 0.2s ease;
 
-  :global(.ant-menu-item) {
-    margin: 4px 8px;
-    border-radius: 6px;
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+}
+
+.collapseButton {
+  position: absolute;
+  right: -16px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+}
+
+.collapseBtn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #1890ff;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
+  color: #fff;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #40a9ff;
+    box-shadow: 0 4px 12px rgba(24, 144, 255, 0.4);
+    transform: scale(1.1);
   }
 
-  :global(.ant-menu-item-selected) {
-    background-color: #e6f7ff;
-    color: #1890ff;
+  &:active {
+    background-color: #096dd9;
+    transform: scale(0.95);
   }
+}
+
+.logoIcon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.logoText {
+  display: flex;
+  align-items: center;
+}
+
+.logoMain {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1.2;
+}
+
+.empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  color: #8c8c8c;
+  font-size: 13px;
+}
+
+.menuWrapper {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 0;
 }

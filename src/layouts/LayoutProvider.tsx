@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { useTenant } from '@/hooks/useTenant'
 
 interface LayoutProviderProps {
@@ -6,7 +6,6 @@ interface LayoutProviderProps {
 }
 
 export function LayoutProvider({ children }: LayoutProviderProps) {
-  // 初始化租户数据
   useTenant()
 
   return <>{children}</>

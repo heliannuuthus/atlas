@@ -5,7 +5,6 @@ import {
   Table,
   Button,
   Space,
-  Tag,
   Input,
   Select,
   message,
@@ -78,7 +77,7 @@ export function List() {
     try {
       await deleteMiniprogram(id)
       message.success('删除成功')
-      refresh()
+      await refresh()
     } catch (error) {
       message.error('删除失败')
     }

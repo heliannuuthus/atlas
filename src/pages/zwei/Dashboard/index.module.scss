@@ -1,0 +1,57 @@
+.container {
+  padding: 0;
+}
+
+.statsRow {
+  margin-bottom: 24px;
+}
+
+.cardsRow {
+  margin-top: 24px;
+}
+
+.moduleCard {
+  height: 100%;
+}
+
+.moduleList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.moduleItem {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #fafafa;
+  }
+}
+
+.moduleIcon {
+  font-size: 24px;
+  color: #1890ff;
+  flex-shrink: 0;
+}
+
+.moduleInfo {
+  flex: 1;
+}
+
+.moduleName {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 4px;
+}
+
+.moduleDesc {
+  font-size: 14px;
+  color: #8c8c8c;
+}
+

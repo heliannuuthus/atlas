@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 import { Avatar, Badge, Tooltip, Dropdown, MenuProps } from 'antd'
 import {
   UserOutlined,
@@ -22,29 +21,10 @@ const getUserInitials = (name?: string) => {
   return chars.substring(0, 2).toUpperCase()
 }
 
-const getAvatarColor = (name: string) => {
-  const colors = [
-    ['#667eea', '#764ba2'],
-    ['#f093fb', '#f5576c'],
-    ['#4facfe', '#00f2fe'],
-    ['#43e97b', '#38f9d7'],
-    ['#fa709a', '#fee140'],
-    ['#a8edea', '#fed6e3'],
-    ['#ff9a9e', '#fecfef'],
-    ['#ffecd2', '#fcb69f'],
-  ]
-  const index = name.charCodeAt(0) % colors.length
-  return colors[index]
-}
-
 export function UserMenu() {
   const userName = '管理员'
-  const userRole = '超级管理员'
   const userAvatar = null
   const notificationCount = 3
-
-  const avatarColors = useMemo(() => getAvatarColor(userName), [userName])
-  const avatarGradient = `linear-gradient(135deg, ${avatarColors[0]} 0%, ${avatarColors[1]} 100%)`
 
   const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
     switch (key) {
@@ -102,32 +82,14 @@ export function UserMenu() {
 
       <Dropdown menu={{ items: menuItems, onClick: handleMenuClick }} placement="bottomRight">
         <div className={styles.avatarWrapper}>
-          <div className={styles.avatarContainer}>
-            <div className={styles.avatar}>
-              {userAvatar ? (
-                <Avatar src={userAvatar} size={40} />
-              ) : (
-                <Avatar size={40} style={{ backgroundColor: 'transparent' }}>
-                  <div className={styles.avatarContent} style={{ background: avatarGradient }}>
-                    {getUserInitials(userName)}
-                  </div>
-                </Avatar>
-              )}
-            </div>
-          </div>
-          <div className={styles.userBrief}>
-            <span className={styles.userName}>{userName}</span>
-            <span className={styles.userRole}>{userRole}</span>
-          </div>
-          <svg className={styles.arrow} width="10" height="6" viewBox="0 0 10 6" fill="none">
-            <path
-              d="M1 1L5 5L9 1"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          {userAvatar ? (
+            <Avatar src={userAvatar} size={28} />
+          ) : (
+            <Avatar size={28} style={{ backgroundColor: '#1890ff' }}>
+              {getUserInitials(userName)}
+            </Avatar>
+          )}
+          <span className={styles.userName}>{userName}</span>
         </div>
       </Dropdown>
     </div>
