@@ -5,13 +5,13 @@ import { ErrorBoundary } from './components/ErrorBoundary'
 
 function App() {
   return (
-    <ErrorBoundary>
-      <BrowserRouter>
+    <BrowserRouter>
+      <ErrorBoundary>
         <LayoutProvider>
           <AppRoutes />
         </LayoutProvider>
-      </BrowserRouter>
-    </ErrorBoundary>
+      </ErrorBoundary>
+    </BrowserRouter>
   )
 }
 

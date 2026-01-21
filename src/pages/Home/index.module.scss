@@ -34,6 +34,7 @@
   border-radius: 16px;
   overflow: hidden;
   transition: all 0.3s ease;
+  cursor: pointer;
 
   &:hover {
     transform: translateY(-4px);
@@ -92,6 +93,7 @@
   border-radius: 12px;
   background: #fafafa;
   transition: all 0.2s ease;
+  cursor: pointer;
 
   &:hover {
     background: #f0f0f0;

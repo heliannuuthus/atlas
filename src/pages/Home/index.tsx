@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { Card, Row, Col, Typography, Button } from 'antd'
+import { Card, Row, Col, Typography } from 'antd'
 import {
   BookOutlined,
   ApartmentOutlined,
@@ -23,36 +23,42 @@ const zweiModules = [
     title: '菜谱管理',
     description: '菜谱的创建、编辑、分类管理',
     color: '#1890ff',
+    path: '/zwei/recipes',
   },
   {
     icon: <HeartOutlined />,
     title: '收藏管理',
     description: '用户收藏的菜谱管理',
     color: '#f5222d',
+    path: '/zwei/favorites',
   },
   {
     icon: <HistoryOutlined />,
     title: '浏览历史',
     description: '用户浏览记录管理',
     color: '#52c41a',
+    path: '/zwei/history',
   },
   {
     icon: <TagsOutlined />,
     title: '标签管理',
     description: '菜谱标签和用户偏好标签',
     color: '#722ed1',
+    path: '/zwei/tags',
   },
   {
     icon: <FireOutlined />,
     title: '推荐系统',
     description: '基于 AI 的个性化菜谱推荐',
     color: '#fa8c16',
+    path: '/zwei/recommend',
   },
   {
     icon: <StarOutlined />,
     title: '首页内容',
     description: '轮播图、热门推荐、推荐菜谱',
     color: '#13c2c2',
+    path: '/zwei/home',
   },
 ]
 
@@ -62,30 +68,35 @@ const hermesModules = [
     title: '域管理',
     description: '管理身份域配置',
     color: '#13c2c2',
+    path: '/hermes/domains',
   },
   {
     icon: <CloudServerOutlined />,
     title: '服务管理',
     description: '管理服务配置和密钥',
     color: '#1890ff',
+    path: '/hermes/services',
   },
   {
     icon: <AppstoreAddOutlined />,
     title: '应用管理',
     description: '管理应用配置和重定向 URI',
     color: '#722ed1',
+    path: '/hermes/applications',
   },
   {
     icon: <ShareAltOutlined />,
     title: '关系管理',
     description: '管理权限关系和访问控制',
     color: '#52c41a',
+    path: '/hermes/relationships',
   },
   {
     icon: <TeamOutlined />,
     title: '组管理',
     description: '管理用户组和成员关系',
     color: '#fa8c16',
+    path: '/hermes/groups',
   },
 ]
 
@@ -105,7 +116,11 @@ export function Home() {
 
       <Row gutter={[24, 24]} className={styles.servicesRow}>
         <Col xs={24} lg={12}>
-          <Card className={styles.serviceCard} hoverable>
+          <Card
+            className={styles.serviceCard}
+            hoverable
+            onClick={() => navigate('/zwei')}
+          >
             <div className={styles.serviceHeader}>
               <div className={styles.serviceIcon} style={{ backgroundColor: '#1890ff20', color: '#1890ff' }}>
                 <BookOutlined />
@@ -119,7 +134,14 @@ export function Home() {
             </div>
             <div className={styles.moduleGrid}>
               {zweiModules.map((module, index) => (
-                <div key={index} className={styles.moduleCard}>
+                <div
+                  key={index}
+                  className={styles.moduleCard}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    navigate(module.path)
+                  }}
+                >
                   <div className={styles.moduleIcon} style={{ color: module.color }}>
                     {module.icon}
                   </div>
@@ -130,20 +152,15 @@ export function Home() {
                 </div>
               ))}
             </div>
-            <Button
-              type="primary"
-              size="large"
-              block
-              className={styles.enterButton}
-              onClick={() => navigate('/zwei')}
-            >
-              进入 Zwei 管理
-            </Button>
           </Card>
         </Col>
 
         <Col xs={24} lg={12}>
-          <Card className={styles.serviceCard} hoverable>
+          <Card
+            className={styles.serviceCard}
+            hoverable
+            onClick={() => navigate('/hermes/domains')}
+          >
             <div className={styles.serviceHeader}>
               <div className={styles.serviceIcon} style={{ backgroundColor: '#13c2c220', color: '#13c2c2' }}>
                 <ApartmentOutlined />
@@ -157,7 +174,14 @@ export function Home() {
             </div>
             <div className={styles.moduleGrid}>
               {hermesModules.map((module, index) => (
-                <div key={index} className={styles.moduleCard}>
+                <div
+                  key={index}
+                  className={styles.moduleCard}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    navigate(module.path)
+                  }}
+                >
                   <div className={styles.moduleIcon} style={{ color: module.color }}>
                     {module.icon}
                   </div>
@@ -168,16 +192,6 @@ export function Home() {
                 </div>
               ))}
             </div>
-            <Button
-              type="primary"
-              size="large"
-              block
-              className={styles.enterButton}
-              onClick={() => navigate('/hermes/domains')}
-              style={{ backgroundColor: '#13c2c2', borderColor: '#13c2c2' }}
-            >
-              进入 Hermes 管理
-            </Button>
           </Card>
         </Col>
       </Row>

@@ -1,5 +1,5 @@
 .layout {
-  background: #f5f5f5;
+  background: #fff;
   
   // 非主页时限制高度并隐藏溢出
   &:not(.homeLayout) {
@@ -13,6 +13,10 @@
   }
 }
 
+.innerLayout {
+  background: #fff !important;
+}
+
 .siderWrapper {
   position: fixed;
   left: 0;
@@ -21,29 +25,102 @@
   z-index: 100;
   display: flex;
   align-items: center;
+  position: relative;
+  
+  // hover 时显示折叠按钮
+  &:hover .collapseTrigger {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
 }
 
 .sider {
   background: #fff;
-  overflow: visible !important;
   height: 100%;
   position: relative;
-  // 允许按钮溢出到外部显示
-  overflow-x: visible !important;
+  overflow-x: visible;
   overflow-y: hidden;
+  
+  // 移除 Ant Design Sider 的默认右侧边框
+  border-right: none !important;
+}
+
+.collapseTrigger {
+  position: absolute;
+  right: -18px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 101;
+  width: 20px;
+  height: 48px;
+  padding: 0;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  background: #fff;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+  color: #595959;
+  
+  // 书签样式：左侧有一个小三角形缺口
+  &::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 8px solid #fff;
+  }
+  
+  
+  &:hover {
+    background: #fafafa;
+    color: #1890ff;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.12);
+    transform: translateY(-50%) translateX(2px);
+  }
+  
+  &:active {
+    transform: translateY(-50%) translateX(1px);
+    box-shadow: 2px 0 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  // 图标样式
+  .anticon {
+    font-size: 12px;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  &:hover .anticon {
+    transform: scale(1.1);
+  }
+  
+  // 聚焦状态（无障碍）
+  &:focus-visible {
+    outline: 2px solid rgba(24, 144, 255, 0.3);
+    outline-offset: 2px;
+  }
 }
 
 .content {
-  margin-left: calc(var(--sider-width, 240px) + 24px);
-  margin-right: 24px;
-  margin-top: calc(56px + 33px);
+  margin-left: 24px;
+  margin-right: 0;
+  margin-top: calc(56px);
   margin-bottom: 0;
   padding: 24px;
   background: #fff;
   transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border-left: 1px solid #f0f0f0;
-  border-right: 1px solid #f0f0f0;
-  border-radius: 8px 8px 0 0;
   overflow-y: auto;
   overflow-x: hidden;
   height: calc(100vh - 56px - 33px);
@@ -52,6 +129,7 @@
 .homeContent {
   margin: 0;
   padding: 0;
+  margin-top: 56px;
   background: transparent;
   border-radius: 0;
   min-height: calc(100vh - 56px);
