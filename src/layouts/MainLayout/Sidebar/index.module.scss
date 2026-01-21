@@ -30,41 +30,6 @@
   }
 }
 
-.collapseButton {
-  position: absolute;
-  right: -16px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.2s ease;
-}
-
-.collapseBtn {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: #1890ff;
-  border: 2px solid #fff;
-  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
-  color: #fff;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background-color: #40a9ff;
-    box-shadow: 0 4px 12px rgba(24, 144, 255, 0.4);
-    transform: scale(1.1);
-  }
-
-  &:active {
-    background-color: #096dd9;
-    transform: scale(0.95);
-  }
-}
 
 .logoIcon {
   width: 28px;

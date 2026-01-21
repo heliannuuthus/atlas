@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
-import { Layout } from 'antd'
+import { Layout, Button } from 'antd'
+import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import { Header } from './Header'
 import { Sidebar } from './Sidebar'
 import { BusinessTabs } from '@/components/BusinessTabs'
@@ -34,7 +35,7 @@ export function MainLayout() {
   }, [])
 
   return (
-    <Layout className={styles.layout}>
+    <Layout className={`${styles.layout} ${isHomePage ? styles.homeLayout : ''}`}>
       {isHomePage ? (
         <>
           <Header />
@@ -44,17 +45,27 @@ export function MainLayout() {
         </>
       ) : (
         <>
-          <Sider
-            width={240}
-            collapsedWidth={64}
-            collapsed={collapsed}
-            onCollapse={setCollapsed}
-            className={styles.sider}
-            collapsible
-            trigger={null}
-          >
-            <Sidebar collapsed={collapsed} onCollapse={setCollapsed} />
-          </Sider>
+          <div className={styles.siderWrapper}>
+            <Sider
+              width={240}
+              collapsedWidth={64}
+              collapsed={collapsed}
+              onCollapse={setCollapsed}
+              className={styles.sider}
+              collapsible
+              trigger={null}
+            >
+              <Sidebar collapsed={collapsed} />
+            </Sider>
+            <div className={styles.collapseButton}>
+              <Button
+                type="text"
+                icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                onClick={() => setCollapsed(!collapsed)}
+                className={styles.collapseBtn}
+              />
+            </div>
+          </div>
           <Layout style={{ '--sider-width': collapsed ? '64px' : '240px' } as React.CSSProperties}>
             <Header />
             <BusinessTabs />
