@@ -42,7 +42,7 @@ export function List() {
     }
   )
 
-  const filteredData = data?.filter((item) => {
+  const filteredData = (data || []).filter((item) => {
     if (!keyword) return true
     return (
       item.name.toLowerCase().includes(keyword.toLowerCase()) ||

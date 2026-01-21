@@ -236,7 +236,7 @@ export function List() {
 
         <Table
           columns={columns}
-          dataSource={data?.list}
+          dataSource={data?.list || []}
           loading={loading}
           rowKey="id"
           scroll={{ x: 1200 }}

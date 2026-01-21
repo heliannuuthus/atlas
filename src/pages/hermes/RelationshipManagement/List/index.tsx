@@ -22,6 +22,8 @@ export function List() {
     { refreshDeps: [serviceId, subjectType] }
   )
 
+  const tableData = data || []
+
   const handleDelete = async (rel: Relationship) => {
     try {
       await relationshipApi.delete({
@@ -80,7 +82,7 @@ export function List() {
             <Button icon={<ReloadOutlined />} onClick={refresh}>刷新</Button>
           </Space>
         </div>
-        <Table columns={columns} dataSource={data} loading={loading} rowKey="_id" scroll={{ x: 1200 }} />
+        <Table columns={columns} dataSource={tableData} loading={loading} rowKey="_id" scroll={{ x: 1200 }} />
       </Card>
     </div>
   )

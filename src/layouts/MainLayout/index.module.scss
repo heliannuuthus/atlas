@@ -25,58 +25,12 @@
 
 .sider {
   background: #fff;
-  overflow: visible;
+  overflow: visible !important;
   height: 100%;
   position: relative;
-  // 允许标签按钮溢出显示
-  overflow-x: visible;
-}
-
-// 折叠按钮 - 标签效果，只露出外部一小部分
-.collapseButton {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%) translateX(100%); // 完全在外部
-  z-index: 101;
-  transition: all 0.2s ease;
-  pointer-events: auto;
-  overflow: visible;
-}
-
-.collapseBtn {
-  width: 16px; // 很窄，只露出一点
-  height: 56px; // 较高的标签
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border-radius: 0 6px 6px 0; // 右侧圆角
-  background: linear-gradient(180deg, #e8e8e8 0%, #d9d9d9 100%);
-  border: 1px solid #bfbfbf;
-  border-left: none;
-  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
-  color: #595959;
-  font-size: 12px;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  
-  // 默认只显示一条细线
-  opacity: 0.6;
-
-  &:hover {
-    width: 24px; // 悬停时变宽
-    background: linear-gradient(180deg, #1890ff 0%, #096dd9 100%);
-    border-color: #1890ff;
-    color: #fff;
-    opacity: 1;
-    box-shadow: 2px 0 8px rgba(24, 144, 255, 0.3);
-  }
-
-  &:active {
-    background: linear-gradient(180deg, #096dd9 0%, #0050b3 100%);
-    transform: translateX(-1px);
-  }
+  // 允许按钮溢出到外部显示
+  overflow-x: visible !important;
+  overflow-y: hidden;
 }
 
 .content {
@@ -86,7 +40,7 @@
   margin-bottom: 0;
   padding: 24px;
   background: #fff;
-  transition: margin-left 0.2s;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border-left: 1px solid #f0f0f0;
   border-right: 1px solid #f0f0f0;
   border-radius: 8px 8px 0 0;

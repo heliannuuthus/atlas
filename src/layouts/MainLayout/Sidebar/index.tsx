@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Menu, ConfigProvider } from 'antd'
+import { Menu, Button, ConfigProvider } from 'antd'
 import type { MenuProps, ThemeConfig } from 'antd'
+import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import { useBusinessStore } from '@/store/business'
 import { businessConfigs } from '@/config/business'
 import styles from './index.module.scss'
@@ -9,9 +10,10 @@ type MenuItem = Required<MenuProps>['items'][number]
 
 interface SidebarProps {
   collapsed: boolean
+  onCollapse: (collapsed: boolean) => void
 }
 
-export function Sidebar({ collapsed }: SidebarProps) {
+export function Sidebar({ collapsed, onCollapse }: SidebarProps) {
   const navigate = useNavigate()
   const location = useLocation()
   const { currentBusiness } = useBusinessStore()
@@ -113,6 +115,15 @@ export function Sidebar({ collapsed }: SidebarProps) {
       ) : (
         <div className={styles.empty}>请选择一个业务模块</div>
       )}
+      <div className={styles.collapseButton}>
+        <Button
+          type="text"
+          icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+          onClick={() => onCollapse(!collapsed)}
+          className={styles.collapseBtn}
+          aria-label={collapsed ? '展开侧边栏' : '折叠侧边栏'}
+        />
+      </div>
     </div>
   )
 }

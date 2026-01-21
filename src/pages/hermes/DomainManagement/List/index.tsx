@@ -14,6 +14,8 @@ export function List() {
     refreshDeps: [],
   })
 
+  const tableData = data || []
+
   const columns: ColumnsType<Domain> = [
     {
       title: '域ID',
@@ -79,7 +81,7 @@ export function List() {
 
         <Table
           columns={columns}
-          dataSource={data}
+          dataSource={tableData}
           loading={loading}
           rowKey="domain_id"
           scroll={{ x: 1000 }}

@@ -12,6 +12,8 @@ export function List() {
 
   const { data, loading, refresh } = useRequest(() => groupApi.getList())
 
+  const tableData = data || []
+
   const columns: ColumnsType<Group> = [
     { title: '组ID', dataIndex: 'group_id', key: 'group_id', width: 200 },
     { title: '名称', dataIndex: 'name', key: 'name', width: 200 },
@@ -40,7 +42,7 @@ export function List() {
         <div className={styles.filters}>
           <Button icon={<ReloadOutlined />} onClick={refresh}>刷新</Button>
         </div>
-        <Table columns={columns} dataSource={data} loading={loading} rowKey="group_id" scroll={{ x: 1000 }} />
+        <Table columns={columns} dataSource={tableData} loading={loading} rowKey="group_id" scroll={{ x: 1000 }} />
       </Card>
     </div>
   )
