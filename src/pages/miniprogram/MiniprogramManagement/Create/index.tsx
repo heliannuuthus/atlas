@@ -1,12 +1,9 @@
-import { useNavigate } from 'react-router-dom'
 import { useRequest } from 'ahooks'
-import { Form, Input, Select, Button, Card, message } from 'antd'
-import { ArrowLeftOutlined } from '@ant-design/icons'
+import { Form, Input, Card, message } from 'antd'
+import { useNavigate } from 'react-router-dom'
 import { createMiniprogram } from '@/mock/api/miniprogram'
-import {
-  MiniprogramPlatform,
-  MiniprogramStatus,
-} from '@/types/miniprogram'
+import { MiniprogramStatus } from '@/types/miniprogram'
+import { PageHeader, PlatformSelect, FormActions } from '@/components'
 import styles from './index.module.scss'
 
 const { TextArea } = Input
@@ -16,7 +13,7 @@ export function Create() {
   const [form] = Form.useForm()
 
   const { run: handleSubmit, loading } = useRequest(
-    async (values: any) => {
+    async (values: Record<string, unknown>) => {
       await createMiniprogram({
         ...values,
         status: MiniprogramStatus.DRAFT,
@@ -35,15 +32,7 @@ export function Create() {
   return (
     <div className={styles.container}>
       <Card>
-        <div className={styles.header}>
-          <Button
-            icon={<ArrowLeftOutlined />}
-            onClick={() => navigate('/miniprogram')}
-          >
-            返回
-          </Button>
-          <div className={styles.title}>新建小程序</div>
-        </div>
+        <PageHeader title="新建小程序" backPath="/miniprogram" />
 
         <Form
           form={form}
@@ -72,17 +61,7 @@ export function Create() {
             label="平台"
             rules={[{ required: true, message: '请选择平台' }]}
           >
-            <Select placeholder="请选择平台">
-              <Select.Option value={MiniprogramPlatform.WECHAT}>
-                微信小程序
-              </Select.Option>
-              <Select.Option value={MiniprogramPlatform.ALIPAY}>
-                支付宝小程序
-              </Select.Option>
-              <Select.Option value={MiniprogramPlatform.BYTEDANCE}>
-                字节跳动小程序
-              </Select.Option>
-            </Select>
+            <PlatformSelect />
           </Form.Item>
 
           <Form.Item
@@ -112,15 +91,11 @@ export function Create() {
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" loading={loading}>
-              创建
-            </Button>
-            <Button
-              style={{ marginLeft: 8 }}
-              onClick={() => navigate('/miniprogram')}
-            >
-              取消
-            </Button>
+            <FormActions
+              loading={loading}
+              submitText="创建"
+              cancelPath="/miniprogram"
+            />
           </Form.Item>
         </Form>
       </Card>

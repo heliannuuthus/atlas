@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useTenantStore } from '@/store/tenant'
 import { mockTenantList } from '@/mock/data/tenant'
 
@@ -9,17 +9,25 @@ import { mockTenantList } from '@/mock/data/tenant'
 export function useTenant() {
   const { currentTenant, tenantList, setCurrentTenant, setTenantList } =
     useTenantStore()
+  const initialized = useRef(false)
 
   useEffect(() => {
-    // 初始化租户列表
-    if (tenantList.length === 0) {
-      setTenantList(mockTenantList)
-      // 设置默认租户
-      if (!currentTenant && mockTenantList.length > 0) {
-        setCurrentTenant(mockTenantList[0])
+    if (initialized.current) return
+
+    try {
+      const store = useTenantStore.getState()
+      if (store.tenantList.length === 0) {
+        setTenantList(mockTenantList)
+        if (!store.currentTenant && mockTenantList.length > 0) {
+          setCurrentTenant(mockTenantList[0])
+        }
       }
+      initialized.current = true
+    } catch (error) {
+      console.error('Failed to initialize tenant:', error)
+      initialized.current = true
     }
-  }, [tenantList.length, currentTenant, setTenantList, setCurrentTenant])
+  }, [])
 
   return {
     currentTenant,

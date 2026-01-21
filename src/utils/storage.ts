@@ -86,7 +86,7 @@ class Storage {
   size(): number {
     let total = 0
     for (const key in this.storage) {
-      if (this.storage.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(this.storage, key)) {
         total +=
           this.storage[key].length + key.length
       }

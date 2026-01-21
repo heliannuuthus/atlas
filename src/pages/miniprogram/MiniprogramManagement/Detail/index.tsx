@@ -9,13 +9,9 @@ import {
   Spin,
   message,
 } from 'antd'
-import {
-  ArrowLeftOutlined,
-  EditOutlined,
-} from '@ant-design/icons'
+import { EditOutlined } from '@ant-design/icons'
 import { getMiniprogramDetail, publishMiniprogram } from '@/mock/api/miniprogram'
-import { StatusTag } from '@/components/StatusTag'
-import { PlatformTag } from '@/components/PlatformTag'
+import { StatusTag, PlatformTag, PageHeader } from '@/components'
 import { MiniprogramStatus } from '@/types/miniprogram'
 import styles from './index.module.scss'
 
@@ -24,7 +20,10 @@ export function Detail() {
   const navigate = useNavigate()
 
   const { data, loading, refresh } = useRequest(
-    () => getMiniprogramDetail(id!),
+    async () => {
+      if (!id) throw new Error('ID is required')
+      return await getMiniprogramDetail(id)
+    },
     {
       ready: !!id,
     }
@@ -35,7 +34,7 @@ export function Detail() {
     try {
       await publishMiniprogram(id)
       message.success('提交审核成功')
-      refresh()
+      await refresh()
     } catch (error) {
       message.error('提交审核失败')
     }
@@ -53,31 +52,31 @@ export function Detail() {
     return null
   }
 
+  const extra = (
+    <Space>
+      {data.status === MiniprogramStatus.DRAFT && (
+        <Button type="primary" onClick={handlePublish}>
+          提交审核
+        </Button>
+      )}
+      <Button
+        type="primary"
+        icon={<EditOutlined />}
+        onClick={() => navigate(`/miniprogram/${id}/edit`)}
+      >
+        编辑
+      </Button>
+    </Space>
+  )
+
   return (
     <div className={styles.container}>
       <Card>
-        <div className={styles.header}>
-          <Button
-            icon={<ArrowLeftOutlined />}
-            onClick={() => navigate('/miniprogram')}
-          >
-            返回
-          </Button>
-          <Space>
-            {data.status === MiniprogramStatus.DRAFT && (
-              <Button type="primary" onClick={handlePublish}>
-                提交审核
-              </Button>
-            )}
-            <Button
-              type="primary"
-              icon={<EditOutlined />}
-              onClick={() => navigate(`/miniprogram/${id}/edit`)}
-            >
-              编辑
-            </Button>
-          </Space>
-        </div>
+        <PageHeader
+          title="小程序详情"
+          backPath="/miniprogram"
+          extra={extra}
+        />
 
         <div className={styles.content}>
           <Card title="基本信息" className={styles.card}>

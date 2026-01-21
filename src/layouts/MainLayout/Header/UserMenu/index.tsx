@@ -1,31 +1,31 @@
-import { Dropdown, Avatar, Space } from 'antd'
-import type { MenuProps } from 'antd'
-import { UserOutlined, SettingOutlined, LogoutOutlined } from '@ant-design/icons'
+import { Avatar, Badge, Tooltip, Dropdown, MenuProps } from 'antd'
+import {
+  UserOutlined,
+  SettingOutlined,
+  LogoutOutlined,
+  BellOutlined,
+  QuestionCircleOutlined,
+} from '@ant-design/icons'
 import styles from './index.module.scss'
 
-const items: MenuProps['items'] = [
-  {
-    key: 'profile',
-    icon: <UserOutlined />,
-    label: '个人中心',
-  },
-  {
-    key: 'settings',
-    icon: <SettingOutlined />,
-    label: '设置',
-  },
-  {
-    type: 'divider',
-  },
-  {
-    key: 'logout',
-    icon: <LogoutOutlined />,
-    label: '退出登录',
-    danger: true,
-  },
-]
+const getUserInitials = (name?: string) => {
+  if (!name) return 'U'
+  const chars = name.trim()
+  if (/^[\u4e00-\u9fa5]/.test(chars)) {
+    return chars.substring(0, 1)
+  }
+  const parts = chars.split(/\s+/)
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+  }
+  return chars.substring(0, 2).toUpperCase()
+}
 
 export function UserMenu() {
+  const userName = '管理员'
+  const userAvatar = null
+  const notificationCount = 3
+
   const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
     switch (key) {
       case 'profile':
@@ -34,20 +34,64 @@ export function UserMenu() {
       case 'settings':
         console.log('设置')
         break
+      case 'help':
+        console.log('帮助文档')
+        break
       case 'logout':
         console.log('退出登录')
         break
     }
   }
 
+  const menuItems: MenuProps['items'] = [
+    {
+      key: 'profile',
+      icon: <UserOutlined />,
+      label: '个人中心',
+    },
+    {
+      key: 'settings',
+      icon: <SettingOutlined />,
+      label: '设置',
+    },
+    {
+      key: 'help',
+      icon: <QuestionCircleOutlined />,
+      label: '帮助文档',
+    },
+    {
+      type: 'divider',
+    },
+    {
+      key: 'logout',
+      icon: <LogoutOutlined />,
+      label: '退出登录',
+      danger: true,
+    },
+  ]
+
   return (
-    <Dropdown menu={{ items, onClick: handleMenuClick }} placement="bottomRight">
-      <div className={styles.userMenu}>
-        <Space>
-          <Avatar icon={<UserOutlined />} />
-          <span className={styles.username}>管理员</span>
-        </Space>
-      </div>
-    </Dropdown>
+    <div className={styles.headerActions}>
+      <Tooltip title="通知" placement="bottom">
+        <div className={styles.iconButton}>
+          <Badge count={notificationCount} size="small" offset={[-2, 2]}>
+            <BellOutlined className={styles.headerIcon} />
+          </Badge>
+        </div>
+      </Tooltip>
+
+      <Dropdown menu={{ items: menuItems, onClick: handleMenuClick }} placement="bottomRight">
+        <div className={styles.avatarWrapper}>
+          {userAvatar ? (
+            <Avatar src={userAvatar} size={28} />
+          ) : (
+            <Avatar size={28} style={{ backgroundColor: '#1890ff' }}>
+              {getUserInitials(userName)}
+            </Avatar>
+          )}
+          <span className={styles.userName}>{userName}</span>
+        </div>
+      </Dropdown>
+    </div>
   )
 }

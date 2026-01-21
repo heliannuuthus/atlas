@@ -5,6 +5,7 @@ import type {
   MiniprogramListParams,
   MiniprogramListResponse,
 } from '@/types/miniprogram'
+import { MiniprogramStatus } from '@/types/miniprogram'
 
 /**
  * 模拟 API 延迟
@@ -83,7 +84,7 @@ export async function createMiniprogram(
     name: data.name || '未命名小程序',
     appId: data.appId || '',
     platform: data.platform!,
-    status: data.status || 'draft',
+    status: data.status || MiniprogramStatus.DRAFT,
     version: data.version || '1.0.0',
     description: data.description,
     logo: data.logo,
@@ -148,7 +149,7 @@ export async function publishMiniprogram(id: string): Promise<Miniprogram> {
 
   const updatedItem: Miniprogram = {
     ...mockMiniprogramList[index],
-    status: 'reviewing',
+    status: MiniprogramStatus.REVIEWING,
     updatedAt: new Date().toISOString(),
   }
 

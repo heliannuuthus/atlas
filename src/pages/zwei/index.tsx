@@ -1,0 +1,8 @@
+export { Dashboard } from './Dashboard'
+export { Recipes } from './Recipes'
+export { Categories } from './Recipes/Categories'
+export { Favorites } from './Favorites'
+export { History } from './History'
+export { Tags } from './Tags'
+export { Recommend } from './Recommend'
+export { Home } from './Home'

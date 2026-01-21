@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { localStorage, STORAGE_KEYS } from '@/utils/storage'
+import { STORAGE_KEYS } from '@/utils/storage'
 
 export interface Tenant {
   id: string
@@ -19,14 +19,27 @@ interface TenantState {
 
 const customStorage = {
   getItem: (name: string): string | null => {
-    const value = localStorage.get(name)
-    return value ? JSON.stringify(value) : null
+    try {
+      const value = window.localStorage.getItem(name)
+      return value
+    } catch (error) {
+      console.error(`Storage getItem error for "${name}":`, error)
+      return null
+    }
   },
   setItem: (name: string, value: string): void => {
-    localStorage.set(name, JSON.parse(value))
+    try {
+      window.localStorage.setItem(name, value)
+    } catch (error) {
+      console.error(`Storage setItem error for "${name}":`, error)
+    }
   },
   removeItem: (name: string): void => {
-    localStorage.remove(name)
+    try {
+      window.localStorage.removeItem(name)
+    } catch (error) {
+      console.error(`Storage removeItem error for "${name}":`, error)
+    }
   },
 }
 
@@ -40,6 +53,7 @@ export const useTenantStore = create<TenantState>()(
     }),
     {
       name: STORAGE_KEYS.CURRENT_TENANT,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       storage: customStorage as any,
     }
   )
