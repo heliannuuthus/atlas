@@ -1,8 +1,23 @@
 import { message } from 'antd'
 import type { AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios'
 import axios from 'axios'
-import { env, getServiceUrl, apiEndpoints, type ServiceName } from '@/config/env'
+import { getServiceUrl, apiEndpoints, type ServiceName } from '@/config/env'
 import { useAuthStore } from '@/store/auth'
+
+// 用于存储当前的 access token（同步获取）
+let cachedAccessToken: string | null = null
+
+// 订阅 auth store 变化来更新缓存的 token
+useAuthStore.subscribe((state) => {
+  // 当认证状态变化时，尝试刷新 token
+  if (state.isAuthenticated) {
+    state.getAccessToken().then((token) => {
+      cachedAccessToken = token
+    })
+  } else {
+    cachedAccessToken = null
+  }
+})
 
 export interface ApiResponse<T = unknown> {
   code?: number
@@ -34,9 +49,8 @@ export function createServiceRequest(service: ServiceName) {
   // 复用相同的拦截器逻辑
   instance.interceptors.request.use(
     (config) => {
-      const token = useAuthStore.getState().accessToken
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`
+      if (cachedAccessToken) {
+        config.headers.Authorization = `Bearer ${cachedAccessToken}`
       }
       return config
     },
@@ -79,8 +93,7 @@ function responseErrorHandler(error: AxiosError<ApiResponse>) {
     switch (status) {
       case 401:
         errorMsg = '未授权，请重新登录'
-        useAuthStore.getState().clearTokens()
-        window.location.href = '/login'
+        useAuthStore.getState().logout()
         break
       case 403:
         errorMsg = '拒绝访问'
@@ -111,9 +124,8 @@ function responseErrorHandler(error: AxiosError<ApiResponse>) {
 // 默认请求实例的拦截器 - 支持动态路由
 request.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = useAuthStore.getState().accessToken
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+    if (cachedAccessToken) {
+      config.headers.Authorization = `Bearer ${cachedAccessToken}`
     }
 
     // 根据 URL 路径动态设置 baseURL

@@ -1,6 +1,8 @@
 import { Routes, Route } from 'react-router-dom'
 import { MainLayout } from '@/layouts'
+import { AuthGuard } from '@/components'
 import { Home } from '@/pages/Home'
+import { AuthCallback } from '@/pages/auth'
 import {
   Dashboard,
   Recipes,
@@ -23,7 +25,18 @@ import {
 export function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<MainLayout />}>
+      {/* 认证回调路由 - 不需要登录保护 */}
+      <Route path="/auth/callback" element={<AuthCallback />} />
+
+      {/* 受保护的路由 */}
+      <Route
+        path="/"
+        element={
+          <AuthGuard>
+            <MainLayout />
+          </AuthGuard>
+        }
+      >
         <Route index element={<Home />} />
         <Route path="zwei" element={<Dashboard />} />
         <Route path="zwei/recipes" element={<Recipes />} />
