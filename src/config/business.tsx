@@ -17,6 +17,9 @@ import {
   FireOutlined,
   StarOutlined,
   HomeOutlined,
+  DashboardOutlined,
+  NodeIndexOutlined,
+  UnorderedListOutlined,
 } from '@ant-design/icons'
 import type { BusinessConfig, BusinessModule } from '@/types/business'
 
@@ -263,6 +266,12 @@ export const businessConfigs: Record<string, BusinessConfig> = {
     module: businessModules[4],
     menus: [
       {
+        key: 'dashboard',
+        label: '概览',
+        icon: <DashboardOutlined />,
+        path: '/hermes/dashboard',
+      },
+      {
         key: 'domains',
         label: '域管理',
         icon: <ApartmentOutlined />,
@@ -285,6 +294,20 @@ export const businessConfigs: Record<string, BusinessConfig> = {
         label: '关系管理',
         icon: <ShareAltOutlined />,
         path: '/hermes/relationships',
+        children: [
+          {
+            key: 'rel-list',
+            label: '关系列表',
+            icon: <UnorderedListOutlined />,
+            path: '/hermes/relationships',
+          },
+          {
+            key: 'rel-graph',
+            label: '关系图谱',
+            icon: <NodeIndexOutlined />,
+            path: '/hermes/relationships/graph',
+          },
+        ],
       },
       {
         key: 'groups',
@@ -293,7 +316,7 @@ export const businessConfigs: Record<string, BusinessConfig> = {
         path: '/hermes/groups',
       },
     ],
-    defaultPath: '/hermes/domains',
+    defaultPath: '/hermes/dashboard',
   },
 }
 
