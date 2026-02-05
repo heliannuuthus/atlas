@@ -7,8 +7,9 @@ import {
   Space,
   Input,
   Select,
-  message,
   Tag,
+  Empty,
+  Typography,
 } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import {
@@ -16,13 +17,16 @@ import {
   EditOutlined,
   EyeOutlined,
   ReloadOutlined,
+  CloudServerOutlined,
 } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { serviceApi, domainApi } from '@/services'
 import type { Service, Domain } from '@/types/management'
+import { formatDuration } from '@/utils/format'
 import styles from './index.module.scss'
 
 const { Search } = Input
+const { Text } = Typography
 
 export function List() {
   const navigate = useNavigate()
@@ -61,41 +65,46 @@ export function List() {
       title: '名称',
       dataIndex: 'name',
       key: 'name',
-      width: 200,
+      width: 180,
     },
     {
-      title: '域ID',
+      title: '域',
       dataIndex: 'domain_id',
       key: 'domain_id',
-      width: 120,
+      width: 100,
+      render: (value) => <Tag bordered={false}>{value}</Tag>,
     },
     {
       title: '描述',
       dataIndex: 'description',
       key: 'description',
       ellipsis: true,
+      render: (value) => value || <Text type="secondary">-</Text>,
     },
     {
-      title: 'Access Token 过期时间',
-      dataIndex: 'access_token_expires_in',
-      key: 'access_token_expires_in',
-      width: 180,
-      render: (value) => `${value}秒`,
-    },
-    {
-      title: 'Refresh Token 过期时间',
-      dataIndex: 'refresh_token_expires_in',
-      key: 'refresh_token_expires_in',
-      width: 200,
-      render: (value) => `${value}秒`,
+      title: 'Token 有效期',
+      key: 'token_expiry',
+      width: 160,
+      render: (_, record) => (
+        <div className={styles.tokenExpiry}>
+          <div className={styles.tokenRow}>
+            <Text type="secondary">Access:</Text>
+            <span>{formatDuration(record.access_token_expires_in)}</span>
+          </div>
+          <div className={styles.tokenRow}>
+            <Text type="secondary">Refresh:</Text>
+            <span>{formatDuration(record.refresh_token_expires_in)}</span>
+          </div>
+        </div>
+      ),
     },
     {
       title: '状态',
       dataIndex: 'status',
       key: 'status',
-      width: 100,
+      width: 80,
       render: (status) => (
-        <Tag color={status === 0 ? 'green' : 'red'}>
+        <Tag color={status === 0 ? 'success' : 'error'} bordered={false}>
           {status === 0 ? '启用' : '禁用'}
         </Tag>
       ),
@@ -103,10 +112,10 @@ export function List() {
     {
       title: '操作',
       key: 'action',
-      width: 200,
+      width: 140,
       fixed: 'right',
       render: (_, record) => (
-        <Space>
+        <Space size={0}>
           <Button
             type="link"
             size="small"
@@ -127,6 +136,19 @@ export function List() {
       ),
     },
   ]
+
+  // 空状态组件
+  const emptyState = (
+    <Empty
+      image={<CloudServerOutlined style={{ fontSize: 48, color: '#d9d9d9' }} />}
+      imageStyle={{ height: 60 }}
+      description="暂无服务"
+    >
+      <Button type="primary" onClick={() => navigate('/hermes/services/create')}>
+        创建第一个服务
+      </Button>
+    </Empty>
+  )
 
   return (
     <div className={styles.container}>
@@ -175,7 +197,8 @@ export function List() {
           dataSource={filteredData}
           loading={loading}
           rowKey="service_id"
-          scroll={{ x: 1400 }}
+          scroll={{ x: 1100 }}
+          locale={{ emptyText: emptyState }}
         />
       </Card>
     </div>

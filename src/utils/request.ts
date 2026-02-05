@@ -147,4 +147,30 @@ request.interceptors.response.use(
   responseErrorHandler
 )
 
+// 便捷的 HTTP 方法封装
+export async function get<T = unknown>(url: string, params?: Record<string, unknown>): Promise<T> {
+  const response = await request.get<T>(url, { params })
+  return response.data
+}
+
+export async function post<T = unknown>(url: string, data?: unknown): Promise<T> {
+  const response = await request.post<T>(url, data)
+  return response.data
+}
+
+export async function put<T = unknown>(url: string, data?: unknown): Promise<T> {
+  const response = await request.put<T>(url, data)
+  return response.data
+}
+
+export async function del<T = unknown>(url: string, data?: unknown): Promise<T> {
+  const response = await request.delete<T>(url, { data })
+  return response.data
+}
+
+export async function patch<T = unknown>(url: string, data?: unknown): Promise<T> {
+  const response = await request.patch<T>(url, data)
+  return response.data
+}
+
 export default request
