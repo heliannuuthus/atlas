@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Button } from 'antd'
 import {
   BookOutlined,
   ApartmentOutlined,
@@ -8,7 +7,6 @@ import {
   HomeOutlined,
 } from '@ant-design/icons'
 import { servicePlatforms, type ServicePlatformId } from '@/config/services'
-import { businessConfigs } from '@/config/business'
 import type { ServicePlatform } from '@/types/service'
 import styles from './index.module.scss'
 
@@ -49,7 +47,7 @@ export function ServiceSwitcher() {
 
   useEffect(() => {
     if (open) {
-      setPulsing(false)
+      queueMicrotask(() => setPulsing(false))
     }
   }, [open])
 
@@ -78,7 +76,7 @@ export function ServiceSwitcher() {
     
     // 如果配置了外部 URL，跳转到外部
     if (serviceWithUrl.url) {
-      window.location.href = serviceWithUrl.url
+      window.location.assign(serviceWithUrl.url)
       return
     }
     

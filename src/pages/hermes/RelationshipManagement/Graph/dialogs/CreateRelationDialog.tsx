@@ -45,7 +45,7 @@ export function CreateRelationDialog({
   useEffect(() => {
     if (open) {
       form.resetFields()
-      setCustomRelation(false)
+      queueMicrotask(() => setCustomRelation(false))
     }
   }, [open, form])
 

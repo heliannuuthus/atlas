@@ -11,20 +11,6 @@ import styles from './index.module.scss'
 
 const { Text, Link } = Typography
 
-// 主体类型标签颜色映射
-const subjectTypeColors: Record<string, string> = {
-  user: 'blue',
-  group: 'green',
-  application: 'orange',
-}
-
-// 主体类型显示名称
-const subjectTypeLabels: Record<string, string> = {
-  user: '用户',
-  group: '组',
-  application: '应用',
-}
-
 export function Detail() {
   const { appId } = useParams<{ appId: string }>()
   const navigate = useNavigate()

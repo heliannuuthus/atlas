@@ -19,7 +19,7 @@ import { message, Table, Card, Popconfirm, Button, Spin } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { DeleteOutlined } from '@ant-design/icons'
 import * as hermesApi from '@/services/hermes'
-import type { Relationship, Service, Application, Group } from '@/types/hermes'
+import type { Relationship } from '@/types/hermes'
 import { formatDateTime, isExpiringSoon } from '@/utils/format'
 import { GraphContextProvider, useGraphContext } from './context/GraphContext'
 import { SubjectNode, type SubjectNodeData } from './nodes/SubjectNode'
@@ -45,6 +45,7 @@ function GraphCanvas() {
   const reactFlowWrapper = useRef<HTMLDivElement>(null)
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null)
 
   const {
@@ -55,8 +56,8 @@ function GraphCanvas() {
     addPendingRelation,
     resetChanges,
     setDirty,
-    clearDirty,
-    deleteEdge: contextDeleteEdge,
+    clearDirty: _clearDirty,
+    deleteEdge: _contextDeleteEdge,
   } = useGraphContext()
 
   const [isFullscreen, setIsFullscreen] = useState(false)
@@ -305,7 +306,7 @@ function GraphCanvas() {
       message.success('保存成功')
       resetChanges()
       refreshRelationships()
-    } catch (error) {
+    } catch {
       message.error('保存失败')
     } finally {
       setSaving(false)
@@ -337,7 +338,7 @@ function GraphCanvas() {
         })
         message.success('删除成功')
         refreshRelationships()
-      } catch (error) {
+      } catch {
         message.error('删除失败')
       }
     },

@@ -35,7 +35,7 @@ export function Detail() {
       await publishMiniprogram(id)
       message.success('提交审核成功')
       await refresh()
-    } catch (error) {
+    } catch {
       message.error('提交审核失败')
     }
   }

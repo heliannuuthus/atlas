@@ -5,9 +5,8 @@ import {
   UserOutlined,
   TeamOutlined,
   AppstoreOutlined,
-  DatabaseOutlined,
 } from '@ant-design/icons'
-import type { Service, Application, Group } from '@/types/hermes'
+import type { Application, Group } from '@/types/hermes'
 import styles from './index.module.scss'
 
 const { Text } = Typography

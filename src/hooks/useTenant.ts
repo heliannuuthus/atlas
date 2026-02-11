@@ -27,7 +27,7 @@ export function useTenant() {
       console.error('Failed to initialize tenant:', error)
       initialized.current = true
     }
-  }, [])
+  }, [setCurrentTenant, setTenantList])
 
   return {
     currentTenant,

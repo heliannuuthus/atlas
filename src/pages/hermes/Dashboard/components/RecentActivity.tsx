@@ -6,7 +6,7 @@ import {
   ShareAltOutlined,
   ClockCircleOutlined,
 } from '@ant-design/icons'
-import { formatDateTime, isExpiringSoon, formatRelativeTime } from '@/utils/format'
+import { isExpiringSoon, formatRelativeTime } from '@/utils/format'
 import type { Service, Application, Group, Relationship } from '@/types/hermes'
 import styles from '../index.module.scss'
 

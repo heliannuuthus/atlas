@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { useRequest } from 'ahooks'
 import { Form, Input, InputNumber, Card, message, Switch } from 'antd'
 import { useParams, useNavigate } from 'react-router-dom'
@@ -13,17 +12,17 @@ export function Edit() {
   const navigate = useNavigate()
   const [form] = Form.useForm()
 
-  const { data, loading: detailLoading } = useRequest(
+  const { data: _data, loading: detailLoading } = useRequest(
     () => serviceApi.getDetail(serviceId!),
     {
       ready: !!serviceId,
-      onSuccess: (data) => {
+      onSuccess: (_data) => {
         form.setFieldsValue({
-          name: data.name,
-          description: data.description,
-          access_token_expires_in: data.access_token_expires_in,
-          refresh_token_expires_in: data.refresh_token_expires_in,
-          status: data.status === 0,
+          name: _data.name,
+          description: _data.description,
+          access_token_expires_in: _data.access_token_expires_in,
+          refresh_token_expires_in: _data.refresh_token_expires_in,
+          status: _data.status === 0,
         })
       },
       onError: () => {

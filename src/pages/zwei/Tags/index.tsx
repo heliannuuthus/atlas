@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Card, Tabs, Table, Button, Space, Input, Tag } from 'antd'
+import { Card, Tabs, Table, Button, Space, Input } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import styles from './index.module.scss'
@@ -48,7 +48,7 @@ const mockTags: Record<string, TagItem[]> = {
 export function Tags() {
   const [activeTab, setActiveTab] = useState('cuisine')
 
-  const getColumns = (type: string): ColumnsType<TagItem> => [
+  const getColumns = (_type: string): ColumnsType<TagItem> => [
     {
       title: 'ID',
       dataIndex: 'id',
@@ -78,7 +78,7 @@ export function Tags() {
       title: '操作',
       key: 'action',
       width: 150,
-      render: (_, record) => (
+      render: (_, _record) => (
         <Space size="small">
           <Button type="link" icon={<EditOutlined />} size="small">
             编辑

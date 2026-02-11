@@ -24,14 +24,14 @@ export function AuthCallback() {
     // 处理错误响应
     if (errorParam) {
       console.error('[AuthCallback] Error:', errorParam, errorDescription)
-      setProcessing(false)
+      queueMicrotask(() => setProcessing(false))
       return
     }
 
     // 没有授权码
     if (!code) {
       console.error('[AuthCallback] No authorization code')
-      setProcessing(false)
+      queueMicrotask(() => setProcessing(false))
       return
     }
 
@@ -45,7 +45,7 @@ export function AuthCallback() {
       })
       .catch((err) => {
         console.error('[AuthCallback] Failed to handle callback:', err)
-        setProcessing(false)
+        queueMicrotask(() => setProcessing(false))
       })
   }, [searchParams, handleCallback, navigate])
 

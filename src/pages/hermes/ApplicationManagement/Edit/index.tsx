@@ -12,13 +12,13 @@ export function Edit() {
   const navigate = useNavigate()
   const [form] = Form.useForm()
 
-  const { data, loading: detailLoading } = useRequest(() => applicationApi.getDetail(appId!), {
+  const { data: _data, loading: detailLoading } = useRequest(() => applicationApi.getDetail(appId!), {
     ready: !!appId,
     onSuccess: (data) => {
       let redirectUris: string[] = []
       try {
         redirectUris = data.redirect_uris ? JSON.parse(data.redirect_uris) : []
-      } catch {}
+      } catch { /* ignore JSON parse error */ }
       form.setFieldsValue({
         name: data.name,
         redirect_uris: redirectUris.join('\n'),

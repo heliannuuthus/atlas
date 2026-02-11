@@ -102,7 +102,7 @@ export const serviceApi = {
     request.post<Service>('/hermes/services', data),
 
   update: (serviceId: string, data: ServiceUpdateRequest) =>
-    request.put(`/hermes/services/${serviceId}`, data),
+    request.patch(`/hermes/services/${serviceId}`, data),
 }
 
 export const applicationApi = {
@@ -116,7 +116,7 @@ export const applicationApi = {
     request.post<Application>('/hermes/applications', data),
 
   update: (appId: string, data: ApplicationUpdateRequest) =>
-    request.put(`/hermes/applications/${appId}`, data),
+    request.patch(`/hermes/applications/${appId}`, data),
 
   setServiceRelations: (
     appId: string,
@@ -155,7 +155,7 @@ export const groupApi = {
     request.post<Group>('/hermes/groups', data),
 
   update: (groupId: string, data: GroupUpdateRequest) =>
-    request.put(`/hermes/groups/${groupId}`, data),
+    request.patch(`/hermes/groups/${groupId}`, data),
 
   setMembers: (groupId: string, data: GroupMemberRequest) =>
     request.post(`/hermes/groups/${groupId}/members`, data),

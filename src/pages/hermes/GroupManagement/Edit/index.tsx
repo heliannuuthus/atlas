@@ -12,12 +12,12 @@ export function Edit() {
   const navigate = useNavigate()
   const [form] = Form.useForm()
 
-  const { data, loading: detailLoading } = useRequest(() => groupApi.getDetail(groupId!), {
+  const { data: _data, loading: detailLoading } = useRequest(() => groupApi.getDetail(groupId!), {
     ready: !!groupId,
-    onSuccess: (data) => {
+    onSuccess: (_data) => {
       form.setFieldsValue({
-        name: data.name,
-        description: data.description,
+        name: _data.name,
+        description: _data.description,
       })
     },
     onError: () => message.error('获取组信息失败'),
