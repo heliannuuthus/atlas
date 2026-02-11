@@ -18,7 +18,9 @@ export function Edit() {
       let redirectUris: string[] = []
       try {
         redirectUris = data.redirect_uris ? JSON.parse(data.redirect_uris) : []
-      } catch { /* ignore JSON parse error */ }
+      } catch {
+        redirectUris = []
+      }
       form.setFieldsValue({
         name: data.name,
         redirect_uris: redirectUris.join('\n'),
