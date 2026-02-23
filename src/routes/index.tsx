@@ -21,6 +21,7 @@ import {
   RelationshipManagement,
   GroupManagement,
 } from '@/pages/hermes'
+import { ChaosManagement } from '@/pages/chaos'
 
 export function AppRoutes() {
   return (
@@ -59,6 +60,7 @@ export function AppRoutes() {
         <Route path="hermes/applications/*" element={<ApplicationManagement />} />
         <Route path="hermes/relationships/*" element={<RelationshipManagement />} />
         <Route path="hermes/groups/*" element={<GroupManagement />} />
+        <Route path="chaos/*" element={<ChaosManagement />} />
       </Route>
     </Routes>
   )

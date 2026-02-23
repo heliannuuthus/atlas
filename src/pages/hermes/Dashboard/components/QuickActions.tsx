@@ -1,4 +1,6 @@
+import { useMemo } from 'react'
 import { Card, Button, Space } from 'antd'
+import type { CardProps } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import {
   PlusOutlined,
@@ -35,8 +37,18 @@ export function QuickActions() {
     },
   ]
 
+  const cardStyles = useMemo<CardProps['styles']>(() => ({
+    body: { padding: 16 },
+  }), [])
+
+  const actionButtonStyle = useMemo<React.CSSProperties>(() => ({
+    textAlign: 'left',
+    justifyContent: 'flex-start',
+    height: 40,
+  }), [])
+
   return (
-    <Card title="快捷操作" className={styles.quickActions}>
+    <Card title="快捷操作" className={styles.quickActions} styles={cardStyles}>
       <Space direction="vertical" style={{ width: '100%' }}>
         {actions.map((action) => (
           <Button
@@ -44,7 +56,7 @@ export function QuickActions() {
             icon={action.icon}
             onClick={() => navigate(action.path)}
             block
-            className={styles.actionButton}
+            style={actionButtonStyle}
           >
             <PlusOutlined style={{ fontSize: 10, marginRight: 4 }} />
             {action.label}

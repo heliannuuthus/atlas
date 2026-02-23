@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
-import { Input, Collapse, Typography, Empty } from 'antd'
+import { Input, Collapse, Typography, Empty, ConfigProvider } from 'antd'
+import type { ThemeConfig } from 'antd'
 import {
   SearchOutlined,
   UserOutlined,
@@ -10,6 +11,17 @@ import type { Application, Group } from '@/types/hermes'
 import styles from './index.module.scss'
 
 const { Text } = Typography
+
+const collapseTheme: ThemeConfig = {
+  components: {
+    Collapse: {
+      headerBg: 'transparent',
+      contentBg: 'transparent',
+      headerPadding: '10px 16px',
+      contentPadding: 0,
+    },
+  },
+}
 
 interface AddNodesProps {
   users: string[] // 简化为用户 ID 列表
@@ -192,12 +204,14 @@ export function AddNodes({ users, groups, applications, onDragStart }: AddNodesP
       </div>
 
       <div className={styles.collapseWrapper}>
-        <Collapse
-          items={collapseItems}
-          defaultActiveKey={['users', 'groups', 'applications']}
-          bordered={false}
-          expandIconPosition="end"
-        />
+        <ConfigProvider theme={collapseTheme}>
+          <Collapse
+            items={collapseItems}
+            defaultActiveKey={['users', 'groups', 'applications']}
+            bordered={false}
+            expandIconPosition="end"
+          />
+        </ConfigProvider>
       </div>
     </div>
   )

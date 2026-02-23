@@ -102,23 +102,6 @@
 .collapseWrapper {
   flex: 1;
   overflow-y: auto;
-
-  :global(.ant-collapse) {
-    border: none;
-    background: transparent;
-  }
-
-  :global(.ant-collapse-item) {
-    border-bottom: 1px solid #f0f0f0;
-  }
-
-  :global(.ant-collapse-header) {
-    padding: 10px 16px !important;
-  }
-
-  :global(.ant-collapse-content-box) {
-    padding: 0 !important;
-  }
 }
 
 .collapseHeader {
@@ -319,17 +302,4 @@
 .tableCard {
   margin-top: 16px;
   border-radius: 8px;
-
-  :global(.ant-card-body) {
-    padding: 0;
-  }
-
-  :global(.ant-table-thead > tr > th) {
-    background: #fafafa;
-    font-size: 13px;
-  }
-
-  :global(.ant-table-tbody > tr > td) {
-    font-size: 13px;
-  }
 }

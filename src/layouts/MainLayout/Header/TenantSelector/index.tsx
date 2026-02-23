@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { Select, Avatar } from 'antd'
 import { useTenant } from '@/hooks/useTenant'
 import styles from './index.module.scss'
@@ -12,12 +13,15 @@ export function TenantSelector() {
     }
   }
 
+  const selectStyle = useMemo<React.CSSProperties>(() => ({
+    width: 200,
+  }), [])
+
   return (
     <Select
       value={currentTenant?.id}
       onChange={handleChange}
-      className={styles.selector}
-      style={{ width: 200 }}
+      style={selectStyle}
       placeholder="选择租户"
     >
       {tenantList.map((tenant) => (

@@ -15,8 +15,9 @@ import ReactFlow, {
   type EdgeTypes,
 } from 'reactflow'
 import 'reactflow/dist/style.css'
-import { message, Table, Card, Popconfirm, Button, Spin } from 'antd'
+import { message, Table, Card, Popconfirm, Button, Spin, ConfigProvider } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
+import type { ThemeConfig } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons'
 import * as hermesApi from '@/services/hermes'
 import type { Relationship } from '@/types/hermes'
@@ -381,6 +382,18 @@ function GraphCanvas() {
 
   const loading = servicesLoading || applicationsLoading || groupsLoading
 
+  const tableCardTheme: ThemeConfig = useMemo(() => ({
+    components: {
+      Card: {
+        paddingLG: 0,
+      },
+      Table: {
+        headerBg: '#fafafa',
+        fontSize: 13,
+      },
+    },
+  }), [])
+
   return (
     <div className={`${styles.graphPage} ${isFullscreen ? styles.fullscreen : ''}`}>
       <CanvasHeader
@@ -438,17 +451,19 @@ function GraphCanvas() {
       </div>
 
       {/* 下方数据表格 */}
-      <Card className={styles.tableCard} title={null} size="small">
-        <Table
-          columns={columns}
-          dataSource={relationships || []}
-          loading={relationshipsLoading}
-          rowKey="_id"
-          size="small"
-          pagination={{ pageSize: 5 }}
-          scroll={{ x: 900 }}
-        />
-      </Card>
+      <ConfigProvider theme={tableCardTheme}>
+        <Card className={styles.tableCard} title={null} size="small">
+          <Table
+            columns={columns}
+            dataSource={relationships || []}
+            loading={relationshipsLoading}
+            rowKey="_id"
+            size="small"
+            pagination={{ pageSize: 5 }}
+            scroll={{ x: 900 }}
+          />
+        </Card>
+      </ConfigProvider>
 
       {/* 创建关系对话框 */}
       <CreateRelationDialog

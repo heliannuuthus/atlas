@@ -1,5 +1,5 @@
 import { useRequest } from 'ahooks'
-import { Form, Input, Card, message } from 'antd'
+import { Form, Input, Card, message, Spin } from 'antd'
 import { useParams, useNavigate } from 'react-router-dom'
 import { applicationApi } from '@/services'
 import { PageHeader, FormActions } from '@/components'
@@ -39,7 +39,7 @@ export function Edit() {
     { manual: true, onError: () => message.error('更新失败') }
   )
 
-  if (detailLoading) return <div>加载中...</div>
+  if (detailLoading) return <Spin size="large" />
 
   return (
     <div className={styles.container}>

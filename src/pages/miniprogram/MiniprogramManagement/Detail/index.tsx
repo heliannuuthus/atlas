@@ -7,6 +7,7 @@ import {
   Space,
   Tag,
   Spin,
+  Image,
   message,
 } from 'antd'
 import { EditOutlined } from '@ant-design/icons'
@@ -84,7 +85,7 @@ export function Detail() {
               <Descriptions.Item label="小程序名称">
                 <div className={styles.nameRow}>
                   {data.logo && (
-                    <img src={data.logo} alt={data.name} className={styles.logo} />
+                    <Image src={data.logo} alt={data.name} className={styles.logo} preview={false} />
                   )}
                   <span>{data.name}</span>
                 </div>
@@ -127,7 +128,7 @@ export function Detail() {
           {data.qrCode && (
             <Card title="二维码" className={styles.card}>
               <div className={styles.qrcode}>
-                <img src={data.qrCode} alt="小程序二维码" />
+                <Image src={data.qrCode} alt="小程序二维码" />
               </div>
             </Card>
           )}

@@ -20,6 +20,8 @@ import {
   DashboardOutlined,
   NodeIndexOutlined,
   UnorderedListOutlined,
+  CloudUploadOutlined,
+  FileTextOutlined,
 } from '@ant-design/icons'
 import type { BusinessConfig, BusinessModule } from '@/types/business'
 
@@ -83,6 +85,16 @@ export const businessModules: BusinessModule[] = [
     description: '身份与访问管理：域、服务、应用、关系、组',
     enabled: true,
     order: 5,
+  },
+  {
+    id: 'chaos',
+    name: 'Chaos',
+    icon: 'cloud',
+    path: '/chaos',
+    color: '#eb2f96',
+    description: '业务聚合：邮件发送、文件上传等',
+    enabled: true,
+    order: 6,
   },
 ]
 
@@ -317,6 +329,30 @@ export const businessConfigs: Record<string, BusinessConfig> = {
       },
     ],
     defaultPath: '/hermes/dashboard',
+  },
+  chaos: {
+    module: businessModules[5],
+    menus: [
+      {
+        key: 'dashboard',
+        label: '概览',
+        icon: <DashboardOutlined />,
+        path: '/chaos/dashboard',
+      },
+      {
+        key: 'templates',
+        label: '邮件模板',
+        icon: <FileTextOutlined />,
+        path: '/chaos/templates',
+      },
+      {
+        key: 'files',
+        label: '文件管理',
+        icon: <CloudUploadOutlined />,
+        path: '/chaos/files',
+      },
+    ],
+    defaultPath: '/chaos/dashboard',
   },
 }
 

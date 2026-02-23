@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Menu, ConfigProvider } from 'antd'
 import type { MenuProps, ThemeConfig } from 'antd'
@@ -58,7 +59,7 @@ export function Sidebar({ collapsed }: SidebarProps) {
     }
   }
 
-  const menuTheme: ThemeConfig = {
+  const menuTheme: ThemeConfig = useMemo(() => ({
     components: {
       Menu: {
         itemMarginInline: collapsed ? 0 : 8,
@@ -72,7 +73,14 @@ export function Sidebar({ collapsed }: SidebarProps) {
         }),
       },
     },
-  }
+  }), [collapsed])
+
+  const menuStyle = useMemo<React.CSSProperties>(() => ({
+    width: '100%',
+    height: '100%',
+    borderRight: 'none',
+    flex: 1,
+  }), [])
 
   return (
     <div className={styles.sidebar}>
@@ -107,6 +115,7 @@ export function Sidebar({ collapsed }: SidebarProps) {
               onClick={handleMenuClick}
               inlineCollapsed={collapsed}
               triggerSubMenuAction="hover"
+              style={menuStyle}
             />
           </div>
         </ConfigProvider>

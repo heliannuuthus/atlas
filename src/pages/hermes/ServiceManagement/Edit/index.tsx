@@ -1,5 +1,5 @@
 import { useRequest } from 'ahooks'
-import { Form, Input, InputNumber, Card, message, Switch } from 'antd'
+import { Form, Input, InputNumber, Card, message, Switch, Spin } from 'antd'
 import { useParams, useNavigate } from 'react-router-dom'
 import { serviceApi } from '@/services'
 import { PageHeader, FormActions } from '@/components'
@@ -52,7 +52,7 @@ export function Edit() {
   )
 
   if (detailLoading) {
-    return <div>加载中...</div>
+    return <Spin size="large" />
   }
 
   return (

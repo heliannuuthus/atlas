@@ -5,74 +5,6 @@
   margin-left: 24px;
   min-width: 0;
   overflow: hidden;
-
-  :global(.ant-breadcrumb) {
-    font-size: 13px;
-    line-height: 1.5;
-    display: flex;
-    align-items: center;
-    flex-wrap: nowrap;
-    overflow: hidden;
-    width: 100%;
-
-    :global(.ant-breadcrumb-item) {
-      display: inline-flex;
-      align-items: center;
-      flex-shrink: 0;
-      max-width: 100%;
-
-      &:last-child {
-        flex-shrink: 1;
-        min-width: 0;
-        overflow: hidden;
-      }
-    }
-
-    :global(.ant-breadcrumb-link) {
-      display: inline-flex;
-      align-items: center;
-      color: #8c8c8c;
-      cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      padding: 4px 10px;
-      border-radius: 6px;
-      margin: 0 -2px;
-      font-weight: 500;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      position: relative;
-
-      &::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: 6px;
-        background: rgba(24, 144, 255, 0.08);
-        opacity: 0;
-        transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-
-      &:hover {
-        color: #1890ff;
-
-        &::before {
-          opacity: 1;
-        }
-      }
-
-      &:active {
-        transform: scale(0.97);
-      }
-    }
-
-    :global(.ant-breadcrumb-separator) {
-      display: inline-flex;
-      align-items: center;
-      margin: 0 6px;
-      flex-shrink: 0;
-    }
-  }
 }
 
 .moduleRoot {
@@ -80,10 +12,6 @@
   
   &:hover {
     color: inherit !important;
-    
-    &::before {
-      opacity: 0 !important;
-    }
   }
 }
 
@@ -92,7 +20,6 @@
   font-size: 10px;
   margin: 0 4px;
   opacity: 0.5;
-  transition: opacity 0.2s ease;
 }
 
 .breadcrumbItem {
@@ -103,6 +30,20 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   position: relative;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  color: #8c8c8c;
+  cursor: pointer;
+
+  &:hover:not(.active):not(.moduleRoot) {
+    color: #1890ff;
+    background: rgba(24, 144, 255, 0.08);
+  }
+
+  &:active:not(.active):not(.moduleRoot) {
+    transform: scale(0.97);
+  }
 }
 
 .active {
