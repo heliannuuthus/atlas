@@ -3,7 +3,6 @@ import {
   getBezierPath,
   EdgeLabelRenderer,
   type EdgeProps,
-  type Edge,
 } from 'reactflow'
 import { Button, Tooltip } from 'antd'
 import { CloseOutlined, ClockCircleOutlined } from '@ant-design/icons'

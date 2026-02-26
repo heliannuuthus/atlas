@@ -2,7 +2,7 @@
  * Hermes 身份与访问管理 API 服务
  */
 
-import { get, post, put, del } from '@/utils/request'
+import { get, post, patch, del } from '@/utils/request'
 import type {
   Domain,
   Service,
@@ -66,7 +66,7 @@ export async function createService(data: ServiceCreateRequest): Promise<Service
  * 更新服务
  */
 export async function updateService(serviceId: string, data: ServiceUpdateRequest): Promise<{ message: string }> {
-  return put<{ message: string }>(`/hermes/services/${serviceId}`, data)
+  return patch<{ message: string }>(`/hermes/services/${serviceId}`, data)
 }
 
 // ==================== Application 相关 ====================
@@ -96,7 +96,7 @@ export async function createApplication(data: ApplicationCreateRequest): Promise
  * 更新应用
  */
 export async function updateApplication(appId: string, data: ApplicationUpdateRequest): Promise<{ message: string }> {
-  return put<{ message: string }>(`/hermes/applications/${appId}`, data)
+  return patch<{ message: string }>(`/hermes/applications/${appId}`, data)
 }
 
 /**
@@ -141,7 +141,7 @@ export async function createRelationship(data: RelationshipCreateRequest): Promi
  * 更新关系
  */
 export async function updateRelationship(data: RelationshipUpdateRequest): Promise<Relationship> {
-  return put<Relationship>('/hermes/relationships', data)
+  return patch<Relationship>('/hermes/relationships', data)
 }
 
 /**
@@ -178,7 +178,7 @@ export async function createGroup(data: GroupCreateRequest): Promise<Group> {
  * 更新组
  */
 export async function updateGroup(groupId: string, data: GroupUpdateRequest): Promise<{ message: string }> {
-  return put<{ message: string }>(`/hermes/groups/${groupId}`, data)
+  return patch<{ message: string }>(`/hermes/groups/${groupId}`, data)
 }
 
 /**

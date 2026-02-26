@@ -86,7 +86,7 @@ export function Breadcrumb() {
 
   const breadcrumbItems = generateBreadcrumbs()
 
-  if (breadcrumbItems.length === 0) {
+  if (!breadcrumbItems || breadcrumbItems.length === 0) {
     return null
   }
 

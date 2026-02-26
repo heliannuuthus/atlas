@@ -1,5 +1,5 @@
 import { useRequest } from 'ahooks'
-import { Form, Input, Card, message } from 'antd'
+import { Form, Input, Card, message, Spin } from 'antd'
 import { useParams, useNavigate } from 'react-router-dom'
 import { applicationApi } from '@/services'
 import { PageHeader, FormActions } from '@/components'
@@ -12,13 +12,15 @@ export function Edit() {
   const navigate = useNavigate()
   const [form] = Form.useForm()
 
-  const { data, loading: detailLoading } = useRequest(() => applicationApi.getDetail(appId!), {
+  const { data: _data, loading: detailLoading } = useRequest(() => applicationApi.getDetail(appId!), {
     ready: !!appId,
     onSuccess: (data) => {
       let redirectUris: string[] = []
       try {
         redirectUris = data.redirect_uris ? JSON.parse(data.redirect_uris) : []
-      } catch {}
+      } catch {
+        redirectUris = []
+      }
       form.setFieldsValue({
         name: data.name,
         redirect_uris: redirectUris.join('\n'),
@@ -37,7 +39,7 @@ export function Edit() {
     { manual: true, onError: () => message.error('更新失败') }
   )
 
-  if (detailLoading) return <div>加载中...</div>
+  if (detailLoading) return <Spin size="large" />
 
   return (
     <div className={styles.container}>

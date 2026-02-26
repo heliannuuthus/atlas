@@ -1,5 +1,5 @@
 import { useRequest } from 'ahooks'
-import { Form, Input, Card, message } from 'antd'
+import { Form, Input, Card, message, Spin } from 'antd'
 import { useParams, useNavigate } from 'react-router-dom'
 import { groupApi } from '@/services'
 import { PageHeader, FormActions } from '@/components'
@@ -12,12 +12,12 @@ export function Edit() {
   const navigate = useNavigate()
   const [form] = Form.useForm()
 
-  const { data, loading: detailLoading } = useRequest(() => groupApi.getDetail(groupId!), {
+  const { data: _data, loading: detailLoading } = useRequest(() => groupApi.getDetail(groupId!), {
     ready: !!groupId,
-    onSuccess: (data) => {
+    onSuccess: (_data) => {
       form.setFieldsValue({
-        name: data.name,
-        description: data.description,
+        name: _data.name,
+        description: _data.description,
       })
     },
     onError: () => message.error('获取组信息失败'),
@@ -35,7 +35,7 @@ export function Edit() {
     { manual: true, onError: () => message.error('更新失败') }
   )
 
-  if (detailLoading) return <div>加载中...</div>
+  if (detailLoading) return <Spin size="large" />
 
   return (
     <div className={styles.container}>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Button } from 'antd'
 import {
@@ -8,7 +8,6 @@ import {
   HomeOutlined,
 } from '@ant-design/icons'
 import { servicePlatforms, type ServicePlatformId } from '@/config/services'
-import { businessConfigs } from '@/config/business'
 import type { ServicePlatform } from '@/types/service'
 import styles from './index.module.scss'
 
@@ -34,6 +33,7 @@ export function ServiceSwitcher() {
     const path = location.pathname
     if (path.startsWith('/zwei')) return 'zwei'
     if (path.startsWith('/hermes')) return 'hermes'
+    if (path.startsWith('/chaos')) return 'chaos'
     return null
   }
 
@@ -49,7 +49,7 @@ export function ServiceSwitcher() {
 
   useEffect(() => {
     if (open) {
-      setPulsing(false)
+      queueMicrotask(() => setPulsing(false))
     }
   }, [open])
 
@@ -78,7 +78,7 @@ export function ServiceSwitcher() {
     
     // 如果配置了外部 URL，跳转到外部
     if (serviceWithUrl.url) {
-      window.location.href = serviceWithUrl.url
+      window.location.assign(serviceWithUrl.url)
       return
     }
     
@@ -102,6 +102,20 @@ export function ServiceSwitcher() {
     navigate('/')
     setOpen(false)
   }
+
+  const homeIconButtonStyle = useMemo<React.CSSProperties>(() => ({
+    width: 32,
+    height: 32,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: 'none',
+    background: 'transparent',
+    borderRadius: 6,
+    color: '#8c8c8c',
+    fontSize: 18,
+    boxShadow: 'none',
+  }), [])
 
   return (
     <div
@@ -151,16 +165,16 @@ export function ServiceSwitcher() {
             </div>
             <div className={styles.panelHeaderRight}>
               <div className={styles.brandSlogan}>统一管理平台</div>
-              <button
+              <Button
+                type="text"
                 onClick={() => {
                   navigate('/')
                   setOpen(false)
                 }}
-                className={styles.homeIconButton}
+                style={homeIconButtonStyle}
                 title="返回主页"
-              >
-                <HomeOutlined />
-              </button>
+                icon={<HomeOutlined />}
+              />
             </div>
           </div>
           <div className={styles.platformList}>

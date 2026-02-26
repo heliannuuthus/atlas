@@ -37,19 +37,25 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   initialize: async () => {
     const auth = getAuth()
     try {
+      console.log('[Auth] initialize: starting, setting isLoading=true')
       set({ isLoading: true, error: null })
       const authenticated = await auth.isAuthenticated()
+      console.log('[Auth] initialize: isAuthenticated =', authenticated)
 
       if (authenticated) {
         // 尝试获取用户信息
         try {
+          console.log('[Auth] initialize: fetching user info...')
           const user = await auth.getUserInfo()
+          console.log('[Auth] initialize: got user info, setting isAuthenticated=true')
           set({ isAuthenticated: true, user, isLoading: false })
-        } catch {
+        } catch (userErr) {
           // 获取用户信息失败，但仍然认为已认证
+          console.warn('[Auth] initialize: getUserInfo failed, still setting isAuthenticated=true', userErr)
           set({ isAuthenticated: true, isLoading: false })
         }
       } else {
+        console.log('[Auth] initialize: not authenticated, setting isAuthenticated=false')
         set({ isAuthenticated: false, user: null, isLoading: false })
       }
     } catch (error) {
@@ -97,13 +103,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       set({ isLoading: true, error: null })
       const tokens = await auth.handleCallback(code, state)
 
-      // 获取用户信息
-      try {
-        const user = await auth.getUserInfo()
-        set({ isAuthenticated: true, user, isLoading: false })
-      } catch {
-        set({ isAuthenticated: true, isLoading: false })
-      }
+      set({ isAuthenticated: true, isLoading: false })
 
       return tokens
     } catch (error) {

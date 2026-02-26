@@ -35,6 +35,7 @@ export function getAuth(): Auth {
       endpoint: authConfig.endpoint,
       clientId: authConfig.clientId,
       redirectUri: authConfig.redirectUri,
+      debug: import.meta.env.DEV,
     })
   }
   return authInstance

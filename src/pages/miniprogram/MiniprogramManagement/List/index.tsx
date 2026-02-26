@@ -78,7 +78,7 @@ export function List() {
       await deleteMiniprogram(id)
       message.success('删除成功')
       await refresh()
-    } catch (error) {
+    } catch {
       message.error('删除失败')
     }
   }

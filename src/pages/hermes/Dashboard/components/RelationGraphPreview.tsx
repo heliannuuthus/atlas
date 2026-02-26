@@ -1,4 +1,6 @@
+import { useMemo } from 'react'
 import { Card, Button, Empty } from 'antd'
+import type { CardProps } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { FullscreenOutlined, NodeIndexOutlined } from '@ant-design/icons'
 import type { Relationship } from '@/types/hermes'
@@ -12,14 +14,18 @@ interface RelationGraphPreviewProps {
 export function RelationGraphPreview({ relationships, loading }: RelationGraphPreviewProps) {
   const navigate = useNavigate()
 
-  // 简单的关系预览：展示部分关系的文本形式
   const previewRelations = relationships.slice(0, 5)
+
+  const cardStyles = useMemo<CardProps['styles']>(() => ({
+    body: { padding: '16px 20px' },
+  }), [])
 
   return (
     <Card
       title="关系图谱预览"
       className={styles.graphPreview}
       loading={loading}
+      styles={cardStyles}
       extra={
         <Button
           type="text"

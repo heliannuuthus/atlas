@@ -3,7 +3,7 @@
  * 处理从 Aegis 认证服务器返回的授权码
  */
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Spin, Result, Button } from 'antd'
 import { useAuthStore } from '@/store/auth'
@@ -14,8 +14,12 @@ export function AuthCallback() {
   const [searchParams] = useSearchParams()
   const { handleCallback, error, clearError } = useAuthStore()
   const [processing, setProcessing] = useState(true)
+  const initiatedRef = useRef(false)
 
   useEffect(() => {
+    if (initiatedRef.current) return
+    initiatedRef.current = true
+
     const code = searchParams.get('code')
     const state = searchParams.get('state')
     const errorParam = searchParams.get('error')
@@ -24,30 +28,49 @@ export function AuthCallback() {
     // 处理错误响应
     if (errorParam) {
       console.error('[AuthCallback] Error:', errorParam, errorDescription)
-      setProcessing(false)
+      queueMicrotask(() => setProcessing(false))
       return
     }
 
     // 没有授权码
     if (!code) {
       console.error('[AuthCallback] No authorization code')
-      setProcessing(false)
+      queueMicrotask(() => setProcessing(false))
       return
     }
 
     // 处理授权码
+    console.log('[AuthCallback] Processing code:', code.substring(0, 8) + '...', 'state:', state?.substring(0, 8))
+    console.log('[AuthCallback] localStorage before handleCallback:', {
+      codeVerifier: !!localStorage.getItem('aegis_code_verifier'),
+      state: !!localStorage.getItem('aegis_state'),
+      redirectUri: localStorage.getItem('aegis_redirect_uri'),
+      audience: localStorage.getItem('aegis_audience'),
+    })
     handleCallback(code, state ?? undefined)
-      .then(() => {
-        // 获取之前保存的目标路径
+      .then((tokens) => {
+        console.log('[AuthCallback] handleCallback success:', {
+          hasAccessToken: !!tokens?.access_token,
+          expiresIn: tokens?.expires_in,
+          scope: tokens?.scope,
+        })
+        console.log('[AuthCallback] localStorage after handleCallback:', {
+          accessToken: !!localStorage.getItem('aegis_access_token'),
+          refreshToken: !!localStorage.getItem('aegis_refresh_token'),
+          expiresAt: localStorage.getItem('aegis_expires_at'),
+        })
         const returnTo = sessionStorage.getItem('auth_return_to') || '/'
         sessionStorage.removeItem('auth_return_to')
+        console.log('[AuthCallback] Navigating to:', returnTo)
         navigate(returnTo, { replace: true })
       })
       .catch((err) => {
         console.error('[AuthCallback] Failed to handle callback:', err)
-        setProcessing(false)
+        console.error('[AuthCallback] Error details:', { code: err?.code, message: err?.message, description: err?.description })
+        queueMicrotask(() => setProcessing(false))
       })
-  }, [searchParams, handleCallback, navigate])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleRetry = () => {
     clearError()

@@ -15,11 +15,12 @@ import ReactFlow, {
   type EdgeTypes,
 } from 'reactflow'
 import 'reactflow/dist/style.css'
-import { message, Table, Card, Popconfirm, Button, Spin } from 'antd'
+import { message, Table, Card, Popconfirm, Button, Spin, ConfigProvider } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
+import type { ThemeConfig } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons'
 import * as hermesApi from '@/services/hermes'
-import type { Relationship, Service, Application, Group } from '@/types/hermes'
+import type { Relationship } from '@/types/hermes'
 import { formatDateTime, isExpiringSoon } from '@/utils/format'
 import { GraphContextProvider, useGraphContext } from './context/GraphContext'
 import { SubjectNode, type SubjectNodeData } from './nodes/SubjectNode'
@@ -45,6 +46,7 @@ function GraphCanvas() {
   const reactFlowWrapper = useRef<HTMLDivElement>(null)
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null)
 
   const {
@@ -55,8 +57,8 @@ function GraphCanvas() {
     addPendingRelation,
     resetChanges,
     setDirty,
-    clearDirty,
-    deleteEdge: contextDeleteEdge,
+    clearDirty: _clearDirty,
+    deleteEdge: _contextDeleteEdge,
   } = useGraphContext()
 
   const [isFullscreen, setIsFullscreen] = useState(false)
@@ -305,7 +307,7 @@ function GraphCanvas() {
       message.success('保存成功')
       resetChanges()
       refreshRelationships()
-    } catch (error) {
+    } catch {
       message.error('保存失败')
     } finally {
       setSaving(false)
@@ -337,7 +339,7 @@ function GraphCanvas() {
         })
         message.success('删除成功')
         refreshRelationships()
-      } catch (error) {
+      } catch {
         message.error('删除失败')
       }
     },
@@ -379,6 +381,18 @@ function GraphCanvas() {
   ]
 
   const loading = servicesLoading || applicationsLoading || groupsLoading
+
+  const tableCardTheme: ThemeConfig = useMemo(() => ({
+    components: {
+      Card: {
+        paddingLG: 0,
+      },
+      Table: {
+        headerBg: '#fafafa',
+        fontSize: 13,
+      },
+    },
+  }), [])
 
   return (
     <div className={`${styles.graphPage} ${isFullscreen ? styles.fullscreen : ''}`}>
@@ -437,17 +451,19 @@ function GraphCanvas() {
       </div>
 
       {/* 下方数据表格 */}
-      <Card className={styles.tableCard} title={null} size="small">
-        <Table
-          columns={columns}
-          dataSource={relationships || []}
-          loading={relationshipsLoading}
-          rowKey="_id"
-          size="small"
-          pagination={{ pageSize: 5 }}
-          scroll={{ x: 900 }}
-        />
-      </Card>
+      <ConfigProvider theme={tableCardTheme}>
+        <Card className={styles.tableCard} title={null} size="small">
+          <Table
+            columns={columns}
+            dataSource={relationships || []}
+            loading={relationshipsLoading}
+            rowKey="_id"
+            size="small"
+            pagination={{ pageSize: 5 }}
+            scroll={{ x: 900 }}
+          />
+        </Card>
+      </ConfigProvider>
 
       {/* 创建关系对话框 */}
       <CreateRelationDialog

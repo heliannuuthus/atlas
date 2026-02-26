@@ -21,7 +21,7 @@ import {
 } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { serviceApi, domainApi } from '@/services'
-import type { Service, Domain } from '@/types/management'
+import type { Service } from '@/types/management'
 import { formatDuration } from '@/utils/format'
 import styles from './index.module.scss'
 

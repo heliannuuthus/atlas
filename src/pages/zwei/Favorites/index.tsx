@@ -1,6 +1,5 @@
-import { Card, Table, Tag, Space, Input } from 'antd'
+import { Card, Table, Tag, Input } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
-import { SearchOutlined } from '@ant-design/icons'
 import styles from './index.module.scss'
 
 const { Search } = Input

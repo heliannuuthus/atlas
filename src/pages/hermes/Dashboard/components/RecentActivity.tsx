@@ -1,4 +1,6 @@
+import { useMemo } from 'react'
 import { Card, List, Typography, Tag } from 'antd'
+import type { CardProps } from 'antd'
 import {
   CloudServerOutlined,
   AppstoreAddOutlined,
@@ -6,7 +8,7 @@ import {
   ShareAltOutlined,
   ClockCircleOutlined,
 } from '@ant-design/icons'
-import { formatDateTime, isExpiringSoon, formatRelativeTime } from '@/utils/format'
+import { isExpiringSoon, formatRelativeTime } from '@/utils/format'
 import type { Service, Application, Group, Relationship } from '@/types/hermes'
 import styles from '../index.module.scss'
 
@@ -116,28 +118,45 @@ export function RecentActivity({
     }
   }
 
+  const cardStyles = useMemo<CardProps['styles']>(() => ({
+    body: { padding: '0 16px 16px' },
+  }), [])
+
+  const listItemStyle = useMemo<React.CSSProperties>(() => ({
+    padding: '12px 0',
+  }), [])
+
+  const tagStyle = useMemo<React.CSSProperties>(() => ({
+    margin: 0,
+    fontSize: 11,
+    padding: '0 6px',
+    lineHeight: '18px',
+  }), [])
+
   return (
-    <Card title="最近动态" className={styles.recentActivity}>
+    <Card title="最近动态" className={styles.recentActivity} styles={cardStyles}>
       <List
         loading={loading}
         dataSource={activities.slice(0, 6)}
         renderItem={(item) => (
-          <List.Item className={styles.activityItem}>
-            <div className={styles.activityIcon}>{getIcon(item.type)}</div>
-            <div className={styles.activityContent}>
-              <div className={styles.activityTitle}>
-                <Tag bordered={false}>{getTypeLabel(item.type)}</Tag>
-                <Text strong>{item.name}</Text>
-              </div>
-              <div className={styles.activityMeta}>
-                {item.warning ? (
-                  <Text type="warning">
-                    <ClockCircleOutlined style={{ marginRight: 4 }} />
-                    {item.action}
-                  </Text>
-                ) : (
-                  <Text type="secondary">{item.action}</Text>
-                )}
+          <List.Item style={listItemStyle}>
+            <div className={styles.activityItem}>
+              <div className={styles.activityIcon}>{getIcon(item.type)}</div>
+              <div className={styles.activityContent}>
+                <div className={styles.activityTitle}>
+                  <Tag bordered={false} style={tagStyle}>{getTypeLabel(item.type)}</Tag>
+                  <Text strong>{item.name}</Text>
+                </div>
+                <div className={styles.activityMeta}>
+                  {item.warning ? (
+                    <Text type="warning">
+                      <ClockCircleOutlined style={{ marginRight: 4 }} />
+                      {item.action}
+                    </Text>
+                  ) : (
+                    <Text type="secondary">{item.action}</Text>
+                  )}
+                </div>
               </div>
             </div>
           </List.Item>

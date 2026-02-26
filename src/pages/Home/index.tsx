@@ -12,6 +12,9 @@ import {
   AppstoreAddOutlined,
   TeamOutlined,
   ShareAltOutlined,
+  MailOutlined,
+  FileTextOutlined,
+  CloudUploadOutlined,
 } from '@ant-design/icons'
 import styles from './index.module.scss'
 
@@ -100,6 +103,23 @@ const hermesModules = [
   },
 ]
 
+const chaosModules = [
+  {
+    icon: <FileTextOutlined />,
+    title: '邮件模板',
+    description: '管理邮件模板和内容',
+    color: '#eb2f96',
+    path: '/chaos/templates',
+  },
+  {
+    icon: <CloudUploadOutlined />,
+    title: '文件管理',
+    description: '上传和管理文件',
+    color: '#722ed1',
+    path: '/chaos/files',
+  },
+]
+
 export function Home() {
   const navigate = useNavigate()
 
@@ -110,7 +130,7 @@ export function Home() {
           Atlas 管理平台
         </Title>
         <Paragraph className={styles.heroDesc}>
-          统一管理 Zwei 业务和 Hermes 身份认证服务
+          统一管理 Zwei 业务、Hermes 身份认证和 Chaos 业务聚合服务
         </Paragraph>
       </div>
 
@@ -174,6 +194,46 @@ export function Home() {
             </div>
             <div className={styles.moduleGrid}>
               {hermesModules.map((module, index) => (
+                <div
+                  key={index}
+                  className={styles.moduleCard}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    navigate(module.path)
+                  }}
+                >
+                  <div className={styles.moduleIcon} style={{ color: module.color }}>
+                    {module.icon}
+                  </div>
+                  <div className={styles.moduleContent}>
+                    <div className={styles.moduleTitle}>{module.title}</div>
+                    <div className={styles.moduleDescription}>{module.description}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </Col>
+
+        <Col xs={24} lg={12}>
+          <Card
+            className={styles.serviceCard}
+            hoverable
+            onClick={() => navigate('/chaos')}
+          >
+            <div className={styles.serviceHeader}>
+              <div className={styles.serviceIcon} style={{ backgroundColor: '#eb2f9620', color: '#eb2f96' }}>
+                <MailOutlined />
+              </div>
+              <div className={styles.serviceInfo}>
+                <Title level={3} className={styles.serviceTitle}>Chaos</Title>
+                <Paragraph className={styles.serviceDesc}>
+                  业务聚合：邮件发送、文件上传等
+                </Paragraph>
+              </div>
+            </div>
+            <div className={styles.moduleGrid}>
+              {chaosModules.map((module, index) => (
                 <div
                   key={index}
                   className={styles.moduleCard}

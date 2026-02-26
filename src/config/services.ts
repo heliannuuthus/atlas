@@ -15,6 +15,14 @@ export const servicePlatforms = [
     color: '#13c2c2',
     enabled: true,
   },
+  {
+    id: 'chaos',
+    name: 'Chaos',
+    nameEn: 'Chaos',
+    description: '业务聚合：邮件发送、文件上传等',
+    color: '#eb2f96',
+    enabled: true,
+  },
 ] as const
 
 export type ServicePlatformId = typeof servicePlatforms[number]['id']

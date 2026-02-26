@@ -1,0 +1,35 @@
+.container {
+  padding: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.uploadSection {
+  margin-bottom: 24px;
+}
+
+.pathInput {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.dragger {
+  max-width: 600px;
+}
+
+.resultSection {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #f0f0f0;
+}

@@ -1,5 +1,5 @@
 import { createContext, useContext, useCallback, useState, type ReactNode } from 'react'
-import { useReactFlow, type Node, type Edge } from 'reactflow'
+import { useReactFlow } from 'reactflow'
 import type { Relationship } from '@/types/hermes'
 
 interface GraphContextType {
