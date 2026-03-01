@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { UserInfo, TokenResponse } from '@aegis/sdk'
+import type { TokenResponse } from '@aegis/sdk'
 import { getAuth, defaultAuthorizeOptions, isAllowedAuthUrl } from '@/config/auth'
 
 interface AuthState {
@@ -8,7 +8,7 @@ interface AuthState {
   /** 是否正在加载 */
   isLoading: boolean
   /** 用户信息 */
-  user: UserInfo | null
+  user: Record<string, unknown> | null
   /** 错误信息 */
   error: string | null
 
@@ -35,25 +35,19 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   error: null,
 
   initialize: async () => {
+    if (get().isAuthenticated) {
+      set({ isLoading: false })
+      return
+    }
     const auth = getAuth()
     try {
-      console.log('[Auth] initialize: starting, setting isLoading=true')
       set({ isLoading: true, error: null })
       const authenticated = await auth.isAuthenticated()
       console.log('[Auth] initialize: isAuthenticated =', authenticated)
 
       if (authenticated) {
-        // 尝试获取用户信息
-        try {
-          console.log('[Auth] initialize: fetching user info...')
-          const user = await auth.getUserInfo()
-          console.log('[Auth] initialize: got user info, setting isAuthenticated=true')
-          set({ isAuthenticated: true, user, isLoading: false })
-        } catch (userErr) {
-          // 获取用户信息失败，但仍然认为已认证
-          console.warn('[Auth] initialize: getUserInfo failed, still setting isAuthenticated=true', userErr)
-          set({ isAuthenticated: true, isLoading: false })
-        }
+        const claims = await auth.getClaims()
+        set({ isAuthenticated: true, user: claims, isLoading: false })
       } else {
         console.log('[Auth] initialize: not authenticated, setting isAuthenticated=false')
         set({ isAuthenticated: false, user: null, isLoading: false })
@@ -146,8 +140,8 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   refreshUserInfo: async () => {
     const auth = getAuth()
     try {
-      const user = await auth.getUserInfo()
-      set({ user })
+      const claims = await auth.getClaims()
+      set({ user: claims })
     } catch (error) {
       console.error('[Auth] Refresh user info failed:', error)
     }
