@@ -18,8 +18,8 @@ interface AuthState {
   handleCallback: (code: string, state?: string) => Promise<TokenResponse>
   /** 登出 */
   logout: () => Promise<void>
-  /** 获取 Access Token */
-  getAccessToken: () => Promise<string | null>
+  /** 获取 Access Token（可指定 audience） */
+  getAccessToken: (audience?: string) => Promise<string | null>
   /** 清除错误 */
   clearError: () => void
 }
@@ -101,11 +101,11 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     }
   },
 
-  getAccessToken: async () => {
+  getAccessToken: async (audience?: string) => {
     const auth = getAuth()
     try {
-      const token = await auth.getAccessToken()
-      if (!token && get().isAuthenticated) {
+      const token = await auth.getAccessToken(audience)
+      if (!token && !audience && get().isAuthenticated) {
         set({ isAuthenticated: false })
       }
       return token

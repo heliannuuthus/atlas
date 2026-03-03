@@ -3,21 +3,44 @@ import type { AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axio
 import axios from 'axios'
 import { getServiceUrl, apiEndpoints, type ServiceName } from '@/config/env'
 import { useAuthStore } from '@/store/auth'
+import { getAuth } from '@/config/auth'
 
-// 用于存储当前的 access token（同步获取）
-let cachedAccessToken: string | null = null
+const tokenCache: Record<string, string | null> = {}
 
-// 订阅 auth store 变化来更新缓存的 token
-useAuthStore.subscribe((state) => {
-  // 当认证状态变化时，尝试刷新 token
-  if (state.isAuthenticated) {
-    state.getAccessToken().then((token) => {
-      cachedAccessToken = token
-    })
+function refreshAllTokens() {
+  const auth = getAuth()
+  const audiences = auth.getAudiences()
+  if (audiences.length > 0) {
+    for (const aud of audiences) {
+      auth.getAccessToken(aud).then((token) => { tokenCache[aud] = token }).catch(() => {})
+    }
   } else {
-    cachedAccessToken = null
+    useAuthStore.getState().getAccessToken().then((token) => { tokenCache['_default'] = token }).catch(() => {})
+  }
+}
+
+let prevAuthenticated = false
+useAuthStore.subscribe((state) => {
+  if (state.isAuthenticated === prevAuthenticated) return
+  prevAuthenticated = state.isAuthenticated
+  if (state.isAuthenticated) {
+    refreshAllTokens()
+  } else {
+    Object.keys(tokenCache).forEach((k) => { delete tokenCache[k] })
   }
 })
+
+function getTokenForAudience(audience?: string): string | null {
+  if (audience) return tokenCache[audience] ?? null
+  return tokenCache['_default'] ?? null
+}
+
+/** 服务名 → audience 映射 */
+const serviceAudienceMap: Record<string, string> = {
+  hermes: 'hermes',
+  zwei: 'zwei',
+  chaos: 'chaos',
+}
 
 export interface ApiResponse<T = unknown> {
   code?: number
@@ -38,6 +61,8 @@ const request = axios.create({
  * @param service 服务名称: 'hermes' | 'zwei' | 'auth'
  */
 export function createServiceRequest(service: ServiceName) {
+  const audience = serviceAudienceMap[service]
+
   const instance = axios.create({
     baseURL: apiEndpoints[service],
     timeout: 30000,
@@ -46,11 +71,11 @@ export function createServiceRequest(service: ServiceName) {
     },
   })
 
-  // 复用相同的拦截器逻辑
   instance.interceptors.request.use(
     (config) => {
-      if (cachedAccessToken) {
-        config.headers.Authorization = `Bearer ${cachedAccessToken}`
+      const token = getTokenForAudience(audience)
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`
       }
       return config
     },
@@ -68,6 +93,7 @@ export function createServiceRequest(service: ServiceName) {
 // 预创建各服务的请求实例
 export const hermesRequest = createServiceRequest('hermes')
 export const zweiRequest = createServiceRequest('zwei')
+export const chaosRequest = createServiceRequest('chaos')
 export const authRequest = createServiceRequest('auth')
 
 // 响应成功处理器
@@ -84,17 +110,35 @@ function responseSuccessHandler(response: AxiosResponse<ApiResponse>) {
   return response
 }
 
-// 响应错误处理器
+function resolveAudienceFromError(error: AxiosError): string | undefined {
+  const url = error.config?.baseURL || error.config?.url || ''
+  for (const [service, audience] of Object.entries(serviceAudienceMap)) {
+    if (url.includes(service)) return audience
+  }
+  return undefined
+}
+
 function responseErrorHandler(error: AxiosError<ApiResponse>) {
   if (error.response) {
     const { status, data } = error.response
     let errorMsg = '请求失败'
 
     switch (status) {
-      case 401:
+      case 401: {
         errorMsg = '未授权，请重新登录'
-        useAuthStore.getState().logout()
+        const audience = resolveAudienceFromError(error)
+        if (audience) {
+          delete tokenCache[audience]
+          getAuth().refreshToken(undefined, audience).then((resp) => {
+            tokenCache[audience] = resp.access_token
+          }).catch(() => {
+            useAuthStore.getState().logout()
+          })
+        } else {
+          useAuthStore.getState().logout()
+        }
         break
+      }
       case 403:
         errorMsg = '拒绝访问'
         break
@@ -124,15 +168,25 @@ function responseErrorHandler(error: AxiosError<ApiResponse>) {
 // 默认请求实例的拦截器 - 支持动态路由
 request.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    if (cachedAccessToken) {
-      config.headers.Authorization = `Bearer ${cachedAccessToken}`
-    }
-
-    // 根据 URL 路径动态设置 baseURL
     if (config.url) {
+      // 从原始 URL 前缀推断服务和 audience
+      const originalPath = config.url.startsWith('/') ? config.url.slice(1) : config.url
+      const service = originalPath.split('/')[0] as string
+      const audience = serviceAudienceMap[service]
+
       const { baseUrl, servicePath } = getServiceUrl(config.url)
       config.baseURL = baseUrl
       config.url = servicePath
+
+      const token = getTokenForAudience(audience)
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`
+      }
+    } else {
+      const token = getTokenForAudience()
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`
+      }
     }
 
     return config

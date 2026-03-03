@@ -15,14 +15,18 @@ export const authConfig = {
   redirectUri: import.meta.env.VITE_AUTH_REDIRECT_URI || `${window.location.origin}/auth/callback`,
 }
 
+/** 默认 scope 列表 */
+const defaultScopes = ['openid', 'profile', 'email']
+const defaultScopeString = defaultScopes.join(' ')
+
 /** 默认授权选项 */
 export const defaultAuthorizeOptions = {
-  scopes: ['openid', 'profile', 'email'],
+  scopes: defaultScopes,
   audiences: {
-    hermes: { scope: 'openid profile email' },
-    zwei: { scope: 'openid profile email' },
-    chaos: { scope: 'openid profile email' },
-  } as Record<string, { scope: string }>,
+    hermes: { scope: defaultScopeString },
+    zwei: { scope: defaultScopeString },
+    chaos: { scope: defaultScopeString },
+  } as Record<string, { scope?: string }>,
 }
 
 /** Auth 单例 */
