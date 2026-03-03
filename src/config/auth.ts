@@ -17,10 +17,12 @@ export const authConfig = {
 
 /** 默认授权选项 */
 export const defaultAuthorizeOptions = {
-  /** 目标服务 audience */
-  audience: import.meta.env.VITE_AUTH_AUDIENCE || 'hermes',
-  /** Scope */
   scopes: ['openid', 'profile', 'email'],
+  audiences: {
+    hermes: { scope: 'openid profile email' },
+    zwei: { scope: 'openid profile email' },
+    chaos: { scope: 'openid profile email' },
+  } as Record<string, { scope: string }>,
 }
 
 /** Auth 单例 */
@@ -35,7 +37,6 @@ export function getAuth(): Auth {
       endpoint: authConfig.endpoint,
       clientId: authConfig.clientId,
       redirectUri: authConfig.redirectUri,
-      debug: import.meta.env.DEV,
     })
   }
   return authInstance
@@ -48,22 +49,3 @@ export function resetAuth(): void {
   authInstance = null
 }
 
-/** 允许跳转的认证域名白名单 */
-const ALLOWED_AUTH_HOSTS = [
-  'aegis.heliannuuthus.com',
-  'localhost',
-  '127.0.0.1',
-]
-
-/**
- * 验证跳转 URL 是否安全
- * 防止恶意配置篡改导致跳转到恶意地址
- */
-export function isAllowedAuthUrl(url: string): boolean {
-  try {
-    const parsed = new URL(url)
-    return ALLOWED_AUTH_HOSTS.some(host => parsed.hostname === host || parsed.hostname.endsWith(`.${host}`))
-  } catch {
-    return false
-  }
-}

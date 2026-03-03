@@ -6,6 +6,7 @@ import {
   BellOutlined,
   QuestionCircleOutlined,
 } from '@ant-design/icons'
+import { useAuthStore } from '@/store/auth'
 import styles from './index.module.scss'
 
 const getUserInitials = (name?: string) => {
@@ -22,8 +23,9 @@ const getUserInitials = (name?: string) => {
 }
 
 export function UserMenu() {
-  const userName = '管理员'
-  const userAvatar = null
+  const { logout } = useAuthStore()
+  const userName = undefined as string | undefined
+  const userAvatar = null as string | null
   const notificationCount = 3
 
   const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
@@ -38,7 +40,7 @@ export function UserMenu() {
         console.log('帮助文档')
         break
       case 'logout':
-        console.log('退出登录')
+        logout()
         break
     }
   }

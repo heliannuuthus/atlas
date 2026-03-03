@@ -1,14 +1,12 @@
 import { create } from 'zustand'
 import type { TokenResponse } from '@aegis/sdk'
-import { getAuth, defaultAuthorizeOptions, isAllowedAuthUrl } from '@/config/auth'
+import { getAuth, defaultAuthorizeOptions } from '@/config/auth'
 
 interface AuthState {
   /** 是否已认证 */
   isAuthenticated: boolean
   /** 是否正在加载 */
   isLoading: boolean
-  /** 用户信息 */
-  user: Record<string, unknown> | null
   /** 错误信息 */
   error: string | null
 
@@ -22,8 +20,6 @@ interface AuthState {
   logout: () => Promise<void>
   /** 获取 Access Token */
   getAccessToken: () => Promise<string | null>
-  /** 刷新用户信息 */
-  refreshUserInfo: () => Promise<void>
   /** 清除错误 */
   clearError: () => void
 }
@@ -31,7 +27,6 @@ interface AuthState {
 export const useAuthStore = create<AuthState>()((set, get) => ({
   isAuthenticated: false,
   isLoading: true,
-  user: null,
   error: null,
 
   initialize: async () => {
@@ -46,17 +41,14 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       console.log('[Auth] initialize: isAuthenticated =', authenticated)
 
       if (authenticated) {
-        const claims = await auth.getClaims()
-        set({ isAuthenticated: true, user: claims, isLoading: false })
+        set({ isAuthenticated: true, isLoading: false })
       } else {
-        console.log('[Auth] initialize: not authenticated, setting isAuthenticated=false')
-        set({ isAuthenticated: false, user: null, isLoading: false })
+        set({ isAuthenticated: false, isLoading: false })
       }
     } catch (error) {
       console.error('[Auth] Initialize failed:', error)
       set({
         isAuthenticated: false,
-        user: null,
         isLoading: false,
         error: error instanceof Error ? error.message : 'Unknown error',
       })
@@ -68,21 +60,11 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     try {
       set({ error: null })
 
-      // 发起授权，指定目标服务和 scope
       const { url } = await auth.authorize({
-        audience: defaultAuthorizeOptions.audience,
         scopes: defaultAuthorizeOptions.scopes,
+        audiences: defaultAuthorizeOptions.audiences,
       })
 
-      // 验证跳转 URL 是否在白名单内，防止恶意配置篡改
-      if (!isAllowedAuthUrl(url)) {
-        console.error('[Auth] Blocked redirect to untrusted URL:', url)
-        // 跳转到空白页，阻止恶意跳转
-        window.location.href = 'about:blank'
-        return
-      }
-
-      // 跳转到认证页面
       window.location.href = url
     } catch (error) {
       console.error('[Auth] Login failed:', error)
@@ -96,9 +78,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     try {
       set({ isLoading: true, error: null })
       const tokens = await auth.handleCallback(code, state)
-
       set({ isAuthenticated: true, isLoading: false })
-
       return tokens
     } catch (error) {
       console.error('[Auth] Callback handling failed:', error)
@@ -114,11 +94,10 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     const auth = getAuth()
     try {
       await auth.logout()
-      set({ isAuthenticated: false, user: null, error: null })
+      set({ isAuthenticated: false, error: null })
     } catch (error) {
       console.error('[Auth] Logout failed:', error)
-      // 即使登出 API 失败，也清除本地状态
-      set({ isAuthenticated: false, user: null })
+      set({ isAuthenticated: false })
     }
   },
 
@@ -127,23 +106,12 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     try {
       const token = await auth.getAccessToken()
       if (!token && get().isAuthenticated) {
-        // Token 失效，更新状态
-        set({ isAuthenticated: false, user: null })
+        set({ isAuthenticated: false })
       }
       return token
     } catch (error) {
       console.error('[Auth] Get access token failed:', error)
       return null
-    }
-  },
-
-  refreshUserInfo: async () => {
-    const auth = getAuth()
-    try {
-      const claims = await auth.getClaims()
-      set({ user: claims })
-    } catch (error) {
-      console.error('[Auth] Refresh user info failed:', error)
     }
   },
 
