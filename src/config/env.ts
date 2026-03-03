@@ -2,6 +2,7 @@
 export const apiEndpoints = {
   hermes: import.meta.env.VITE_API_HERMES_URL || 'https://hermes.heliannuuthus.com/api',
   zwei: import.meta.env.VITE_API_ZWEI_URL || 'https://zwei.heliannuuthus.com/api',
+  chaos: import.meta.env.VITE_API_CHAOS_URL || 'https://chaos.heliannuuthus.com/api',
   auth: import.meta.env.VITE_API_AUTH_URL || 'https://aegis.heliannuuthus.com/api',
 } as const
 
