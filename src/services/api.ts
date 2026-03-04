@@ -46,30 +46,6 @@ export const miniprogramApi = {
     request.post<Miniprogram>(`/miniprogram/${id}/publish`),
 }
 
-export const authApi = {
-  login: (code: string, idp: string) =>
-    request.post<{ access_token: string; refresh_token: string }>('/token', {
-      grant_type: 'authorization_code',
-      code,
-      idp,
-    }),
-
-  refreshToken: (refreshToken: string) =>
-    request.post<{ access_token: string; refresh_token: string }>('/token', {
-      grant_type: 'refresh_token',
-      refresh_token: refreshToken,
-    }),
-
-  logout: () => request.post('/revoke'),
-
-  logoutAll: () => request.post('/revoke-all'),
-
-  getProfile: () => request.get('/user/profile'),
-
-  updateProfile: (data: Record<string, unknown>) =>
-    request.put('/user/profile', data),
-}
-
 export const tenantApi = {
   getList: () => request.get('/tenants'),
 
@@ -124,13 +100,13 @@ export const applicationApi = {
     data: ApplicationServiceRelationRequest
   ) =>
     request.post(
-      `/hermes/applications/${appId}/services/${serviceId}/relations`,
+      `/hermes/applications/${appId}/services/${serviceId}/applicable`,
       data
     ),
 
   getServiceRelations: (appId: string) =>
     request.get<ApplicationServiceRelation[]>(
-      `/hermes/applications/${appId}/relations`
+      `/hermes/applications/${appId}/applicable`
     ),
 }
 
