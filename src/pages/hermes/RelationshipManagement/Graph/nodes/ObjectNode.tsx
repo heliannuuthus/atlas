@@ -18,7 +18,7 @@ function ObjectNodeComponent({ id, data, selected }: NodeProps<ObjectNodeData>) 
     <div
       className={styles.objectNode}
       style={{
-        borderColor: selected ? '#8c8c8c' : '#e0e0e0',
+        borderColor: selected ? '#a3a3a3' : '#e5e5e5',
         boxShadow: selected ? '0 0 0 2px rgba(140, 140, 140, 0.2)' : undefined,
       }}
     >
@@ -27,12 +27,12 @@ function ObjectNodeComponent({ id, data, selected }: NodeProps<ObjectNodeData>) 
         type="target"
         position={Position.Left}
         className={styles.handle}
-        style={{ backgroundColor: '#8c8c8c' }}
+        style={{ backgroundColor: '#a3a3a3' }}
       />
 
       {/* 节点头部 */}
       <div className={styles.nodeHeader} style={{ borderBottomColor: '#f0f0f0' }}>
-        <span className={styles.nodeIcon} style={{ color: '#8c8c8c' }}>
+        <span className={styles.nodeIcon} style={{ color: '#a3a3a3' }}>
           <DatabaseOutlined />
         </span>
         <span className={styles.nodeType}>{data.type}</span>
@@ -62,7 +62,7 @@ function ObjectNodeComponent({ id, data, selected }: NodeProps<ObjectNodeData>) 
         type="source"
         position={Position.Right}
         className={styles.handle}
-        style={{ backgroundColor: '#8c8c8c' }}
+        style={{ backgroundColor: '#a3a3a3' }}
       />
     </div>
   )

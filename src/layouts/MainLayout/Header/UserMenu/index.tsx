@@ -23,9 +23,9 @@ const getUserInitials = (name?: string) => {
 }
 
 export function UserMenu() {
-  const { logout } = useAuthStore()
-  const userName = undefined as string | undefined
-  const userAvatar = null as string | null
+  const { logout, user } = useAuthStore()
+  const userName = user?.nic
+  const userAvatar = user?.pic ?? null
   const notificationCount = 3
 
   const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
@@ -87,7 +87,7 @@ export function UserMenu() {
           {userAvatar ? (
             <Avatar src={userAvatar} size={28} />
           ) : (
-            <Avatar size={28} style={{ backgroundColor: '#1890ff' }}>
+            <Avatar size={28} style={{ backgroundColor: '#7c3aed' }}>
               {getUserInitials(userName)}
             </Avatar>
           )}

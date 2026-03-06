@@ -59,20 +59,18 @@ export function Sidebar({ collapsed }: SidebarProps) {
     }
   }
 
-  const menuTheme: ThemeConfig = useMemo(
-    () => ({
-      components: {
-        Menu: {
-          itemMarginInline: collapsed ? 0 : 8,
-          itemBorderRadius: 6,
-          itemSelectedBg: '#e6f7ff',
-          itemSelectedColor: '#1890ff',
-          subMenuItemBg: 'transparent',
-          ...(collapsed && {
-            itemPaddingInline: 20,
-            iconSize: 16,
-          }),
-        },
+  const menuTheme: ThemeConfig = useMemo(() => ({
+    components: {
+      Menu: {
+        itemMarginInline: collapsed ? 0 : 8,
+        itemBorderRadius: 6,
+        itemSelectedBg: '#f5f3ff',
+        itemSelectedColor: '#7c3aed',
+        subMenuItemBg: 'transparent',
+        ...(collapsed && {
+          itemPaddingInline: 20,
+          iconSize: 16,
+        }),
       },
     }),
     [collapsed]
@@ -93,53 +91,15 @@ export function Sidebar({ collapsed }: SidebarProps) {
       <div className={styles.logo} onClick={handleLogoClick}>
         <div className={styles.logoIcon}>
           <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#1890ff" />
-                <stop offset="100%" stopColor="#722ed1" />
-              </linearGradient>
-            </defs>
-            <rect
-              x="3"
-              y="3"
-              width="12"
-              height="12"
-              rx="3"
-              fill="url(#logoGradient)"
-              opacity="0.9"
-            />
-            <rect
-              x="17"
-              y="3"
-              width="12"
-              height="12"
-              rx="3"
-              fill="url(#logoGradient)"
-              opacity="0.6"
-            />
-            <rect
-              x="3"
-              y="17"
-              width="12"
-              height="12"
-              rx="3"
-              fill="url(#logoGradient)"
-              opacity="0.6"
-            />
-            <rect
-              x="17"
-              y="17"
-              width="12"
-              height="12"
-              rx="3"
-              fill="url(#logoGradient)"
-              opacity="0.3"
-            />
+            <rect x="3" y="3" width="12" height="12" rx="3" fill="#7c3aed" opacity="0.9" />
+            <rect x="17" y="3" width="12" height="12" rx="3" fill="#7c3aed" opacity="0.5" />
+            <rect x="3" y="17" width="12" height="12" rx="3" fill="#7c3aed" opacity="0.5" />
+            <rect x="17" y="17" width="12" height="12" rx="3" fill="#7c3aed" opacity="0.2" />
           </svg>
         </div>
         {!collapsed && (
           <span className={styles.logoText}>
-            <span className={styles.logoMain}>择味</span>
+            <span className={styles.logoMain}>{currentBusiness?.name || 'Atlas'}</span>
           </span>
         )}
       </div>

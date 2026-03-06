@@ -12,7 +12,7 @@
 }
 
 .subtitle {
-  color: #8c8c8c;
+  color: #a3a3a3;
   font-size: 14px;
   margin-top: 4px;
 }
@@ -29,7 +29,7 @@
 
   &:hover {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    border-color: #e0e0e0;
+    border-color: #e5e5e5;
   }
 }
 
@@ -104,7 +104,7 @@
 
 .entityType {
   font-size: 11px;
-  color: #8c8c8c;
+  color: #a3a3a3;
   text-transform: uppercase;
 }
 
@@ -118,14 +118,14 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #8c8c8c;
+  color: #a3a3a3;
   flex-shrink: 0;
 }
 
 .relationName {
   padding: 2px 8px;
   background: #fff;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #e5e5e5;
   border-radius: 4px;
   font-size: 12px;
   color: #595959;
@@ -137,7 +137,7 @@
 
 .moreHint {
   text-align: center;
-  color: #8c8c8c;
+  color: #a3a3a3;
   font-size: 13px;
   margin-bottom: 16px;
 }

@@ -4,7 +4,7 @@ export const servicePlatforms = [
     name: 'Zwei',
     nameEn: 'Zwei',
     description: '菜谱管理、收藏、推荐、标签等业务管理',
-    color: '#1890ff',
+    color: '#ea580c',
     enabled: true,
   },
   {
@@ -12,7 +12,7 @@ export const servicePlatforms = [
     name: 'Hermes',
     nameEn: 'Hermes',
     description: '身份与访问管理：域、服务、应用、关系、组',
-    color: '#13c2c2',
+    color: '#059669',
     enabled: true,
   },
   {
@@ -20,7 +20,7 @@ export const servicePlatforms = [
     name: 'Chaos',
     nameEn: 'Chaos',
     description: '业务聚合：邮件发送、文件上传等',
-    color: '#eb2f96',
+    color: '#d97706',
     enabled: true,
   },
 ] as const

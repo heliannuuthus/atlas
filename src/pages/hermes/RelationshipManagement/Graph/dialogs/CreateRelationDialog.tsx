@@ -80,7 +80,7 @@ export function CreateRelationDialog({
           }}
         >
           <div style={{ marginBottom: 8 }}>
-            <span style={{ color: '#8c8c8c' }}>服务: </span>
+            <span style={{ color: '#a3a3a3' }}>服务: </span>
             <span style={{ fontWeight: 500 }}>{serviceId || '未选择'}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -94,7 +94,7 @@ export function CreateRelationDialog({
             >
               {sourceNode?.type}:{sourceNode?.id}
             </span>
-            <span style={{ color: '#8c8c8c' }}>→</span>
+            <span style={{ color: '#a3a3a3' }}>→</span>
             <span
               style={{
                 padding: '2px 8px',

@@ -12,16 +12,13 @@
 .heroTitle {
   font-size: 48px;
   font-weight: 700;
-  background: linear-gradient(135deg, #1890ff 0%, #722ed1 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #171717;
   margin-bottom: 16px;
 }
 
 .heroDesc {
   font-size: 18px;
-  color: #8c8c8c;
+  color: #737373;
   margin: 0;
 }
 
@@ -38,7 +35,7 @@
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
   }
 }
 
@@ -48,7 +45,7 @@
   gap: 16px;
   margin-bottom: 24px;
   padding-bottom: 24px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f5f5f5;
 }
 
 .serviceIcon {
@@ -74,7 +71,7 @@
 
 .serviceDesc {
   margin: 0;
-  color: #8c8c8c;
+  color: #737373;
   font-size: 14px;
 }
 
@@ -96,7 +93,7 @@
   cursor: pointer;
 
   &:hover {
-    background: #f0f0f0;
+    background: #f5f5f5;
     transform: translateX(4px);
   }
 }
@@ -115,13 +112,13 @@
 .moduleTitle {
   font-size: 14px;
   font-weight: 600;
-  color: #262626;
+  color: #171717;
   margin-bottom: 4px;
 }
 
 .moduleDescription {
   font-size: 12px;
-  color: #8c8c8c;
+  color: #a3a3a3;
   line-height: 1.5;
 }
 

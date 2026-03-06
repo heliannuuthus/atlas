@@ -12,18 +12,18 @@ dayjs.locale('zh-cn')
 
 const themeConfig: ThemeConfig = {
   token: {
-    colorPrimary: '#1890ff',
-    colorSuccess: '#52c41a',
-    colorWarning: '#faad14',
-    colorError: '#ff4d4f',
-    colorInfo: '#1890ff',
+    colorPrimary: '#7c3aed',
+    colorSuccess: '#16a34a',
+    colorWarning: '#d97706',
+    colorError: '#dc2626',
+    colorInfo: '#7c3aed',
     borderRadius: 8,
     fontFamily:
       "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
     colorBgContainer: '#ffffff',
     colorBgLayout: '#f5f5f5',
-    colorBorder: '#d9d9d9',
-    colorBorderSecondary: '#f0f0f0',
+    colorBorder: '#e5e5e5',
+    colorBorderSecondary: '#f5f5f5',
   },
   components: {
     Menu: {
@@ -31,16 +31,16 @@ const themeConfig: ThemeConfig = {
       itemMarginBlock: 4,
       itemMarginInline: 8,
       itemBorderRadius: 8,
-      itemSelectedBg: '#e6f7ff',
-      itemSelectedColor: '#1890ff',
+      itemSelectedBg: '#f5f3ff',
+      itemSelectedColor: '#7c3aed',
     },
     Card: {
       paddingLG: 24,
     },
     Table: {
       headerBg: '#fafafa',
-      headerColor: '#262626',
-      rowHoverBg: '#f5f5f5',
+      headerColor: '#171717',
+      rowHoverBg: '#fafafa',
     },
     Collapse: {
       headerBg: 'transparent',
@@ -48,12 +48,12 @@ const themeConfig: ThemeConfig = {
     },
     Breadcrumb: {
       separatorMargin: 8,
-      linkColor: '#595959',
-      linkHoverColor: '#1890ff',
-      lastItemColor: '#262626',
+      linkColor: '#737373',
+      linkHoverColor: '#7c3aed',
+      lastItemColor: '#171717',
     },
     Select: {
-      optionSelectedBg: '#e6f7ff',
+      optionSelectedBg: '#f5f3ff',
     },
     Tag: {
       defaultBg: '#fafafa',

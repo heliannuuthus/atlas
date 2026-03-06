@@ -5,40 +5,6 @@ import { getServiceUrl, apiEndpoints, type ServiceName } from '@/config/env'
 import { useAuthStore } from '@/store/auth'
 import { getAuth } from '@/config/auth'
 
-const tokenCache: Record<string, string | null> = {}
-
-function refreshAllTokens() {
-  const auth = getAuth()
-  const audiences = Object.keys(serviceAudienceMap)
-  for (const aud of audiences) {
-    auth
-      .getAccessToken(aud)
-      .then(token => {
-        tokenCache[aud] = token
-      })
-      .catch(() => {})
-  }
-}
-
-let prevAuthenticated = false
-useAuthStore.subscribe(state => {
-  if (state.isAuthenticated === prevAuthenticated) return
-  prevAuthenticated = state.isAuthenticated
-  if (state.isAuthenticated) {
-    refreshAllTokens()
-  } else {
-    Object.keys(tokenCache).forEach(k => {
-      delete tokenCache[k]
-    })
-  }
-})
-
-function getTokenForAudience(audience?: string): string | null {
-  if (audience) return tokenCache[audience] ?? null
-  return tokenCache['_default'] ?? null
-}
-
-/** 服务名 → audience 映射 */
 const serviceAudienceMap: Record<string, string> = {
   hermes: 'hermes',
   zwei: 'zwei',
@@ -52,51 +18,15 @@ export interface ApiResponse<T = unknown> {
   [key: string]: unknown
 }
 
-const request = axios.create({
-  timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-})
-
-/**
- * 创建针对特定服务的请求实例
- * @param service 服务名称: 'hermes' | 'zwei' | 'auth'
- */
-export function createServiceRequest(service: ServiceName) {
-  const audience = serviceAudienceMap[service]
-
-  const instance = axios.create({
-    baseURL: apiEndpoints[service],
-    timeout: 30000,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
-
-  instance.interceptors.request.use(
-    config => {
-      const token = getTokenForAudience(audience)
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`
-      }
-      return config
-    },
-    error => Promise.reject(error)
-  )
-
-  instance.interceptors.response.use(responseSuccessHandler, responseErrorHandler)
-
-  return instance
+async function injectToken(config: InternalAxiosRequestConfig, audience?: string) {
+  const auth = getAuth()
+  const token = await auth.getAccessToken(audience)
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
 }
 
-// 预创建各服务的请求实例
-export const hermesRequest = createServiceRequest('hermes')
-export const zweiRequest = createServiceRequest('zwei')
-export const chaosRequest = createServiceRequest('chaos')
-export const authRequest = createServiceRequest('auth')
-
-// 响应成功处理器
 function responseSuccessHandler(response: AxiosResponse<ApiResponse>) {
   const { data } = response
   if (data.code !== undefined && data.code !== 0 && data.code !== 200) {
@@ -127,19 +57,9 @@ function responseErrorHandler(error: AxiosError<ApiResponse>) {
       case 401: {
         errorMsg = '未授权，请重新登录'
         const audience = resolveAudienceFromError(error)
-        if (audience) {
-          delete tokenCache[audience]
-          getAuth()
-            .refreshToken(undefined, audience)
-            .then(resp => {
-              tokenCache[audience] = resp.access_token
-            })
-            .catch(() => {
-              useAuthStore.getState().logout()
-            })
-        } else {
+        getAuth().refreshToken(undefined, audience).catch(() => {
           useAuthStore.getState().logout()
-        }
+        })
         break
       }
       case 403:
@@ -168,11 +88,41 @@ function responseErrorHandler(error: AxiosError<ApiResponse>) {
   return Promise.reject(error)
 }
 
-// 默认请求实例的拦截器 - 支持动态路由
+/**
+ * 创建针对特定服务的请求实例，自动注入该服务 audience 对应的 token
+ */
+export function createServiceRequest(service: ServiceName) {
+  const audience = serviceAudienceMap[service]
+
+  const instance = axios.create({
+    baseURL: apiEndpoints[service],
+    timeout: 30000,
+    headers: { 'Content-Type': 'application/json' },
+  })
+
+  instance.interceptors.request.use(
+    (config) => injectToken(config, audience),
+    (error) => Promise.reject(error)
+  )
+
+  instance.interceptors.response.use(responseSuccessHandler, responseErrorHandler)
+
+  return instance
+}
+
+export const hermesRequest = createServiceRequest('hermes')
+export const zweiRequest = createServiceRequest('zwei')
+export const chaosRequest = createServiceRequest('chaos')
+export const authRequest = createServiceRequest('auth')
+
+const request = axios.create({
+  timeout: 30000,
+  headers: { 'Content-Type': 'application/json' },
+})
+
 request.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     if (config.url) {
-      // 从原始 URL 前缀推断服务和 audience
       const originalPath = config.url.startsWith('/') ? config.url.slice(1) : config.url
       const service = originalPath.split('/')[0] as string
       const audience = serviceAudienceMap[service]
@@ -181,27 +131,15 @@ request.interceptors.request.use(
       config.baseURL = baseUrl
       config.url = servicePath
 
-      const token = getTokenForAudience(audience)
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`
-      }
-    } else {
-      const token = getTokenForAudience()
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`
-      }
+      return injectToken(config, audience)
     }
-
-    return config
+    return injectToken(config)
   },
-  error => {
-    return Promise.reject(error)
-  }
+  (error) => Promise.reject(error)
 )
 
 request.interceptors.response.use(responseSuccessHandler, responseErrorHandler)
 
-// 便捷的 HTTP 方法封装
 export async function get<T = unknown>(url: string, params?: Record<string, unknown>): Promise<T> {
   const response = await request.get<T>(url, { params })
   return response.data

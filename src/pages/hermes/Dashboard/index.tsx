@@ -55,7 +55,7 @@ export function Dashboard() {
             icon={<ApartmentOutlined />}
             title="域"
             count={domains?.length ?? 0}
-            color="#13c2c2"
+            color="#059669"
             path="/hermes/domains"
             loading={domainsLoading}
           />
@@ -65,7 +65,7 @@ export function Dashboard() {
             icon={<CloudServerOutlined />}
             title="服务"
             count={services?.length ?? 0}
-            color="#1677ff"
+            color="#171717"
             path="/hermes/services"
             loading={servicesLoading}
           />
@@ -75,7 +75,7 @@ export function Dashboard() {
             icon={<AppstoreAddOutlined />}
             title="应用"
             count={applications?.length ?? 0}
-            color="#722ed1"
+            color="#059669"
             path="/hermes/applications"
             loading={applicationsLoading}
           />
@@ -85,7 +85,7 @@ export function Dashboard() {
             icon={<TeamOutlined />}
             title="组"
             count={groups?.length ?? 0}
-            color="#52c41a"
+            color="#4d7c0f"
             path="/hermes/groups"
             loading={groupsLoading}
           />
@@ -95,7 +95,7 @@ export function Dashboard() {
             icon={<ShareAltOutlined />}
             title="关系"
             count={relationships?.length ?? 0}
-            color="#fa8c16"
+            color="#059669"
             path="/hermes/relationships"
             loading={relationshipsLoading}
           />

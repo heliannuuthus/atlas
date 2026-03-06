@@ -95,13 +95,13 @@ export function RecentActivity({
   const getIcon = (type: ActivityItem['type']) => {
     switch (type) {
       case 'service':
-        return <CloudServerOutlined style={{ color: '#1677ff' }} />
+        return <CloudServerOutlined style={{ color: '#171717' }} />
       case 'application':
-        return <AppstoreAddOutlined style={{ color: '#722ed1' }} />
+        return <AppstoreAddOutlined style={{ color: '#059669' }} />
       case 'group':
-        return <TeamOutlined style={{ color: '#52c41a' }} />
+        return <TeamOutlined style={{ color: '#4d7c0f' }} />
       case 'relationship':
-        return <ShareAltOutlined style={{ color: '#fa8c16' }} />
+        return <ShareAltOutlined style={{ color: '#d97706' }} />
     }
   }
 

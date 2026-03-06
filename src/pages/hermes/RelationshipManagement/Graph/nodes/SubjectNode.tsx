@@ -15,17 +15,17 @@ const typeConfig = {
   user: {
     icon: <UserOutlined />,
     label: 'user',
-    color: '#1677ff',
+    color: '#171717',
   },
   group: {
     icon: <TeamOutlined />,
     label: 'group',
-    color: '#52c41a',
+    color: '#4d7c0f',
   },
   application: {
     icon: <AppstoreOutlined />,
     label: 'application',
-    color: '#722ed1',
+    color: '#059669',
   },
 }
 
@@ -37,7 +37,7 @@ function SubjectNodeComponent({ id, data, selected }: NodeProps<SubjectNodeData>
     <div
       className={styles.subjectNode}
       style={{
-        borderColor: selected ? config.color : '#e0e0e0',
+        borderColor: selected ? config.color : '#e5e5e5',
         boxShadow: selected ? `0 0 0 2px ${config.color}20` : undefined,
       }}
     >

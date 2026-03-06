@@ -23,7 +23,6 @@ body {
   height: 100%;
 }
 
-// Ant Design 样式覆盖
 .ant-layout {
   background: $bg-color;
 }
@@ -42,22 +41,21 @@ body {
   border-radius: $border-radius-md;
 }
 
-// 滚动条样式
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: $gray-100;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: $gray-300;
   border-radius: 4px;
 
   &:hover {
-    background: #a8a8a8;
+    background: $gray-400;
   }
 }

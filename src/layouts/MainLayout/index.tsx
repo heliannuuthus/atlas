@@ -5,6 +5,7 @@ import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import { Header } from './Header'
 import { Sidebar } from './Sidebar'
 import { BusinessTabs } from '@/components/BusinessTabs'
+import { GuideBall } from '@/components/GuideBall'
 import { syncBusinessFromPath } from '@/store/business'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 import { useDocumentMeta } from '@/hooks/useDocumentMeta'
@@ -105,6 +106,7 @@ export function MainLayout() {
               <Outlet />
             </Content>
           </Layout>
+          <GuideBall />
         </>
       )}
     </Layout>

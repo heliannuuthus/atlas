@@ -23,7 +23,7 @@ export function Dashboard() {
               title="菜谱总数"
               value={0}
               prefix={<BookOutlined />}
-              valueStyle={{ color: '#1890ff' }}
+              valueStyle={{ color: '#171717' }}
             />
           </Card>
         </Col>
@@ -33,7 +33,7 @@ export function Dashboard() {
               title="收藏总数"
               value={0}
               prefix={<HeartOutlined />}
-              valueStyle={{ color: '#f5222d' }}
+              valueStyle={{ color: '#dc2626' }}
             />
           </Card>
         </Col>
@@ -43,7 +43,7 @@ export function Dashboard() {
               title="浏览历史"
               value={0}
               prefix={<HistoryOutlined />}
-              valueStyle={{ color: '#52c41a' }}
+              valueStyle={{ color: '#4d7c0f' }}
             />
           </Card>
         </Col>
@@ -53,7 +53,7 @@ export function Dashboard() {
               title="标签数量"
               value={0}
               prefix={<TagsOutlined />}
-              valueStyle={{ color: '#722ed1' }}
+              valueStyle={{ color: '#ea580c' }}
             />
           </Card>
         </Col>

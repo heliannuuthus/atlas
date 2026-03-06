@@ -1,18 +1,14 @@
-/**
- * OAuth 认证回调页面
- * 处理从 Aegis 认证服务器返回的授权码
- */
-
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { Spin, Result, Button } from 'antd'
+import { Spin, Button } from 'antd'
+import { CloseCircleOutlined, HomeOutlined, ReloadOutlined } from '@ant-design/icons'
 import { useAuthStore } from '@/store/auth'
 import styles from './index.module.scss'
 
 export function AuthCallback() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const { handleCallback, error, clearError } = useAuthStore()
+  const { handleCallback, consumeReturnTo, error, clearError } = useAuthStore()
   const [processing, setProcessing] = useState(true)
   const initiatedRef = useRef(false)
 
@@ -23,67 +19,36 @@ export function AuthCallback() {
     const code = searchParams.get('code')
     const state = searchParams.get('state')
     const errorParam = searchParams.get('error')
-    const errorDescription = searchParams.get('error_description')
 
-    // 处理错误响应
     if (errorParam) {
-      console.error('[AuthCallback] Error:', errorParam, errorDescription)
       queueMicrotask(() => setProcessing(false))
       return
     }
 
-    // 没有授权码
     if (!code) {
-      console.error('[AuthCallback] No authorization code')
       queueMicrotask(() => setProcessing(false))
       return
     }
 
-    // 处理授权码
-    console.log(
-      '[AuthCallback] Processing code:',
-      code.substring(0, 8) + '...',
-      'state:',
-      state?.substring(0, 8)
-    )
-    console.log('[AuthCallback] localStorage before handleCallback:', {
-      codeVerifier: !!localStorage.getItem('aegis_code_verifier'),
-      state: !!localStorage.getItem('aegis_state'),
-      redirectUri: localStorage.getItem('aegis_redirect_uri'),
-      audience: localStorage.getItem('aegis_audience'),
-    })
     handleCallback(code, state ?? undefined)
-      .then(tokens => {
-        console.log('[AuthCallback] handleCallback success:', {
-          hasAccessToken: !!tokens?.access_token,
-          expiresIn: tokens?.expires_in,
-          scope: tokens?.scope,
-        })
-        console.log('[AuthCallback] localStorage after handleCallback:', {
-          accessToken: !!localStorage.getItem('aegis_access_token'),
-          refreshToken: !!localStorage.getItem('aegis_refresh_token'),
-          expiresAt: localStorage.getItem('aegis_expires_at'),
-        })
-        const returnTo = sessionStorage.getItem('auth_return_to') || '/'
-        sessionStorage.removeItem('auth_return_to')
-        console.log('[AuthCallback] Navigating to:', returnTo)
+      .then(async () => {
+        const returnTo = await consumeReturnTo() || '/'
         navigate(returnTo, { replace: true })
       })
-      .catch(err => {
-        console.error('[AuthCallback] Failed to handle callback:', err)
-        console.error('[AuthCallback] Error details:', {
-          code: err?.code,
-          message: err?.message,
-          description: err?.description,
-        })
+      .catch(() => {
         queueMicrotask(() => setProcessing(false))
       })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const handleRetry = () => {
+  const handleGoHome = () => {
     clearError()
     navigate('/', { replace: true })
+  }
+
+  const handleRetry = () => {
+    clearError()
+    window.location.reload()
   }
 
   if (processing && !error) {
@@ -94,18 +59,55 @@ export function AuthCallback() {
     )
   }
 
+  const errorCode = searchParams.get('error')
+  const errorMessage = error || searchParams.get('error_description') || '认证过程中发生错误'
+
   return (
     <div className={styles.container}>
-      <Result
-        status="error"
-        title="登录失败"
-        subTitle={error || searchParams.get('error_description') || '认证过程中发生错误'}
-        extra={[
-          <Button key="home" type="primary" onClick={handleRetry}>
+      <div className={styles.content}>
+        <div className={styles.header}>
+          <div className={styles.icon}>
+            <CloseCircleOutlined />
+          </div>
+          <h1 className={styles.title}>登录失败</h1>
+          <p className={styles.subtitle}>认证过程中发生了错误，请重试或返回首页</p>
+        </div>
+
+        <div className={styles.info}>
+          {errorCode && (
+            <div className={styles.infoItem}>
+              <span className={styles.infoLabel}>错误码</span>
+              <span className={styles.infoValue}>
+                <code className={styles.errorCode}>{errorCode}</code>
+              </span>
+            </div>
+          )}
+          <div className={styles.infoItem}>
+            <span className={styles.infoLabel}>错误信息</span>
+            <span className={`${styles.infoValue} ${styles.errorMessage}`}>
+              {errorMessage}
+            </span>
+          </div>
+        </div>
+
+        <div className={styles.actions}>
+          <Button
+            type="primary"
+            icon={<HomeOutlined />}
+            onClick={handleGoHome}
+            className={`${styles.actionButton} ${styles.primaryButton}`}
+          >
             返回首页
-          </Button>,
-        ]}
-      />
+          </Button>
+          <Button
+            icon={<ReloadOutlined />}
+            onClick={handleRetry}
+            className={`${styles.actionButton} ${styles.secondaryButton}`}
+          >
+            重试
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }

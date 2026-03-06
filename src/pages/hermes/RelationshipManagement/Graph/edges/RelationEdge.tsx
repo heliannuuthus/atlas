@@ -38,11 +38,11 @@ function RelationEdgeComponent({
   const isPending = data?.isPending
 
   // 边的颜色
-  let strokeColor = '#8c8c8c'
+  let strokeColor = '#a3a3a3'
   if (isExpiring) {
-    strokeColor = '#faad14' // 即将过期：橙色
+    strokeColor = '#d97706'
   } else if (isPending) {
-    strokeColor = '#1677ff' // 待保存：蓝色虚线
+    strokeColor = '#171717' // 待保存：虚线
   }
 
   return (
@@ -72,12 +72,12 @@ function RelationEdgeComponent({
             className={styles.edgeLabel}
             style={{
               borderColor: strokeColor,
-              backgroundColor: isPending ? '#e6f4ff' : '#fff',
+              backgroundColor: isPending ? '#f5f5f5' : '#fff',
             }}
           >
             {isExpiring && (
               <Tooltip title="即将过期">
-                <ClockCircleOutlined style={{ color: '#faad14', marginRight: 4 }} />
+                <ClockCircleOutlined style={{ color: '#d97706', marginRight: 4 }} />
               </Tooltip>
             )}
             <span>{data?.relation || 'relation'}</span>
@@ -116,7 +116,7 @@ export function EdgeArrowDefs() {
           orient="auto"
           markerUnits="strokeWidth"
         >
-          <polygon points="0 0, 10 3.5, 0 7" fill="#8c8c8c" />
+          <polygon points="0 0, 10 3.5, 0 7" fill="#a3a3a3" />
         </marker>
       </defs>
     </svg>

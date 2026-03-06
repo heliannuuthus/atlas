@@ -72,7 +72,7 @@ export function FileManagement() {
 
           <Dragger {...uploadProps} className={styles.dragger}>
             <p className="ant-upload-drag-icon">
-              <CloudUploadOutlined style={{ fontSize: 48, color: '#1890ff' }} />
+              <CloudUploadOutlined style={{ fontSize: 48, color: '#d97706' }} />
             </p>
             <p className="ant-upload-text">点击或拖拽文件到此区域上传</p>
             <p className="ant-upload-hint">支持单个或批量上传，文件将上传到 Cloudflare R2</p>
@@ -99,7 +99,11 @@ export function FileManagement() {
                   ]}
                 >
                   <List.Item.Meta
-                    avatar={<CheckCircleOutlined style={{ fontSize: 20, color: '#52c41a' }} />}
+                    avatar={
+                      <CheckCircleOutlined
+                        style={{ fontSize: 20, color: '#4d7c0f' }}
+                      />
+                    }
                     title={
                       <Space>
                         <Text>{item.file_name}</Text>

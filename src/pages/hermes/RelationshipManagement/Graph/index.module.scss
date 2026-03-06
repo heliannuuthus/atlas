@@ -25,7 +25,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f5f5f5;
   background: #fafafa;
 }
 
@@ -38,15 +38,15 @@
 .headerTitle {
   font-size: 16px;
   font-weight: 500;
-  color: #262626;
+  color: #171717;
 }
 
 .relationCount {
   font-size: 13px;
-  color: #8c8c8c;
+  color: #a3a3a3;
 
   strong {
-    color: #1677ff;
+    color: #171717;
   }
 }
 
@@ -65,7 +65,7 @@
 // 左侧节点面板
 .sidePanel {
   width: 240px;
-  border-right: 1px solid #f0f0f0;
+  border-right: 1px solid #f5f5f5;
   background: #fff;
   overflow-y: auto;
 }
@@ -86,12 +86,12 @@
 
 .addNodesHeader {
   padding: 12px 16px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f5f5f5;
 }
 
 .searchWrapper {
   padding: 12px 16px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f5f5f5;
 }
 
 .hint {
@@ -114,7 +114,7 @@
 .count {
   margin-left: auto;
   font-size: 12px;
-  color: #8c8c8c;
+  color: #a3a3a3;
   background: #f5f5f5;
   padding: 0 6px;
   border-radius: 10px;
@@ -176,11 +176,11 @@
   :global(.react-flow__controls) {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     border-radius: 6px;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #e5e5e5;
   }
 
   :global(.react-flow__controls-button) {
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f5f5f5;
 
     &:last-child {
       border-bottom: none;
@@ -193,7 +193,7 @@
 .objectNode {
   min-width: 140px;
   background: #fff;
-  border: 1.5px solid #e0e0e0;
+  border: 1.5px solid #e5e5e5;
   border-radius: 8px;
   font-size: 13px;
   transition: all 0.2s;
@@ -208,7 +208,7 @@
   align-items: center;
   gap: 6px;
   padding: 8px 10px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f5f5f5;
 }
 
 .nodeIcon {
@@ -218,7 +218,7 @@
 .nodeType {
   flex: 1;
   font-size: 11px;
-  color: #8c8c8c;
+  color: #a3a3a3;
   text-transform: uppercase;
 }
 
@@ -230,7 +230,7 @@
   height: 20px;
 
   &:hover {
-    color: #ff4d4f !important;
+    color: #dc2626 !important;
   }
 }
 
@@ -245,7 +245,7 @@
 
 .nodeId {
   font-weight: 500;
-  color: #262626;
+  color: #171717;
   word-break: break-all;
 }
 
@@ -273,10 +273,10 @@
   gap: 4px;
   padding: 3px 8px;
   background: #fff;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #e5e5e5;
   border-radius: 4px;
   font-size: 11px;
-  color: #595959;
+  color: #525252;
   white-space: nowrap;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
@@ -290,7 +290,7 @@
   transition: opacity 0.2s;
 
   &:hover {
-    color: #ff4d4f !important;
+    color: #dc2626 !important;
   }
 }
 

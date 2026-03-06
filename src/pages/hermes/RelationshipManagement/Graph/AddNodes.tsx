@@ -128,18 +128,23 @@ export function AddNodes({ users, groups, applications, onDragStart }: AddNodesP
       key: 'users',
       label: (
         <div className={styles.collapseHeader}>
-          <UserOutlined style={{ color: '#1677ff' }} />
+          <UserOutlined style={{ color: '#171717' }} />
           <span>用户</span>
           <span className={styles.count}>{filteredEntities.userList.length}</span>
         </div>
       ),
-      children: renderEntityList(filteredEntities.userList, <UserOutlined />, '#1677ff', 'subject'),
+      children: renderEntityList(
+        filteredEntities.userList,
+        <UserOutlined />,
+        '#171717',
+        'subject'
+      ),
     },
     {
       key: 'groups',
       label: (
         <div className={styles.collapseHeader}>
-          <TeamOutlined style={{ color: '#52c41a' }} />
+          <TeamOutlined style={{ color: '#4d7c0f' }} />
           <span>组</span>
           <span className={styles.count}>{filteredEntities.groupList.length}</span>
         </div>
@@ -147,7 +152,7 @@ export function AddNodes({ users, groups, applications, onDragStart }: AddNodesP
       children: renderEntityList(
         filteredEntities.groupList,
         <TeamOutlined />,
-        '#52c41a',
+        '#4d7c0f',
         'subject'
       ),
     },
@@ -155,7 +160,7 @@ export function AddNodes({ users, groups, applications, onDragStart }: AddNodesP
       key: 'applications',
       label: (
         <div className={styles.collapseHeader}>
-          <AppstoreOutlined style={{ color: '#722ed1' }} />
+          <AppstoreOutlined style={{ color: '#059669' }} />
           <span>应用</span>
           <span className={styles.count}>{filteredEntities.appList.length}</span>
         </div>
@@ -163,7 +168,7 @@ export function AddNodes({ users, groups, applications, onDragStart }: AddNodesP
       children: renderEntityList(
         filteredEntities.appList,
         <AppstoreOutlined />,
-        '#722ed1',
+        '#059669',
         'subject'
       ),
     },
