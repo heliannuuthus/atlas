@@ -1,1 +1,0 @@
-export { MiniprogramManagement } from './MiniprogramManagement'

@@ -1,0 +1,36 @@
+{
+  "name": "@atlas/zwei",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aegis/sdk": "link:../../../aegis-sdk",
+    "@ant-design/icons": "^6.1.0",
+    "@atlas/shared": "workspace:*",
+    "@atlas/ui": "workspace:*",
+    "ahooks": "^3.7.8",
+    "antd": "^6.0.0",
+    "axios": "^1.7.7",
+    "clsx": "^2.1.1",
+    "dayjs": "^1.11.13",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "react-router-dom": "^7.12.0",
+    "zustand": "^5.0.10"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.9",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.2",
+    "sass": "^1.77.8",
+    "typescript": "^5.5.3",
+    "vite": "^7.3.1"
+  }
+}

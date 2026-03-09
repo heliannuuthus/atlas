@@ -1,0 +1,102 @@
+// ─── Atlas Design Tokens ───
+
+// 品牌色 — 各业务域
+$brand-atlas: #171717;
+$brand-hermes: #059669;
+$brand-chaos: #d97706;
+$brand-zwei: #ea580c;
+
+// Hermes 色阶
+$hermes-50: #ecfdf5;
+$hermes-100: #d1fae5;
+$hermes-500: #10b981;
+$hermes-600: #059669;
+$hermes-700: #047857;
+
+// Chaos 色阶
+$chaos-50: #fffbeb;
+$chaos-100: #fef3c7;
+$chaos-500: #f59e0b;
+$chaos-600: #d97706;
+$chaos-700: #b45309;
+
+// Zwei 色阶
+$zwei-50: #fff7ed;
+$zwei-100: #ffedd5;
+$zwei-500: #f97316;
+$zwei-600: #ea580c;
+$zwei-700: #c2410c;
+
+// 主色 — 紫（Portal 全局强调色）
+$primary-color: #7c3aed;
+$primary-50: #f5f3ff;
+$primary-100: #ede9fe;
+$primary-500: #8b5cf6;
+$primary-600: #7c3aed;
+$primary-700: #6d28d9;
+
+// 语义色
+$success-color: #16a34a;
+$warning-color: #d97706;
+$error-color: #dc2626;
+$info-color: #2563eb;
+
+// 灰阶 (Zinc)
+$gray-950: #09090b;
+$gray-900: #18181b;
+$gray-800: #27272a;
+$gray-700: #3f3f46;
+$gray-600: #52525b;
+$gray-500: #71717a;
+$gray-400: #a1a1aa;
+$gray-300: #d4d4d8;
+$gray-200: #e4e4e7;
+$gray-150: #ececef;
+$gray-100: #f4f4f5;
+$gray-50: #fafafa;
+
+// 文字
+$text-primary: $gray-900;
+$text-secondary: $gray-600;
+$text-tertiary: $gray-500;
+$text-disabled: $gray-400;
+
+// 边框
+$border-color: $gray-200;
+$border-color-light: $gray-100;
+
+// 背景
+$bg-color: #f8f8fa;
+$bg-elevated: #fff;
+$bg-hover: $gray-50;
+$bg-subtle: $gray-100;
+
+// 布局
+$header-height: 52px;
+$sidebar-width: 248px;
+$sidebar-collapsed-width: 68px;
+$content-padding: 24px;
+
+// 阴影
+$shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+$shadow-md: 0 4px 12px rgba(0, 0, 0, 0.07);
+$shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.09);
+$shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.12);
+
+// 圆角
+$radius-xs: 4px;
+$radius-sm: 6px;
+$radius-md: 8px;
+$radius-lg: 12px;
+$radius-xl: 16px;
+
+// 过渡
+$transition-fast: 0.15s ease;
+$transition-base: 0.2s ease;
+$transition-slow: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+// 旧变量别名（兼容）
+$border-radius-sm: $radius-xs;
+$border-radius-md: $radius-sm;
+$border-radius-lg: $radius-md;

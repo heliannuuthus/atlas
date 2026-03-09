@@ -1,0 +1,33 @@
+.layout {
+  height: 100vh;
+  overflow: hidden;
+  background: #f8f8fa;
+}
+
+.innerLayout {
+  background: transparent !important;
+}
+
+.siderWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.sider {
+  background: #fff !important;
+  height: 100%;
+  overflow-x: visible;
+  overflow-y: hidden;
+  border-right: none !important;
+}
+
+.content {
+  margin-top: 52px;
+  padding: 20px 24px;
+  background: transparent;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: calc(100vh - 52px);
+}

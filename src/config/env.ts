@@ -35,8 +35,23 @@ export function getServiceUrl(path: string): { baseUrl: string; servicePath: str
   }
 }
 
+export interface DomainConfig {
+  clientId: string
+  module: string
+  defaultPath: string
+}
+
+export const domainMapping: Record<string, DomainConfig> = {
+  'zwei.heliannuuthus.com': { clientId: 'zwei', module: 'zwei', defaultPath: '/zwei' },
+  'hermes.heliannuuthus.com': { clientId: 'hermes', module: 'hermes', defaultPath: '/hermes/domains' },
+  'chaos.heliannuuthus.com': { clientId: 'chaos', module: 'chaos', defaultPath: '/chaos/dashboard' },
+}
+
+export function getCurrentDomainConfig(): DomainConfig | null {
+  return domainMapping[window.location.hostname] ?? null
+}
+
 export const env = {
-  // 保留旧的 apiBaseUrl 以兼容现有代码，默认指向 hermes
   apiBaseUrl: import.meta.env.VITE_API_BASE_URL || apiEndpoints.hermes,
   apiEndpoints,
   appTitle: import.meta.env.VITE_APP_TITLE || 'Atlas 中台管理平台',
