@@ -25,7 +25,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
       expiresAt: localStorage.getItem('aegis_expires_at'),
     })
     initialize()
-  }, [initialize])
+  }, [initialize, location.pathname])
 
   // 未认证时跳转登录
   useEffect(() => {
