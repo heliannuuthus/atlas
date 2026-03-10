@@ -1,4 +1,4 @@
-import request from '@/utils/request'
+import { get, post, put, del, patch } from '@/utils/request'
 import type {
   Miniprogram,
   MiniprogramListParams,
@@ -28,96 +28,92 @@ import type {
 
 export const miniprogramApi = {
   getList: (params: MiniprogramListParams) =>
-    request.get<MiniprogramListResponse>('/miniprogram', { params }),
+    get<MiniprogramListResponse>('/miniprogram', params as unknown as Record<string, unknown>),
 
-  getDetail: (id: string) => request.get<Miniprogram>(`/miniprogram/${id}`),
+  getDetail: (id: string) => get<Miniprogram>(`/miniprogram/${id}`),
 
-  create: (data: Partial<Miniprogram>) => request.post<Miniprogram>('/miniprogram', data),
+  create: (data: Partial<Miniprogram>) => post<Miniprogram>('/miniprogram', data),
 
-  update: (id: string, data: Partial<Miniprogram>) =>
-    request.put<Miniprogram>(`/miniprogram/${id}`, data),
+  update: (id: string, data: Partial<Miniprogram>) => put<Miniprogram>(`/miniprogram/${id}`, data),
 
-  delete: (id: string) => request.delete<void>(`/miniprogram/${id}`),
+  delete: (id: string) => del<void>(`/miniprogram/${id}`),
 
-  publish: (id: string) => request.post<Miniprogram>(`/miniprogram/${id}/publish`),
+  publish: (id: string) => post<Miniprogram>(`/miniprogram/${id}/publish`),
 }
 
 export const tenantApi = {
-  getList: () => request.get('/tenants'),
+  getList: () => get('/tenants'),
 
-  getDetail: (id: string) => request.get(`/tenants/${id}`),
+  getDetail: (id: string) => get(`/tenants/${id}`),
 
-  create: (data: Record<string, unknown>) => request.post('/tenants', data),
+  create: (data: Record<string, unknown>) => post('/tenants', data),
 
-  update: (id: string, data: Record<string, unknown>) => request.put(`/tenants/${id}`, data),
+  update: (id: string, data: Record<string, unknown>) => put(`/tenants/${id}`, data),
 
-  delete: (id: string) => request.delete(`/tenants/${id}`),
+  delete: (id: string) => del(`/tenants/${id}`),
 }
 
 export const domainApi = {
-  getList: () => request.get<Domain[]>('/hermes/domains'),
+  getList: () => get<Domain[]>('/hermes/domains'),
 
-  getDetail: (domainId: string) => request.get<Domain>(`/hermes/domains/${domainId}`),
+  getDetail: (domainId: string) => get<Domain>(`/hermes/domains/${domainId}`),
 }
 
 export const serviceApi = {
-  getList: (params?: ListServicesParams) => request.get<Service[]>('/hermes/services', { params }),
+  getList: (params?: ListServicesParams) =>
+    get<Service[]>('/hermes/services', params as Record<string, unknown>),
 
-  getDetail: (serviceId: string) => request.get<Service>(`/hermes/services/${serviceId}`),
+  getDetail: (serviceId: string) => get<Service>(`/hermes/services/${serviceId}`),
 
-  create: (data: ServiceCreateRequest) => request.post<Service>('/hermes/services', data),
+  create: (data: ServiceCreateRequest) => post<Service>('/hermes/services', data),
 
   update: (serviceId: string, data: ServiceUpdateRequest) =>
-    request.patch(`/hermes/services/${serviceId}`, data),
+    patch(`/hermes/services/${serviceId}`, data),
 }
 
 export const applicationApi = {
   getList: (params?: ListApplicationsParams) =>
-    request.get<Application[]>('/hermes/applications', { params }),
+    get<Application[]>('/hermes/applications', params as Record<string, unknown>),
 
-  getDetail: (appId: string) => request.get<Application>(`/hermes/applications/${appId}`),
+  getDetail: (appId: string) => get<Application>(`/hermes/applications/${appId}`),
 
-  create: (data: ApplicationCreateRequest) =>
-    request.post<Application>('/hermes/applications', data),
+  create: (data: ApplicationCreateRequest) => post<Application>('/hermes/applications', data),
 
   update: (appId: string, data: ApplicationUpdateRequest) =>
-    request.patch(`/hermes/applications/${appId}`, data),
+    patch(`/hermes/applications/${appId}`, data),
 
   setServiceRelations: (
     appId: string,
     serviceId: string,
     data: ApplicationServiceRelationRequest
-  ) => request.post(`/hermes/applications/${appId}/services/${serviceId}/applicable`, data),
+  ) => post(`/hermes/applications/${appId}/services/${serviceId}/applicable`, data),
 
   getServiceRelations: (appId: string) =>
-    request.get<ApplicationServiceRelation[]>(`/hermes/applications/${appId}/applicable`),
+    get<ApplicationServiceRelation[]>(`/hermes/applications/${appId}/applicable`),
 }
 
 export const relationshipApi = {
   getList: (params?: ListRelationshipsParams) =>
-    request.get<Relationship[]>('/hermes/relationships', { params }),
+    get<Relationship[]>('/hermes/relationships', params as Record<string, unknown>),
 
-  create: (data: RelationshipCreateRequest) =>
-    request.post<Relationship>('/hermes/relationships', data),
+  create: (data: RelationshipCreateRequest) => post<Relationship>('/hermes/relationships', data),
 
-  delete: (data: RelationshipDeleteRequest) => request.delete('/hermes/relationships', { data }),
+  delete: (data: RelationshipDeleteRequest) => del('/hermes/relationships', data),
 }
 
 export const groupApi = {
-  getList: () => request.get<Group[]>('/hermes/groups'),
+  getList: () => get<Group[]>('/hermes/groups'),
 
-  getDetail: (groupId: string) => request.get<Group>(`/hermes/groups/${groupId}`),
+  getDetail: (groupId: string) => get<Group>(`/hermes/groups/${groupId}`),
 
-  create: (data: GroupCreateRequest) => request.post<Group>('/hermes/groups', data),
+  create: (data: GroupCreateRequest) => post<Group>('/hermes/groups', data),
 
-  update: (groupId: string, data: GroupUpdateRequest) =>
-    request.patch(`/hermes/groups/${groupId}`, data),
+  update: (groupId: string, data: GroupUpdateRequest) => patch(`/hermes/groups/${groupId}`, data),
 
   setMembers: (groupId: string, data: GroupMemberRequest) =>
-    request.post(`/hermes/groups/${groupId}/members`, data),
+    post(`/hermes/groups/${groupId}/members`, data),
 
-  getMembers: (groupId: string) =>
-    request.get<{ members: string[] }>(`/hermes/groups/${groupId}/members`),
+  getMembers: (groupId: string) => get<{ members: string[] }>(`/hermes/groups/${groupId}/members`),
 }
 
 // ==================== Chaos API ====================
@@ -179,26 +175,24 @@ export interface RenderResponse {
 
 export const chaosTemplateApi = {
   getList: (serviceId?: string) =>
-    request.get<EmailTemplate[]>('/chaos/templates', {
-      params: serviceId ? { service_id: serviceId } : undefined,
-    }),
+    get<EmailTemplate[]>('/chaos/templates', serviceId ? { service_id: serviceId } : undefined),
 
-  getDetail: (templateId: string) => request.get<EmailTemplate>(`/chaos/templates/${templateId}`),
+  getDetail: (templateId: string) => get<EmailTemplate>(`/chaos/templates/${templateId}`),
 
-  create: (data: TemplateCreateRequest) => request.post<EmailTemplate>('/chaos/templates', data),
+  create: (data: TemplateCreateRequest) => post<EmailTemplate>('/chaos/templates', data),
 
   update: (templateId: string, data: TemplateUpdateRequest) =>
-    request.patch(`/chaos/templates/${templateId}`, data),
+    patch(`/chaos/templates/${templateId}`, data),
 
-  delete: (templateId: string) => request.delete(`/chaos/templates/${templateId}`),
+  delete: (templateId: string) => del(`/chaos/templates/${templateId}`),
 
   render: (templateId: string, data: Record<string, unknown>) =>
-    request.post<RenderResponse>(`/chaos/templates/${templateId}/render`, { data }),
+    post<RenderResponse>(`/chaos/templates/${templateId}/render`, { data }),
 }
 
 // chaosFileApi 暂时移除，等 Worker 方案确定后再实现
 // 上传功能通过 antd Upload 组件直接 POST /chaos/files
 
 export const chaosMailApi = {
-  send: (data: SendMailRequest) => request.post('/chaos/mail', data),
+  send: (data: SendMailRequest) => post('/chaos/mail', data),
 }

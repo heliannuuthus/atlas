@@ -112,7 +112,7 @@ export function Detail() {
 
   if (!data) return null
 
-  const memberList = members?.members || []
+  const memberList: string[] = members?.members || []
 
   const tabItems = [
     {

@@ -9,22 +9,12 @@ const tokenCache: Record<string, string | null> = {}
 
 function refreshAllTokens() {
   const auth = getAuth()
-  const audiences = auth.getAudiences()
-  if (audiences.length > 0) {
-    for (const aud of audiences) {
-      auth
-        .getAccessToken(aud)
-        .then(token => {
-          tokenCache[aud] = token
-        })
-        .catch(() => {})
-    }
-  } else {
-    useAuthStore
-      .getState()
-      .getAccessToken()
+  const audiences = Object.keys(serviceAudienceMap)
+  for (const aud of audiences) {
+    auth
+      .getAccessToken(aud)
       .then(token => {
-        tokenCache['_default'] = token
+        tokenCache[aud] = token
       })
       .catch(() => {})
   }

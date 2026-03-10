@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Card, Table, Button, Space, Tag, Input, Select } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
-import { useNavigate } from 'react-router-dom'
+
 import styles from './index.module.scss'
 
 const { Search } = Input
@@ -90,7 +90,6 @@ const mockRecipes: Recipe[] = [
 ]
 
 export function Recipes() {
-  const _navigate = useNavigate()
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
 
   const columns: ColumnsType<Recipe> = [

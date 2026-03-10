@@ -1,9 +1,10 @@
 import { useRequest } from 'ahooks'
 import { Form, Input, Select, Card, message, DatePicker } from 'antd'
 import { useNavigate } from 'react-router-dom'
+import type { Dayjs } from 'dayjs'
 import { relationshipApi, serviceApi } from '@/services'
 import { PageHeader, FormActions } from '@/components'
-import dayjs from 'dayjs'
+
 import styles from './index.module.scss'
 
 export function Create() {
@@ -20,9 +21,7 @@ export function Create() {
         relation: values.relation as string,
         object_type: values.object_type as string,
         object_id: values.object_id as string,
-        expires_at: values.expires_at
-          ? (values.expires_at as typeof dayjs.Dayjs).toISOString()
-          : undefined,
+        expires_at: values.expires_at ? (values.expires_at as Dayjs).toISOString() : undefined,
       })
       message.success('创建成功')
       navigate('/hermes/relationships')
