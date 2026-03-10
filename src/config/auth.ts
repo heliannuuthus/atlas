@@ -2,7 +2,7 @@
  * Aegis Auth 配置
  */
 
-import { Auth } from '@aegis/sdk'
+import { Auth } from '@heliannuuthus/aegis-sdk'
 import { apiEndpoints } from './env'
 
 /** Auth 配置 */
