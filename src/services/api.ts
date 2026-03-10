@@ -30,20 +30,16 @@ export const miniprogramApi = {
   getList: (params: MiniprogramListParams) =>
     request.get<MiniprogramListResponse>('/miniprogram', { params }),
 
-  getDetail: (id: string) =>
-    request.get<Miniprogram>(`/miniprogram/${id}`),
+  getDetail: (id: string) => request.get<Miniprogram>(`/miniprogram/${id}`),
 
-  create: (data: Partial<Miniprogram>) =>
-    request.post<Miniprogram>('/miniprogram', data),
+  create: (data: Partial<Miniprogram>) => request.post<Miniprogram>('/miniprogram', data),
 
   update: (id: string, data: Partial<Miniprogram>) =>
     request.put<Miniprogram>(`/miniprogram/${id}`, data),
 
-  delete: (id: string) =>
-    request.delete<void>(`/miniprogram/${id}`),
+  delete: (id: string) => request.delete<void>(`/miniprogram/${id}`),
 
-  publish: (id: string) =>
-    request.post<Miniprogram>(`/miniprogram/${id}/publish`),
+  publish: (id: string) => request.post<Miniprogram>(`/miniprogram/${id}/publish`),
 }
 
 export const tenantApi = {
@@ -51,11 +47,9 @@ export const tenantApi = {
 
   getDetail: (id: string) => request.get(`/tenants/${id}`),
 
-  create: (data: Record<string, unknown>) =>
-    request.post('/tenants', data),
+  create: (data: Record<string, unknown>) => request.post('/tenants', data),
 
-  update: (id: string, data: Record<string, unknown>) =>
-    request.put(`/tenants/${id}`, data),
+  update: (id: string, data: Record<string, unknown>) => request.put(`/tenants/${id}`, data),
 
   delete: (id: string) => request.delete(`/tenants/${id}`),
 }
@@ -63,19 +57,15 @@ export const tenantApi = {
 export const domainApi = {
   getList: () => request.get<Domain[]>('/hermes/domains'),
 
-  getDetail: (domainId: string) =>
-    request.get<Domain>(`/hermes/domains/${domainId}`),
+  getDetail: (domainId: string) => request.get<Domain>(`/hermes/domains/${domainId}`),
 }
 
 export const serviceApi = {
-  getList: (params?: ListServicesParams) =>
-    request.get<Service[]>('/hermes/services', { params }),
+  getList: (params?: ListServicesParams) => request.get<Service[]>('/hermes/services', { params }),
 
-  getDetail: (serviceId: string) =>
-    request.get<Service>(`/hermes/services/${serviceId}`),
+  getDetail: (serviceId: string) => request.get<Service>(`/hermes/services/${serviceId}`),
 
-  create: (data: ServiceCreateRequest) =>
-    request.post<Service>('/hermes/services', data),
+  create: (data: ServiceCreateRequest) => request.post<Service>('/hermes/services', data),
 
   update: (serviceId: string, data: ServiceUpdateRequest) =>
     request.patch(`/hermes/services/${serviceId}`, data),
@@ -85,8 +75,7 @@ export const applicationApi = {
   getList: (params?: ListApplicationsParams) =>
     request.get<Application[]>('/hermes/applications', { params }),
 
-  getDetail: (appId: string) =>
-    request.get<Application>(`/hermes/applications/${appId}`),
+  getDetail: (appId: string) => request.get<Application>(`/hermes/applications/${appId}`),
 
   create: (data: ApplicationCreateRequest) =>
     request.post<Application>('/hermes/applications', data),
@@ -98,16 +87,10 @@ export const applicationApi = {
     appId: string,
     serviceId: string,
     data: ApplicationServiceRelationRequest
-  ) =>
-    request.post(
-      `/hermes/applications/${appId}/services/${serviceId}/applicable`,
-      data
-    ),
+  ) => request.post(`/hermes/applications/${appId}/services/${serviceId}/applicable`, data),
 
   getServiceRelations: (appId: string) =>
-    request.get<ApplicationServiceRelation[]>(
-      `/hermes/applications/${appId}/applicable`
-    ),
+    request.get<ApplicationServiceRelation[]>(`/hermes/applications/${appId}/applicable`),
 }
 
 export const relationshipApi = {
@@ -117,18 +100,15 @@ export const relationshipApi = {
   create: (data: RelationshipCreateRequest) =>
     request.post<Relationship>('/hermes/relationships', data),
 
-  delete: (data: RelationshipDeleteRequest) =>
-    request.delete('/hermes/relationships', { data }),
+  delete: (data: RelationshipDeleteRequest) => request.delete('/hermes/relationships', { data }),
 }
 
 export const groupApi = {
   getList: () => request.get<Group[]>('/hermes/groups'),
 
-  getDetail: (groupId: string) =>
-    request.get<Group>(`/hermes/groups/${groupId}`),
+  getDetail: (groupId: string) => request.get<Group>(`/hermes/groups/${groupId}`),
 
-  create: (data: GroupCreateRequest) =>
-    request.post<Group>('/hermes/groups', data),
+  create: (data: GroupCreateRequest) => request.post<Group>('/hermes/groups', data),
 
   update: (groupId: string, data: GroupUpdateRequest) =>
     request.patch(`/hermes/groups/${groupId}`, data),
@@ -203,17 +183,14 @@ export const chaosTemplateApi = {
       params: serviceId ? { service_id: serviceId } : undefined,
     }),
 
-  getDetail: (templateId: string) =>
-    request.get<EmailTemplate>(`/chaos/templates/${templateId}`),
+  getDetail: (templateId: string) => request.get<EmailTemplate>(`/chaos/templates/${templateId}`),
 
-  create: (data: TemplateCreateRequest) =>
-    request.post<EmailTemplate>('/chaos/templates', data),
+  create: (data: TemplateCreateRequest) => request.post<EmailTemplate>('/chaos/templates', data),
 
   update: (templateId: string, data: TemplateUpdateRequest) =>
     request.patch(`/chaos/templates/${templateId}`, data),
 
-  delete: (templateId: string) =>
-    request.delete(`/chaos/templates/${templateId}`),
+  delete: (templateId: string) => request.delete(`/chaos/templates/${templateId}`),
 
   render: (templateId: string, data: Record<string, unknown>) =>
     request.post<RenderResponse>(`/chaos/templates/${templateId}/render`, { data }),
@@ -223,6 +200,5 @@ export const chaosTemplateApi = {
 // 上传功能通过 antd Upload 组件直接 POST /chaos/files
 
 export const chaosMailApi = {
-  send: (data: SendMailRequest) =>
-    request.post('/chaos/mail', data),
+  send: (data: SendMailRequest) => request.post('/chaos/mail', data),
 }

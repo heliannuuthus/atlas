@@ -34,12 +34,7 @@ export function Create() {
       <Card>
         <PageHeader title="新建小程序" backPath="/miniprogram" />
 
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSubmit}
-          className={styles.form}
-        >
+        <Form form={form} layout="vertical" onFinish={handleSubmit} className={styles.form}>
           <Form.Item
             name="name"
             label="小程序名称"
@@ -74,12 +69,7 @@ export function Create() {
           </Form.Item>
 
           <Form.Item name="description" label="描述">
-            <TextArea
-              rows={4}
-              placeholder="请输入小程序描述"
-              showCount
-              maxLength={500}
-            />
+            <TextArea rows={4} placeholder="请输入小程序描述" showCount maxLength={500} />
           </Form.Item>
 
           <Form.Item name="logo" label="Logo URL">
@@ -91,11 +81,7 @@ export function Create() {
           </Form.Item>
 
           <Form.Item>
-            <FormActions
-              loading={loading}
-              submitText="创建"
-              cancelPath="/miniprogram"
-            />
+            <FormActions loading={loading} submitText="创建" cancelPath="/miniprogram" />
           </Form.Item>
         </Form>
       </Card>

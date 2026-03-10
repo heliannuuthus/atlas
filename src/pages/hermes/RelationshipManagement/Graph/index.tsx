@@ -72,34 +72,27 @@ function GraphCanvas() {
   } | null>(null)
 
   // 获取数据
-  const { data: services, loading: servicesLoading } = useRequest(() =>
-    hermesApi.listServices()
-  )
+  const { data: services, loading: servicesLoading } = useRequest(() => hermesApi.listServices())
 
   const { data: applications, loading: applicationsLoading } = useRequest(() =>
     hermesApi.listApplications()
   )
 
-  const { data: groups, loading: groupsLoading } = useRequest(() =>
-    hermesApi.listGroups()
-  )
+  const { data: groups, loading: groupsLoading } = useRequest(() => hermesApi.listGroups())
 
   const {
     data: relationships,
     loading: relationshipsLoading,
     refresh: refreshRelationships,
-  } = useRequest(
-    () => hermesApi.listRelationships({ service_id: selectedServiceId }),
-    {
-      refreshDeps: [selectedServiceId],
-    }
-  )
+  } = useRequest(() => hermesApi.listRelationships({ service_id: selectedServiceId }), {
+    refreshDeps: [selectedServiceId],
+  })
 
   // 模拟用户列表（实际应该从 API 获取）
   const users = useMemo(() => {
     if (!relationships) return []
     const userIds = new Set<string>()
-    relationships.forEach((r) => {
+    relationships.forEach(r => {
       if (r.subject_type === 'user') userIds.add(r.subject_id)
     })
     return Array.from(userIds)
@@ -185,7 +178,7 @@ function GraphCanvas() {
       const nodeId = `${nodeData.type}:${nodeData.id}`
 
       // 检查节点是否已存在
-      const existingNode = nodes.find((n) => n.id === nodeId)
+      const existingNode = nodes.find(n => n.id === nodeId)
       if (existingNode) {
         message.warning('该节点已存在于画布中')
         return
@@ -198,7 +191,7 @@ function GraphCanvas() {
         data: nodeData,
       }
 
-      setNodes((nds) => [...nds, newNode])
+      setNodes(nds => [...nds, newNode])
       setDirty()
     },
     [reactFlowInstance, nodes, setNodes, setDirty]
@@ -273,7 +266,7 @@ function GraphCanvas() {
         } as RelationEdgeData,
       }
 
-      setEdges((eds) => addEdge(newEdge, eds))
+      setEdges(eds => addEdge(newEdge, eds))
       addPendingRelation(newRelation)
 
       setDialogOpen(false)
@@ -322,7 +315,7 @@ function GraphCanvas() {
 
   // 全屏切换
   const handleToggleFullscreen = useCallback(() => {
-    setIsFullscreen((prev) => !prev)
+    setIsFullscreen(prev => !prev)
   }, [])
 
   // 删除关系
@@ -357,13 +350,11 @@ function GraphCanvas() {
       title: '过期时间',
       dataIndex: 'expires_at',
       width: 160,
-      render: (text) => {
+      render: text => {
         if (!text) return '-'
         const expiring = isExpiringSoon(text)
         return (
-          <span style={{ color: expiring ? '#faad14' : undefined }}>
-            {formatDateTime(text)}
-          </span>
+          <span style={{ color: expiring ? '#faad14' : undefined }}>{formatDateTime(text)}</span>
         )
       },
     },
@@ -382,17 +373,20 @@ function GraphCanvas() {
 
   const loading = servicesLoading || applicationsLoading || groupsLoading
 
-  const tableCardTheme: ThemeConfig = useMemo(() => ({
-    components: {
-      Card: {
-        paddingLG: 0,
+  const tableCardTheme: ThemeConfig = useMemo(
+    () => ({
+      components: {
+        Card: {
+          paddingLG: 0,
+        },
+        Table: {
+          headerBg: '#fafafa',
+          fontSize: 13,
+        },
       },
-      Table: {
-        headerBg: '#fafafa',
-        fontSize: 13,
-      },
-    },
-  }), [])
+    }),
+    []
+  )
 
   return (
     <div className={`${styles.graphPage} ${isFullscreen ? styles.fullscreen : ''}`}>

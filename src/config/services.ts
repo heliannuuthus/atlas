@@ -25,4 +25,4 @@ export const servicePlatforms = [
   },
 ] as const
 
-export type ServicePlatformId = typeof servicePlatforms[number]['id']
+export type ServicePlatformId = (typeof servicePlatforms)[number]['id']

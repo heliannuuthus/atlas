@@ -1,12 +1,7 @@
 import { useState, useMemo } from 'react'
 import { Input, Collapse, Typography, Empty, ConfigProvider } from 'antd'
 import type { ThemeConfig } from 'antd'
-import {
-  SearchOutlined,
-  UserOutlined,
-  TeamOutlined,
-  AppstoreOutlined,
-} from '@ant-design/icons'
+import { SearchOutlined, UserOutlined, TeamOutlined, AppstoreOutlined } from '@ant-design/icons'
 import type { Application, Group } from '@/types/hermes'
 import styles from './index.module.scss'
 
@@ -45,18 +40,18 @@ export function AddNodes({ users, groups, applications, onDragStart }: AddNodesP
 
   // 构建实体列表
   const entities = useMemo(() => {
-    const userList: EntityItem[] = users.map((id) => ({
+    const userList: EntityItem[] = users.map(id => ({
       type: 'user',
       id,
     }))
 
-    const groupList: EntityItem[] = groups.map((g) => ({
+    const groupList: EntityItem[] = groups.map(g => ({
       type: 'group',
       id: g.group_id,
       label: g.name,
     }))
 
-    const appList: EntityItem[] = applications.map((a) => ({
+    const appList: EntityItem[] = applications.map(a => ({
       type: 'application',
       id: a.app_id,
       label: a.name,
@@ -72,9 +67,7 @@ export function AddNodes({ users, groups, applications, onDragStart }: AddNodesP
 
     const filterList = (list: EntityItem[]) =>
       list.filter(
-        (item) =>
-          item.id.toLowerCase().includes(search) ||
-          item.label?.toLowerCase().includes(search)
+        item => item.id.toLowerCase().includes(search) || item.label?.toLowerCase().includes(search)
       )
 
     return {
@@ -104,12 +97,12 @@ export function AddNodes({ users, groups, applications, onDragStart }: AddNodesP
 
     return (
       <div className={styles.entityList}>
-        {items.map((item) => (
+        {items.map(item => (
           <div
             key={`${item.type}:${item.id}`}
             className={styles.entityItem}
             draggable
-            onDragStart={(e) => handleDragStart(e, item, nodeType)}
+            onDragStart={e => handleDragStart(e, item, nodeType)}
           >
             <span className={styles.entityIcon} style={{ color }}>
               {icon}
@@ -140,12 +133,7 @@ export function AddNodes({ users, groups, applications, onDragStart }: AddNodesP
           <span className={styles.count}>{filteredEntities.userList.length}</span>
         </div>
       ),
-      children: renderEntityList(
-        filteredEntities.userList,
-        <UserOutlined />,
-        '#1677ff',
-        'subject'
-      ),
+      children: renderEntityList(filteredEntities.userList, <UserOutlined />, '#1677ff', 'subject'),
     },
     {
       key: 'groups',
@@ -193,7 +181,7 @@ export function AddNodes({ users, groups, applications, onDragStart }: AddNodesP
           prefix={<SearchOutlined />}
           allowClear
           value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
+          onChange={e => setSearchValue(e.target.value)}
         />
       </div>
 

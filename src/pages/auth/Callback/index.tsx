@@ -40,7 +40,12 @@ export function AuthCallback() {
     }
 
     // 处理授权码
-    console.log('[AuthCallback] Processing code:', code.substring(0, 8) + '...', 'state:', state?.substring(0, 8))
+    console.log(
+      '[AuthCallback] Processing code:',
+      code.substring(0, 8) + '...',
+      'state:',
+      state?.substring(0, 8)
+    )
     console.log('[AuthCallback] localStorage before handleCallback:', {
       codeVerifier: !!localStorage.getItem('aegis_code_verifier'),
       state: !!localStorage.getItem('aegis_state'),
@@ -48,7 +53,7 @@ export function AuthCallback() {
       audience: localStorage.getItem('aegis_audience'),
     })
     handleCallback(code, state ?? undefined)
-      .then((tokens) => {
+      .then(tokens => {
         console.log('[AuthCallback] handleCallback success:', {
           hasAccessToken: !!tokens?.access_token,
           expiresIn: tokens?.expires_in,
@@ -64,12 +69,16 @@ export function AuthCallback() {
         console.log('[AuthCallback] Navigating to:', returnTo)
         navigate(returnTo, { replace: true })
       })
-      .catch((err) => {
+      .catch(err => {
         console.error('[AuthCallback] Failed to handle callback:', err)
-        console.error('[AuthCallback] Error details:', { code: err?.code, message: err?.message, description: err?.description })
+        console.error('[AuthCallback] Error details:', {
+          code: err?.code,
+          message: err?.message,
+          description: err?.description,
+        })
         queueMicrotask(() => setProcessing(false))
       })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleRetry = () => {

@@ -13,12 +13,7 @@ import {
   message,
   Typography,
 } from 'antd'
-import {
-  ArrowLeftOutlined,
-  EditOutlined,
-  EyeOutlined,
-  SendOutlined,
-} from '@ant-design/icons'
+import { ArrowLeftOutlined, EditOutlined, EyeOutlined, SendOutlined } from '@ant-design/icons'
 import { chaosTemplateApi, chaosMailApi } from '@/services'
 import styles from './index.module.scss'
 
@@ -34,10 +29,9 @@ export function Detail() {
   const [sendTo, setSendTo] = useState('')
   const [sending, setSending] = useState(false)
 
-  const { data, loading } = useRequest(
-    () => chaosTemplateApi.getDetail(templateId!),
-    { ready: !!templateId }
-  )
+  const { data, loading } = useRequest(() => chaosTemplateApi.getDetail(templateId!), {
+    ready: !!templateId,
+  })
 
   const handlePreview = async () => {
     if (!templateId) return
@@ -89,17 +83,10 @@ export function Detail() {
       <Card>
         <div className={styles.header}>
           <Space>
-            <Button
-              icon={<ArrowLeftOutlined />}
-              onClick={() => navigate('/chaos/templates')}
-            />
+            <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/chaos/templates')} />
             <span className={styles.title}>{data.name}</span>
             {data.is_builtin && <Tag color="blue">内置</Tag>}
-            {data.is_enabled ? (
-              <Tag color="success">启用</Tag>
-            ) : (
-              <Tag color="default">禁用</Tag>
-            )}
+            {data.is_enabled ? <Tag color="success">启用</Tag> : <Tag color="default">禁用</Tag>}
           </Space>
           <Space>
             <Button icon={<EyeOutlined />} onClick={handlePreview}>
@@ -157,10 +144,7 @@ export function Detail() {
         footer={null}
         width={800}
       >
-        <div
-          className={styles.preview}
-          dangerouslySetInnerHTML={{ __html: previewHtml }}
-        />
+        <div className={styles.preview} dangerouslySetInnerHTML={{ __html: previewHtml }} />
       </Modal>
 
       <Modal
@@ -172,14 +156,12 @@ export function Detail() {
         okText="发送"
       >
         <div style={{ marginBottom: 16 }}>
-          <Text type="secondary">
-            使用模板变量中的示例数据发送测试邮件
-          </Text>
+          <Text type="secondary">使用模板变量中的示例数据发送测试邮件</Text>
         </div>
         <Input
           placeholder="输入收件人邮箱"
           value={sendTo}
-          onChange={(e) => setSendTo(e.target.value)}
+          onChange={e => setSendTo(e.target.value)}
         />
       </Modal>
     </div>

@@ -29,7 +29,11 @@ export function Create() {
       <Card>
         <PageHeader title="新建组" backPath="/hermes/groups" />
         <Form form={form} layout="vertical" onFinish={handleSubmit} className={styles.form}>
-          <Form.Item name="group_id" label="组ID" rules={[{ required: true, message: '请输入组ID' }]}>
+          <Form.Item
+            name="group_id"
+            label="组ID"
+            rules={[{ required: true, message: '请输入组ID' }]}
+          >
             <Input placeholder="请输入组ID" />
           </Form.Item>
           <Form.Item name="name" label="名称" rules={[{ required: true, message: '请输入名称' }]}>

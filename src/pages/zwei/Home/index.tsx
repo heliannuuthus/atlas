@@ -56,14 +56,49 @@ const mockBanners: Banner[] = [
 ]
 
 const mockRecommendRecipes: HomeRecipe[] = [
-  { id: '1', recipeId: '1', recipeTitle: '宫保鸡丁', type: 'recommend', order: 1, createdAt: '2024-01-15' },
-  { id: '2', recipeId: '2', recipeTitle: '番茄鸡蛋面', type: 'recommend', order: 2, createdAt: '2024-01-15' },
-  { id: '3', recipeId: '3', recipeTitle: '红烧肉', type: 'recommend', order: 3, createdAt: '2024-01-15' },
+  {
+    id: '1',
+    recipeId: '1',
+    recipeTitle: '宫保鸡丁',
+    type: 'recommend',
+    order: 1,
+    createdAt: '2024-01-15',
+  },
+  {
+    id: '2',
+    recipeId: '2',
+    recipeTitle: '番茄鸡蛋面',
+    type: 'recommend',
+    order: 2,
+    createdAt: '2024-01-15',
+  },
+  {
+    id: '3',
+    recipeId: '3',
+    recipeTitle: '红烧肉',
+    type: 'recommend',
+    order: 3,
+    createdAt: '2024-01-15',
+  },
 ]
 
 const mockHotRecipes: HomeRecipe[] = [
-  { id: '1', recipeId: '2', recipeTitle: '番茄鸡蛋面', type: 'hot', order: 1, createdAt: '2024-01-15' },
-  { id: '2', recipeId: '1', recipeTitle: '宫保鸡丁', type: 'hot', order: 2, createdAt: '2024-01-15' },
+  {
+    id: '1',
+    recipeId: '2',
+    recipeTitle: '番茄鸡蛋面',
+    type: 'hot',
+    order: 1,
+    createdAt: '2024-01-15',
+  },
+  {
+    id: '2',
+    recipeId: '1',
+    recipeTitle: '宫保鸡丁',
+    type: 'hot',
+    order: 2,
+    createdAt: '2024-01-15',
+  },
   { id: '3', recipeId: '3', recipeTitle: '红烧肉', type: 'hot', order: 3, createdAt: '2024-01-15' },
 ]
 
@@ -198,7 +233,12 @@ export function Home() {
               新建轮播图
             </Button>
           </div>
-          <Table columns={bannerColumns} dataSource={mockBanners} rowKey="id" pagination={{ pageSize: 10 }} />
+          <Table
+            columns={bannerColumns}
+            dataSource={mockBanners}
+            rowKey="id"
+            pagination={{ pageSize: 10 }}
+          />
         </div>
       ),
     },
@@ -233,7 +273,12 @@ export function Home() {
               添加热门
             </Button>
           </div>
-          <Table columns={recipeColumns} dataSource={mockHotRecipes} rowKey="id" pagination={{ pageSize: 10 }} />
+          <Table
+            columns={recipeColumns}
+            dataSource={mockHotRecipes}
+            rowKey="id"
+            pagination={{ pageSize: 10 }}
+          />
         </div>
       ),
     },

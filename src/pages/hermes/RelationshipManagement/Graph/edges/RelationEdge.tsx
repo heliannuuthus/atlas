@@ -1,9 +1,5 @@
 import { memo } from 'react'
-import {
-  getBezierPath,
-  EdgeLabelRenderer,
-  type EdgeProps,
-} from 'reactflow'
+import { getBezierPath, EdgeLabelRenderer, type EdgeProps } from 'reactflow'
 import { Button, Tooltip } from 'antd'
 import { CloseOutlined, ClockCircleOutlined } from '@ant-design/icons'
 import { useGraphContext } from '../context/GraphContext'
@@ -91,7 +87,7 @@ function RelationEdgeComponent({
                 size="small"
                 icon={<CloseOutlined />}
                 className={styles.edgeDeleteBtn}
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation()
                   deleteEdge(id)
                 }}

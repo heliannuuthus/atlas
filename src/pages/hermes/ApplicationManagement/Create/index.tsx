@@ -14,7 +14,9 @@ export function Create() {
 
   const { run: handleSubmit, loading } = useRequest(
     async (values: Record<string, unknown>) => {
-      const redirectUris = values.redirect_uris ? (values.redirect_uris as string).split('\n').filter(Boolean) : []
+      const redirectUris = values.redirect_uris
+        ? (values.redirect_uris as string).split('\n').filter(Boolean)
+        : []
       await applicationApi.create({
         domain_id: values.domain_id as string,
         app_id: values.app_id as string,
@@ -33,12 +35,20 @@ export function Create() {
       <Card>
         <PageHeader title="新建应用" backPath="/hermes/applications" />
         <Form form={form} layout="vertical" onFinish={handleSubmit} className={styles.form}>
-          <Form.Item name="app_id" label="应用ID" rules={[{ required: true, message: '请输入应用ID' }]}>
+          <Form.Item
+            name="app_id"
+            label="应用ID"
+            rules={[{ required: true, message: '请输入应用ID' }]}
+          >
             <Input placeholder="请输入应用ID" />
           </Form.Item>
           <Form.Item name="domain_id" label="域" rules={[{ required: true, message: '请选择域' }]}>
             <Select placeholder="请选择域">
-              {domains?.map((domain) => <Select.Option key={domain.domain_id} value={domain.domain_id}>{domain.name}</Select.Option>)}
+              {domains?.map(domain => (
+                <Select.Option key={domain.domain_id} value={domain.domain_id}>
+                  {domain.name}
+                </Select.Option>
+              ))}
             </Select>
           </Form.Item>
           <Form.Item name="name" label="名称" rules={[{ required: true, message: '请输入名称' }]}>

@@ -4,7 +4,7 @@ import { useBusinessStore } from '@/store/business'
 const DEFAULT_TITLE = 'Atlas'
 
 export function useDocumentMeta() {
-  const currentBusiness = useBusinessStore((s) => s.currentBusiness)
+  const currentBusiness = useBusinessStore(s => s.currentBusiness)
 
   useEffect(() => {
     if (currentBusiness) {

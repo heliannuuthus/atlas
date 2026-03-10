@@ -39,12 +39,7 @@ export function Create() {
       <Card>
         <PageHeader title="新建服务" backPath="/hermes/services" />
 
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSubmit}
-          className={styles.form}
-        >
+        <Form form={form} layout="vertical" onFinish={handleSubmit} className={styles.form}>
           <Form.Item
             name="service_id"
             label="服务ID"
@@ -53,13 +48,9 @@ export function Create() {
             <Input placeholder="请输入服务ID" />
           </Form.Item>
 
-          <Form.Item
-            name="domain_id"
-            label="域"
-            rules={[{ required: true, message: '请选择域' }]}
-          >
+          <Form.Item name="domain_id" label="域" rules={[{ required: true, message: '请选择域' }]}>
             <Select placeholder="请选择域">
-              {domains?.map((domain) => (
+              {domains?.map(domain => (
                 <Select.Option key={domain.domain_id} value={domain.domain_id}>
                   {domain.name} ({domain.domain_id})
                 </Select.Option>
@@ -67,11 +58,7 @@ export function Create() {
             </Select>
           </Form.Item>
 
-          <Form.Item
-            name="name"
-            label="名称"
-            rules={[{ required: true, message: '请输入名称' }]}
-          >
+          <Form.Item name="name" label="名称" rules={[{ required: true, message: '请输入名称' }]}>
             <Input placeholder="请输入名称" />
           </Form.Item>
 
@@ -96,11 +83,7 @@ export function Create() {
           </Form.Item>
 
           <Form.Item>
-            <FormActions
-              loading={loading}
-              submitText="创建"
-              cancelPath="/hermes/services"
-            />
+            <FormActions loading={loading} submitText="创建" cancelPath="/hermes/services" />
           </Form.Item>
         </Form>
       </Card>

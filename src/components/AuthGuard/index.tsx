@@ -29,7 +29,11 @@ export function AuthGuard({ children }: AuthGuardProps) {
 
   // 未认证时跳转登录
   useEffect(() => {
-    console.log('[AuthGuard] Auth state changed:', { isLoading, isAuthenticated, path: location.pathname })
+    console.log('[AuthGuard] Auth state changed:', {
+      isLoading,
+      isAuthenticated,
+      path: location.pathname,
+    })
     if (!isLoading && !isAuthenticated) {
       console.log('[AuthGuard] Not authenticated, redirecting to login. localStorage:', {
         accessToken: !!localStorage.getItem('aegis_access_token'),

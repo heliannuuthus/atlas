@@ -1,10 +1,7 @@
 import { Tag } from 'antd'
 import { MiniprogramStatus } from '@/types/miniprogram'
 
-const statusConfig: Record<
-  MiniprogramStatus,
-  { color: string; text: string }
-> = {
+const statusConfig: Record<MiniprogramStatus, { color: string; text: string }> = {
   [MiniprogramStatus.DRAFT]: { color: 'default', text: '草稿' },
   [MiniprogramStatus.REVIEWING]: { color: 'processing', text: '审核中' },
   [MiniprogramStatus.PUBLISHED]: { color: 'success', text: '已发布' },

@@ -1,12 +1,12 @@
 .layout {
   background: #fff;
-  
+
   // 非主页时限制高度并隐藏溢出
   &:not(.homeLayout) {
     height: 100vh;
     overflow: hidden;
   }
-  
+
   // 主页时允许滚动
   &.homeLayout {
     min-height: 100vh;
@@ -26,7 +26,7 @@
   display: flex;
   align-items: center;
   position: relative;
-  
+
   // hover 时显示折叠按钮
   &:hover .collapseTrigger {
     opacity: 1;
@@ -41,11 +41,10 @@
   position: relative;
   overflow-x: visible;
   overflow-y: hidden;
-  
+
   // 移除 Ant Design Sider 的默认右侧边框
   border-right: none !important;
 }
-
 
 .content {
   margin-left: 24px;

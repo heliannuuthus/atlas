@@ -136,17 +136,18 @@ export function Home() {
 
       <Row gutter={[24, 24]} className={styles.servicesRow}>
         <Col xs={24} lg={12}>
-          <Card
-            className={styles.serviceCard}
-            hoverable
-            onClick={() => navigate('/zwei')}
-          >
+          <Card className={styles.serviceCard} hoverable onClick={() => navigate('/zwei')}>
             <div className={styles.serviceHeader}>
-              <div className={styles.serviceIcon} style={{ backgroundColor: '#1890ff20', color: '#1890ff' }}>
+              <div
+                className={styles.serviceIcon}
+                style={{ backgroundColor: '#1890ff20', color: '#1890ff' }}
+              >
                 <BookOutlined />
               </div>
               <div className={styles.serviceInfo}>
-                <Title level={3} className={styles.serviceTitle}>Zwei</Title>
+                <Title level={3} className={styles.serviceTitle}>
+                  Zwei
+                </Title>
                 <Paragraph className={styles.serviceDesc}>
                   菜谱管理、收藏、推荐、标签等业务管理平台
                 </Paragraph>
@@ -157,7 +158,7 @@ export function Home() {
                 <div
                   key={index}
                   className={styles.moduleCard}
-                  onClick={(e) => {
+                  onClick={e => {
                     e.stopPropagation()
                     navigate(module.path)
                   }}
@@ -182,11 +183,16 @@ export function Home() {
             onClick={() => navigate('/hermes/domains')}
           >
             <div className={styles.serviceHeader}>
-              <div className={styles.serviceIcon} style={{ backgroundColor: '#13c2c220', color: '#13c2c2' }}>
+              <div
+                className={styles.serviceIcon}
+                style={{ backgroundColor: '#13c2c220', color: '#13c2c2' }}
+              >
                 <ApartmentOutlined />
               </div>
               <div className={styles.serviceInfo}>
-                <Title level={3} className={styles.serviceTitle}>Hermes</Title>
+                <Title level={3} className={styles.serviceTitle}>
+                  Hermes
+                </Title>
                 <Paragraph className={styles.serviceDesc}>
                   身份与访问管理：域、服务、应用、关系、组
                 </Paragraph>
@@ -197,7 +203,7 @@ export function Home() {
                 <div
                   key={index}
                   className={styles.moduleCard}
-                  onClick={(e) => {
+                  onClick={e => {
                     e.stopPropagation()
                     navigate(module.path)
                   }}
@@ -216,20 +222,19 @@ export function Home() {
         </Col>
 
         <Col xs={24} lg={12}>
-          <Card
-            className={styles.serviceCard}
-            hoverable
-            onClick={() => navigate('/chaos')}
-          >
+          <Card className={styles.serviceCard} hoverable onClick={() => navigate('/chaos')}>
             <div className={styles.serviceHeader}>
-              <div className={styles.serviceIcon} style={{ backgroundColor: '#eb2f9620', color: '#eb2f96' }}>
+              <div
+                className={styles.serviceIcon}
+                style={{ backgroundColor: '#eb2f9620', color: '#eb2f96' }}
+              >
                 <MailOutlined />
               </div>
               <div className={styles.serviceInfo}>
-                <Title level={3} className={styles.serviceTitle}>Chaos</Title>
-                <Paragraph className={styles.serviceDesc}>
-                  业务聚合：邮件发送、文件上传等
-                </Paragraph>
+                <Title level={3} className={styles.serviceTitle}>
+                  Chaos
+                </Title>
+                <Paragraph className={styles.serviceDesc}>业务聚合：邮件发送、文件上传等</Paragraph>
               </div>
             </div>
             <div className={styles.moduleGrid}>
@@ -237,7 +242,7 @@ export function Home() {
                 <div
                   key={index}
                   className={styles.moduleCard}
-                  onClick={(e) => {
+                  onClick={e => {
                     e.stopPropagation()
                     navigate(module.path)
                   }}

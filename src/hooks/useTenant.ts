@@ -7,8 +7,7 @@ import { mockTenantList } from '@/mock/data/tenant'
  * 自动初始化租户数据
  */
 export function useTenant() {
-  const { currentTenant, tenantList, setCurrentTenant, setTenantList } =
-    useTenantStore()
+  const { currentTenant, tenantList, setCurrentTenant, setTenantList } = useTenantStore()
   const initialized = useRef(false)
 
   useEffect(() => {

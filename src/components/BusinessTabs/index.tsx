@@ -8,13 +8,12 @@ import styles from './index.module.scss'
 export function BusinessTabs() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { currentBusiness, recentBusinesses, setCurrentBusiness } =
-    useBusinessStore()
+  const { currentBusiness, recentBusinesses, setCurrentBusiness } = useBusinessStore()
 
   const enabledBusinesses = getEnabledBusinesses()
   const tabs = recentBusinesses.length > 0 ? recentBusinesses : enabledBusinesses
 
-  const tabItems: TabsProps['items'] = tabs.map((business) => {
+  const tabItems: TabsProps['items'] = tabs.map(business => {
     const pathSegments = location.pathname.split('/').filter(Boolean)
     const isCurrentPath = pathSegments[0] === business.id
 
@@ -32,7 +31,7 @@ export function BusinessTabs() {
   })
 
   const handleTabChange = (activeKey: string) => {
-    const business = enabledBusinesses.find((b) => b.id === activeKey)
+    const business = enabledBusinesses.find(b => b.id === activeKey)
     if (business) {
       setCurrentBusiness(business)
       navigate(business.path)
@@ -44,7 +43,7 @@ export function BusinessTabs() {
     action: 'add' | 'remove'
   ) => {
     if (action === 'remove' && typeof targetKey === 'string') {
-      const remainingTabs = tabs.filter((t) => t.id !== targetKey)
+      const remainingTabs = tabs.filter(t => t.id !== targetKey)
       if (remainingTabs.length > 0) {
         const nextBusiness = remainingTabs[0]
         setCurrentBusiness(nextBusiness)

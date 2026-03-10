@@ -12,27 +12,35 @@ export function Edit() {
   const navigate = useNavigate()
   const [form] = Form.useForm()
 
-  const { data: _data, loading: detailLoading } = useRequest(() => applicationApi.getDetail(appId!), {
-    ready: !!appId,
-    onSuccess: (data) => {
-      let redirectUris: string[] = []
-      try {
-        redirectUris = data.redirect_uris ? JSON.parse(data.redirect_uris) : []
-      } catch {
-        redirectUris = []
-      }
-      form.setFieldsValue({
-        name: data.name,
-        redirect_uris: redirectUris.join('\n'),
-      })
-    },
-    onError: () => message.error('获取应用信息失败'),
-  })
+  const { data: _data, loading: detailLoading } = useRequest(
+    () => applicationApi.getDetail(appId!),
+    {
+      ready: !!appId,
+      onSuccess: data => {
+        let redirectUris: string[] = []
+        try {
+          redirectUris = data.redirect_uris ? JSON.parse(data.redirect_uris) : []
+        } catch {
+          redirectUris = []
+        }
+        form.setFieldsValue({
+          name: data.name,
+          redirect_uris: redirectUris.join('\n'),
+        })
+      },
+      onError: () => message.error('获取应用信息失败'),
+    }
+  )
 
   const { run: handleSubmit, loading } = useRequest(
     async (values: Record<string, unknown>) => {
-      const redirectUris = values.redirect_uris ? (values.redirect_uris as string).split('\n').filter(Boolean) : []
-      await applicationApi.update(appId!, { name: values.name as string, redirect_uris: redirectUris })
+      const redirectUris = values.redirect_uris
+        ? (values.redirect_uris as string).split('\n').filter(Boolean)
+        : []
+      await applicationApi.update(appId!, {
+        name: values.name as string,
+        redirect_uris: redirectUris,
+      })
       message.success('更新成功')
       navigate(`/hermes/applications/${appId}`)
     },
@@ -53,7 +61,11 @@ export function Edit() {
             <TextArea rows={4} placeholder="请输入重定向URI，每行一个" />
           </Form.Item>
           <Form.Item>
-            <FormActions loading={loading} submitText="保存" cancelPath={`/hermes/applications/${appId}`} />
+            <FormActions
+              loading={loading}
+              submitText="保存"
+              cancelPath={`/hermes/applications/${appId}`}
+            />
           </Form.Item>
         </Form>
       </Card>

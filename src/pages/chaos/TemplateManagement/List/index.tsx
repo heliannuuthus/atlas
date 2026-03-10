@@ -1,16 +1,6 @@
 import { useState } from 'react'
 import { useRequest } from 'ahooks'
-import {
-  Card,
-  Table,
-  Button,
-  Space,
-  Input,
-  Tag,
-  Empty,
-  Popconfirm,
-  message,
-} from 'antd'
+import { Card, Table, Button, Space, Input, Tag, Empty, Popconfirm, message } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import {
   PlusOutlined,
@@ -42,7 +32,7 @@ export function List() {
     }
   }
 
-  const filteredData = (data || []).filter((item) => {
+  const filteredData = (data || []).filter(item => {
     if (!keyword) return true
     return (
       item.name.toLowerCase().includes(keyword.toLowerCase()) ||
@@ -74,7 +64,7 @@ export function List() {
       dataIndex: 'type',
       key: 'type',
       width: 80,
-      render: (value) => <Tag bordered={false}>{value}</Tag>,
+      render: value => <Tag bordered={false}>{value}</Tag>,
     },
     {
       title: '状态',
@@ -83,12 +73,18 @@ export function List() {
       render: (_, record) => (
         <Space>
           {record.is_enabled ? (
-            <Tag color="success" bordered={false}>启用</Tag>
+            <Tag color="success" bordered={false}>
+              启用
+            </Tag>
           ) : (
-            <Tag color="default" bordered={false}>禁用</Tag>
+            <Tag color="default" bordered={false}>
+              禁用
+            </Tag>
           )}
           {record.is_builtin && (
-            <Tag color="blue" bordered={false}>内置</Tag>
+            <Tag color="blue" bordered={false}>
+              内置
+            </Tag>
           )}
         </Space>
       ),
@@ -124,12 +120,7 @@ export function List() {
                 okText="确定"
                 cancelText="取消"
               >
-                <Button
-                  type="link"
-                  size="small"
-                  danger
-                  icon={<DeleteOutlined />}
-                >
+                <Button type="link" size="small" danger icon={<DeleteOutlined />}>
                   删除
                 </Button>
               </Popconfirm>
@@ -173,7 +164,7 @@ export function List() {
               allowClear
               style={{ width: 300 }}
               value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
+              onChange={e => setKeyword(e.target.value)}
             />
             <Button icon={<ReloadOutlined />} onClick={refresh}>
               刷新

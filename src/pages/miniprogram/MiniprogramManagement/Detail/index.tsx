@@ -1,15 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useRequest } from 'ahooks'
-import {
-  Card,
-  Descriptions,
-  Button,
-  Space,
-  Tag,
-  Spin,
-  Image,
-  message,
-} from 'antd'
+import { Card, Descriptions, Button, Space, Tag, Spin, Image, message } from 'antd'
 import { EditOutlined } from '@ant-design/icons'
 import { getMiniprogramDetail, publishMiniprogram } from '@/mock/api/miniprogram'
 import { StatusTag, PlatformTag, PageHeader } from '@/components'
@@ -73,11 +64,7 @@ export function Detail() {
   return (
     <div className={styles.container}>
       <Card>
-        <PageHeader
-          title="小程序详情"
-          backPath="/miniprogram"
-          extra={extra}
-        />
+        <PageHeader title="小程序详情" backPath="/miniprogram" extra={extra} />
 
         <div className={styles.content}>
           <Card title="基本信息" className={styles.card}>
@@ -85,7 +72,12 @@ export function Detail() {
               <Descriptions.Item label="小程序名称">
                 <div className={styles.nameRow}>
                   {data.logo && (
-                    <Image src={data.logo} alt={data.name} className={styles.logo} preview={false} />
+                    <Image
+                      src={data.logo}
+                      alt={data.name}
+                      className={styles.logo}
+                      preview={false}
+                    />
                   )}
                   <span>{data.name}</span>
                 </div>
@@ -116,7 +108,7 @@ export function Detail() {
               {data.tags && data.tags.length > 0 && (
                 <Descriptions.Item label="标签" span={2}>
                   <Space>
-                    {data.tags.map((tag) => (
+                    {data.tags.map(tag => (
                       <Tag key={tag}>{tag}</Tag>
                     ))}
                   </Space>

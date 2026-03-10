@@ -19,14 +19,17 @@ interface StatCardProps {
 export function StatCard({ icon, title, count, color, path, loading }: StatCardProps) {
   const navigate = useNavigate()
 
-  const cardStyles = useMemo<CardProps['styles']>(() => ({
-    body: {
-      padding: '16px 20px',
-      display: 'flex',
-      alignItems: 'center',
-      gap: 16,
-    },
-  }), [])
+  const cardStyles = useMemo<CardProps['styles']>(
+    () => ({
+      body: {
+        padding: '16px 20px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 16,
+      },
+    }),
+    []
+  )
 
   return (
     <Card

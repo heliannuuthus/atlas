@@ -61,7 +61,7 @@ function SubjectNodeComponent({ id, data, selected }: NodeProps<SubjectNodeData>
             size="small"
             icon={<DeleteOutlined />}
             className={styles.deleteBtn}
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation()
               deleteNode(id)
             }}

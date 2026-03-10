@@ -31,11 +31,11 @@ export function Sidebar({ collapsed }: SidebarProps) {
       return []
     }
 
-    return config.menus.map((menu) => ({
+    return config.menus.map(menu => ({
       key: menu.path,
       icon: menu.icon,
       label: menu.label,
-      children: menu.children?.map((child) => ({
+      children: menu.children?.map(child => ({
         key: child.path,
         icon: child.icon,
         label: child.label,
@@ -59,28 +59,34 @@ export function Sidebar({ collapsed }: SidebarProps) {
     }
   }
 
-  const menuTheme: ThemeConfig = useMemo(() => ({
-    components: {
-      Menu: {
-        itemMarginInline: collapsed ? 0 : 8,
-        itemBorderRadius: 6,
-        itemSelectedBg: '#e6f7ff',
-        itemSelectedColor: '#1890ff',
-        subMenuItemBg: 'transparent',
-        ...(collapsed && {
-          itemPaddingInline: 20,
-          iconSize: 16,
-        }),
+  const menuTheme: ThemeConfig = useMemo(
+    () => ({
+      components: {
+        Menu: {
+          itemMarginInline: collapsed ? 0 : 8,
+          itemBorderRadius: 6,
+          itemSelectedBg: '#e6f7ff',
+          itemSelectedColor: '#1890ff',
+          subMenuItemBg: 'transparent',
+          ...(collapsed && {
+            itemPaddingInline: 20,
+            iconSize: 16,
+          }),
+        },
       },
-    },
-  }), [collapsed])
+    }),
+    [collapsed]
+  )
 
-  const menuStyle = useMemo<React.CSSProperties>(() => ({
-    width: '100%',
-    height: '100%',
-    borderRight: 'none',
-    flex: 1,
-  }), [])
+  const menuStyle = useMemo<React.CSSProperties>(
+    () => ({
+      width: '100%',
+      height: '100%',
+      borderRight: 'none',
+      flex: 1,
+    }),
+    []
+  )
 
   return (
     <div className={styles.sidebar}>
@@ -93,10 +99,42 @@ export function Sidebar({ collapsed }: SidebarProps) {
                 <stop offset="100%" stopColor="#722ed1" />
               </linearGradient>
             </defs>
-            <rect x="3" y="3" width="12" height="12" rx="3" fill="url(#logoGradient)" opacity="0.9" />
-            <rect x="17" y="3" width="12" height="12" rx="3" fill="url(#logoGradient)" opacity="0.6" />
-            <rect x="3" y="17" width="12" height="12" rx="3" fill="url(#logoGradient)" opacity="0.6" />
-            <rect x="17" y="17" width="12" height="12" rx="3" fill="url(#logoGradient)" opacity="0.3" />
+            <rect
+              x="3"
+              y="3"
+              width="12"
+              height="12"
+              rx="3"
+              fill="url(#logoGradient)"
+              opacity="0.9"
+            />
+            <rect
+              x="17"
+              y="3"
+              width="12"
+              height="12"
+              rx="3"
+              fill="url(#logoGradient)"
+              opacity="0.6"
+            />
+            <rect
+              x="3"
+              y="17"
+              width="12"
+              height="12"
+              rx="3"
+              fill="url(#logoGradient)"
+              opacity="0.6"
+            />
+            <rect
+              x="17"
+              y="17"
+              width="12"
+              height="12"
+              rx="3"
+              fill="url(#logoGradient)"
+              opacity="0.3"
+            />
           </svg>
         </div>
         {!collapsed && (

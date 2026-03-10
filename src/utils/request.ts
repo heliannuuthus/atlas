@@ -12,21 +12,34 @@ function refreshAllTokens() {
   const audiences = auth.getAudiences()
   if (audiences.length > 0) {
     for (const aud of audiences) {
-      auth.getAccessToken(aud).then((token) => { tokenCache[aud] = token }).catch(() => {})
+      auth
+        .getAccessToken(aud)
+        .then(token => {
+          tokenCache[aud] = token
+        })
+        .catch(() => {})
     }
   } else {
-    useAuthStore.getState().getAccessToken().then((token) => { tokenCache['_default'] = token }).catch(() => {})
+    useAuthStore
+      .getState()
+      .getAccessToken()
+      .then(token => {
+        tokenCache['_default'] = token
+      })
+      .catch(() => {})
   }
 }
 
 let prevAuthenticated = false
-useAuthStore.subscribe((state) => {
+useAuthStore.subscribe(state => {
   if (state.isAuthenticated === prevAuthenticated) return
   prevAuthenticated = state.isAuthenticated
   if (state.isAuthenticated) {
     refreshAllTokens()
   } else {
-    Object.keys(tokenCache).forEach((k) => { delete tokenCache[k] })
+    Object.keys(tokenCache).forEach(k => {
+      delete tokenCache[k]
+    })
   }
 })
 
@@ -72,20 +85,17 @@ export function createServiceRequest(service: ServiceName) {
   })
 
   instance.interceptors.request.use(
-    (config) => {
+    config => {
       const token = getTokenForAudience(audience)
       if (token) {
         config.headers.Authorization = `Bearer ${token}`
       }
       return config
     },
-    (error) => Promise.reject(error)
+    error => Promise.reject(error)
   )
 
-  instance.interceptors.response.use(
-    responseSuccessHandler,
-    responseErrorHandler
-  )
+  instance.interceptors.response.use(responseSuccessHandler, responseErrorHandler)
 
   return instance
 }
@@ -129,11 +139,14 @@ function responseErrorHandler(error: AxiosError<ApiResponse>) {
         const audience = resolveAudienceFromError(error)
         if (audience) {
           delete tokenCache[audience]
-          getAuth().refreshToken(undefined, audience).then((resp) => {
-            tokenCache[audience] = resp.access_token
-          }).catch(() => {
-            useAuthStore.getState().logout()
-          })
+          getAuth()
+            .refreshToken(undefined, audience)
+            .then(resp => {
+              tokenCache[audience] = resp.access_token
+            })
+            .catch(() => {
+              useAuthStore.getState().logout()
+            })
         } else {
           useAuthStore.getState().logout()
         }
@@ -191,15 +204,12 @@ request.interceptors.request.use(
 
     return config
   },
-  (error) => {
+  error => {
     return Promise.reject(error)
   }
 )
 
-request.interceptors.response.use(
-  responseSuccessHandler,
-  responseErrorHandler
-)
+request.interceptors.response.use(responseSuccessHandler, responseErrorHandler)
 
 // 便捷的 HTTP 方法封装
 export async function get<T = unknown>(url: string, params?: Record<string, unknown>): Promise<T> {

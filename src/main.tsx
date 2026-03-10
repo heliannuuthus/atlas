@@ -18,7 +18,8 @@ const themeConfig: ThemeConfig = {
     colorError: '#ff4d4f',
     colorInfo: '#1890ff',
     borderRadius: 8,
-    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+    fontFamily:
+      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
     colorBgContainer: '#ffffff',
     colorBgLayout: '#f5f5f5',
     colorBorder: '#d9d9d9',
@@ -64,7 +65,7 @@ const themeConfig: ThemeConfig = {
   },
 }
 
-window.addEventListener('unhandledrejection', (event) => {
+window.addEventListener('unhandledrejection', event => {
   const error = event.reason
   const errorMessage = error?.message || String(error)
 
@@ -77,7 +78,7 @@ window.addEventListener('unhandledrejection', (event) => {
   console.error('Unhandled promise rejection:', error)
 })
 
-window.addEventListener('error', (event) => {
+window.addEventListener('error', event => {
   const errorMessage = event.message || String(event.error)
 
   if (errorMessage.includes('checkout popup')) {
@@ -92,5 +93,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <ConfigProvider locale={zhCN} theme={themeConfig}>
       <App />
     </ConfigProvider>
-  </React.StrictMode>,
+  </React.StrictMode>
 )

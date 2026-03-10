@@ -2,7 +2,13 @@ import { useState } from 'react'
 import { useRequest } from 'ahooks'
 import { Card, Table, Button, Space, Input, Select, Tag, Empty, Typography, Tooltip } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
-import { PlusOutlined, EditOutlined, EyeOutlined, ReloadOutlined, AppstoreAddOutlined } from '@ant-design/icons'
+import {
+  PlusOutlined,
+  EditOutlined,
+  EyeOutlined,
+  ReloadOutlined,
+  AppstoreAddOutlined,
+} from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { applicationApi, domainApi } from '@/services'
 import type { Application } from '@/types/management'
@@ -23,7 +29,7 @@ export function List() {
     { refreshDeps: [domainId] }
   )
 
-  const filteredData = (data || []).filter((item) => {
+  const filteredData = (data || []).filter(item => {
     if (!keyword) return true
     return (
       item.name.toLowerCase().includes(keyword.toLowerCase()) ||
@@ -39,7 +45,7 @@ export function List() {
       dataIndex: 'domain_id',
       key: 'domain_id',
       width: 100,
-      render: (value) => <Tag bordered={false}>{value}</Tag>,
+      render: value => <Tag bordered={false}>{value}</Tag>,
     },
     {
       title: '重定向URI',
@@ -52,14 +58,18 @@ export function List() {
         if (uris.length === 1) {
           return (
             <Tooltip title={uris[0]}>
-              <Text ellipsis style={{ maxWidth: 200 }}>{uris[0]}</Text>
+              <Text ellipsis style={{ maxWidth: 200 }}>
+                {uris[0]}
+              </Text>
             </Tooltip>
           )
         }
         return (
           <Space size={4}>
             <Tooltip title={uris[0]}>
-              <Text ellipsis style={{ maxWidth: 150 }}>{uris[0]}</Text>
+              <Text ellipsis style={{ maxWidth: 150 }}>
+                {uris[0]}
+              </Text>
             </Tooltip>
             <Tag bordered={false}>+{uris.length - 1}</Tag>
           </Space>
@@ -73,8 +83,22 @@ export function List() {
       fixed: 'right',
       render: (_, record) => (
         <Space size={0}>
-          <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => navigate(`/hermes/applications/${record.app_id}`)}>查看</Button>
-          <Button type="link" size="small" icon={<EditOutlined />} onClick={() => navigate(`/hermes/applications/${record.app_id}/edit`)}>编辑</Button>
+          <Button
+            type="link"
+            size="small"
+            icon={<EyeOutlined />}
+            onClick={() => navigate(`/hermes/applications/${record.app_id}`)}
+          >
+            查看
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            icon={<EditOutlined />}
+            onClick={() => navigate(`/hermes/applications/${record.app_id}/edit`)}
+          >
+            编辑
+          </Button>
         </Space>
       ),
     },
@@ -98,18 +122,49 @@ export function List() {
       <Card>
         <div className={styles.header}>
           <div className={styles.title}>应用管理</div>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/hermes/applications/create')}>新建应用</Button>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => navigate('/hermes/applications/create')}
+          >
+            新建应用
+          </Button>
         </div>
         <div className={styles.filters}>
           <Space size="middle">
-            <Search placeholder="搜索应用名称、应用ID" allowClear style={{ width: 300 }} value={keyword} onChange={(e) => setKeyword(e.target.value)} />
-            <Select placeholder="选择域" style={{ width: 200 }} value={domainId} onChange={setDomainId} allowClear>
-              {domains?.map((domain) => <Select.Option key={domain.domain_id} value={domain.domain_id}>{domain.name}</Select.Option>)}
+            <Search
+              placeholder="搜索应用名称、应用ID"
+              allowClear
+              style={{ width: 300 }}
+              value={keyword}
+              onChange={e => setKeyword(e.target.value)}
+            />
+            <Select
+              placeholder="选择域"
+              style={{ width: 200 }}
+              value={domainId}
+              onChange={setDomainId}
+              allowClear
+            >
+              {domains?.map(domain => (
+                <Select.Option key={domain.domain_id} value={domain.domain_id}>
+                  {domain.name}
+                </Select.Option>
+              ))}
             </Select>
-            <Button icon={<ReloadOutlined />} onClick={refresh}>刷新</Button>
+            <Button icon={<ReloadOutlined />} onClick={refresh}>
+              刷新
+            </Button>
           </Space>
         </div>
-        <Table columns={columns} dataSource={filteredData} loading={loading} rowKey="app_id" scroll={{ x: 900 }} locale={{ emptyText: emptyState }} />
+        <Table
+          columns={columns}
+          dataSource={filteredData}
+          loading={loading}
+          rowKey="app_id"
+          scroll={{ x: 900 }}
+          locale={{ emptyText: emptyState }}
+        />
       </Card>
     </div>
   )

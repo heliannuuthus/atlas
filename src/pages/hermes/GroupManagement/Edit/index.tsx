@@ -14,7 +14,7 @@ export function Edit() {
 
   const { data: _data, loading: detailLoading } = useRequest(() => groupApi.getDetail(groupId!), {
     ready: !!groupId,
-    onSuccess: (_data) => {
+    onSuccess: _data => {
       form.setFieldsValue({
         name: _data.name,
         description: _data.description,
@@ -49,7 +49,11 @@ export function Edit() {
             <TextArea rows={4} placeholder="请输入描述" />
           </Form.Item>
           <Form.Item>
-            <FormActions loading={loading} submitText="保存" cancelPath={`/hermes/groups/${groupId}`} />
+            <FormActions
+              loading={loading}
+              submitText="保存"
+              cancelPath={`/hermes/groups/${groupId}`}
+            />
           </Form.Item>
         </Form>
       </Card>

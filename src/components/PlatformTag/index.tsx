@@ -1,10 +1,7 @@
 import { Tag } from 'antd'
 import { MiniprogramPlatform } from '@/types/miniprogram'
 
-const platformConfig: Record<
-  MiniprogramPlatform,
-  { color: string; text: string }
-> = {
+const platformConfig: Record<MiniprogramPlatform, { color: string; text: string }> = {
   [MiniprogramPlatform.WECHAT]: { color: 'green', text: '微信' },
   [MiniprogramPlatform.ALIPAY]: { color: 'blue', text: '支付宝' },
   [MiniprogramPlatform.BYTEDANCE]: { color: 'purple', text: '字节跳动' },

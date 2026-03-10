@@ -52,4 +52,3 @@ export function getAuth(): Auth {
 export function resetAuth(): void {
   authInstance = null
 }
-
