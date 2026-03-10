@@ -21,13 +21,25 @@ export function Header() {
               <div className={styles.logoIcon}>
                 <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <defs>
-                    <linearGradient id="atlasHeaderLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <linearGradient
+                      id="atlasHeaderLogoGradient"
+                      x1="0%"
+                      y1="0%"
+                      x2="100%"
+                      y2="100%"
+                    >
                       <stop offset="0%" stopColor="#1890ff" />
                       <stop offset="50%" stopColor="#722ed1" />
                       <stop offset="100%" stopColor="#13c2c2" />
                     </linearGradient>
                   </defs>
-                  <circle cx="32" cy="32" r="28" fill="url(#atlasHeaderLogoGradient)" opacity="0.1" />
+                  <circle
+                    cx="32"
+                    cy="32"
+                    r="28"
+                    fill="url(#atlasHeaderLogoGradient)"
+                    opacity="0.1"
+                  />
                   <path
                     d="M32 12 L42 24 L38 28 L32 20 L26 28 L22 24 Z"
                     fill="url(#atlasHeaderLogoGradient)"

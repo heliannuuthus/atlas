@@ -363,12 +363,9 @@ export function getBusinessIcon(iconName: string): React.ReactNode {
 export function getCurrentBusiness(pathname: string): BusinessModule | null {
   const segments = pathname.split('/').filter(Boolean)
   const firstSegment = segments[0]
-  return (
-    businessModules.find((m) => m.id === firstSegment || m.path.includes(firstSegment)) ||
-    null
-  )
+  return businessModules.find(m => m.id === firstSegment || m.path.includes(firstSegment)) || null
 }
 
 export function getEnabledBusinesses(): BusinessModule[] {
-  return businessModules.filter((m) => m.enabled).sort((a, b) => a.order - b.order)
+  return businessModules.filter(m => m.enabled).sort((a, b) => a.order - b.order)
 }

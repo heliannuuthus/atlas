@@ -1,8 +1,28 @@
 import { useRequest } from 'ahooks'
-import { Card, Descriptions, Spin, message, Tabs, Table, Empty, Typography, Tag, Tooltip, Button, Avatar, List } from 'antd'
+import {
+  Card,
+  Descriptions,
+  Spin,
+  message,
+  Tabs,
+  Table,
+  Empty,
+  Typography,
+  Tag,
+  Tooltip,
+  Button,
+  Avatar,
+  List,
+} from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { useParams, useNavigate } from 'react-router-dom'
-import { InfoCircleOutlined, TeamOutlined, ShareAltOutlined, NodeIndexOutlined, UserOutlined } from '@ant-design/icons'
+import {
+  InfoCircleOutlined,
+  TeamOutlined,
+  ShareAltOutlined,
+  NodeIndexOutlined,
+  UserOutlined,
+} from '@ant-design/icons'
 import { groupApi, relationshipApi } from '@/services'
 import type { Relationship } from '@/types/management'
 import { PageHeader } from '@/components'
@@ -41,14 +61,18 @@ export function Detail() {
       dataIndex: 'service_id',
       key: 'service_id',
       width: 120,
-      render: (value) => <Tag bordered={false}>{value}</Tag>,
+      render: value => <Tag bordered={false}>{value}</Tag>,
     },
     {
       title: '关系',
       dataIndex: 'relation',
       key: 'relation',
       width: 100,
-      render: (value) => <Tag color="processing" bordered={false}>{value}</Tag>,
+      render: value => (
+        <Tag color="processing" bordered={false}>
+          {value}
+        </Tag>
+      ),
     },
     {
       title: '对象',
@@ -58,7 +82,9 @@ export function Detail() {
         <div className={styles.entityCell}>
           <Tag bordered={false}>{record.object_type}</Tag>
           <Tooltip title={record.object_id}>
-            <Text ellipsis style={{ maxWidth: 120 }}>{record.object_id}</Text>
+            <Text ellipsis style={{ maxWidth: 120 }}>
+              {record.object_id}
+            </Text>
           </Tooltip>
         </div>
       ),
@@ -68,14 +94,10 @@ export function Detail() {
       dataIndex: 'expires_at',
       key: 'expires_at',
       width: 140,
-      render: (text) => {
+      render: text => {
         if (!text) return <Text type="secondary">永久</Text>
         const expiring = isExpiringSoon(text)
-        return (
-          <Text type={expiring ? 'warning' : undefined}>
-            {formatRelativeTime(text)}
-          </Text>
-        )
+        return <Text type={expiring ? 'warning' : undefined}>{formatRelativeTime(text)}</Text>
       },
     },
   ]
@@ -90,7 +112,7 @@ export function Detail() {
 
   if (!data) return null
 
-  const memberList = members?.members || []
+  const memberList: string[] = members?.members || []
 
   const tabItems = [
     {
@@ -120,7 +142,9 @@ export function Detail() {
           <TeamOutlined />
           成员列表
           {memberList.length > 0 && (
-            <Tag bordered={false} className={styles.tabBadge}>{memberList.length}</Tag>
+            <Tag bordered={false} className={styles.tabBadge}>
+              {memberList.length}
+            </Tag>
           )}
         </span>
       ),
@@ -130,27 +154,28 @@ export function Detail() {
             <Text type="secondary">该组包含的用户成员</Text>
           </div>
           {membersLoading ? (
-            <div className={styles.loading}><Spin /></div>
+            <div className={styles.loading}>
+              <Spin />
+            </div>
           ) : memberList.length > 0 ? (
             <List
               grid={{ gutter: 16, xs: 2, sm: 3, md: 4, lg: 5, xl: 6 }}
               dataSource={memberList}
-              renderItem={(userId) => (
+              renderItem={userId => (
                 <List.Item>
                   <div className={styles.memberCard}>
                     <Avatar icon={<UserOutlined />} />
                     <Tooltip title={userId}>
-                      <Text ellipsis className={styles.memberName}>{userId}</Text>
+                      <Text ellipsis className={styles.memberName}>
+                        {userId}
+                      </Text>
                     </Tooltip>
                   </div>
                 </List.Item>
               )}
             />
           ) : (
-            <Empty
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-              description="暂无成员"
-            />
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无成员" />
           )}
         </div>
       ),
@@ -162,7 +187,9 @@ export function Detail() {
           <ShareAltOutlined />
           授权关系
           {relationships && relationships.length > 0 && (
-            <Tag bordered={false} className={styles.tabBadge}>{relationships.length}</Tag>
+            <Tag bordered={false} className={styles.tabBadge}>
+              {relationships.length}
+            </Tag>
           )}
         </span>
       ),
@@ -185,12 +212,7 @@ export function Detail() {
             size="small"
             pagination={{ pageSize: 10 }}
             locale={{
-              emptyText: (
-                <Empty
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  description="暂无授权关系"
-                />
-              ),
+              emptyText: <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无授权关系" />,
             }}
           />
         </div>

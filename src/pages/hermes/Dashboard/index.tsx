@@ -18,21 +18,15 @@ const { Title } = Typography
 
 export function Dashboard() {
   // 获取各模块数据
-  const { data: domains, loading: domainsLoading } = useRequest(() =>
-    hermesApi.listDomains()
-  )
+  const { data: domains, loading: domainsLoading } = useRequest(() => hermesApi.listDomains())
 
-  const { data: services, loading: servicesLoading } = useRequest(() =>
-    hermesApi.listServices()
-  )
+  const { data: services, loading: servicesLoading } = useRequest(() => hermesApi.listServices())
 
   const { data: applications, loading: applicationsLoading } = useRequest(() =>
     hermesApi.listApplications()
   )
 
-  const { data: groups, loading: groupsLoading } = useRequest(() =>
-    hermesApi.listGroups()
-  )
+  const { data: groups, loading: groupsLoading } = useRequest(() => hermesApi.listGroups())
 
   const { data: relationships, loading: relationshipsLoading } = useRequest(() =>
     hermesApi.listRelationships()

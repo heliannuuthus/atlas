@@ -124,7 +124,7 @@ export function Favorites() {
             total: mockFavorites.length,
             pageSize: 10,
             showSizeChanger: true,
-            showTotal: (total) => `共 ${total} 条`,
+            showTotal: total => `共 ${total} 条`,
           }}
         />
       </Card>

@@ -1,10 +1,7 @@
 import { useParams } from 'react-router-dom'
 import { useRequest } from 'ahooks'
 import { Form, Input, Card, message, Spin } from 'antd'
-import {
-  getMiniprogramDetail,
-  updateMiniprogram,
-} from '@/mock/api/miniprogram'
+import { getMiniprogramDetail, updateMiniprogram } from '@/mock/api/miniprogram'
 import { PageHeader, PlatformSelect, FormActions } from '@/components'
 import styles from './index.module.scss'
 
@@ -21,7 +18,7 @@ export function Edit() {
     },
     {
       ready: !!id,
-      onSuccess: (data) => {
+      onSuccess: data => {
         form.setFieldsValue(data)
       },
     }
@@ -57,12 +54,7 @@ export function Edit() {
       <Card>
         <PageHeader title="编辑小程序" backPath={`/miniprogram/${id}`} />
 
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSubmit}
-          className={styles.form}
-        >
+        <Form form={form} layout="vertical" onFinish={handleSubmit} className={styles.form}>
           <Form.Item
             name="name"
             label="小程序名称"
@@ -96,12 +88,7 @@ export function Edit() {
           </Form.Item>
 
           <Form.Item name="description" label="描述">
-            <TextArea
-              rows={4}
-              placeholder="请输入小程序描述"
-              showCount
-              maxLength={500}
-            />
+            <TextArea rows={4} placeholder="请输入小程序描述" showCount maxLength={500} />
           </Form.Item>
 
           <Form.Item name="logo" label="Logo URL">
@@ -113,11 +100,7 @@ export function Edit() {
           </Form.Item>
 
           <Form.Item>
-            <FormActions
-              loading={submitting}
-              submitText="保存"
-              cancelPath={`/miniprogram/${id}`}
-            />
+            <FormActions loading={submitting} submitText="保存" cancelPath={`/miniprogram/${id}`} />
           </Form.Item>
         </Form>
       </Card>

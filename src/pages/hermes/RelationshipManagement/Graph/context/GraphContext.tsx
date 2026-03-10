@@ -52,14 +52,14 @@ export function GraphContextProvider({ children }: GraphContextProviderProps) {
   }, [])
 
   const addPendingRelation = useCallback((relation: Relationship) => {
-    setPendingRelations((prev) => [...prev, relation])
+    setPendingRelations(prev => [...prev, relation])
     setIsDirty(true)
   }, [])
 
   const removePendingRelation = useCallback((relation: Relationship) => {
-    setPendingRelations((prev) =>
+    setPendingRelations(prev =>
       prev.filter(
-        (r) =>
+        r =>
           !(
             r.subject_type === relation.subject_type &&
             r.subject_id === relation.subject_id &&
@@ -72,16 +72,16 @@ export function GraphContextProvider({ children }: GraphContextProviderProps) {
   }, [])
 
   const markRelationDeleted = useCallback((relation: Relationship) => {
-    setDeletedRelations((prev) => [...prev, relation])
+    setDeletedRelations(prev => [...prev, relation])
     setIsDirty(true)
   }, [])
 
   const deleteNode = useCallback(
     (nodeId: string) => {
-      reactFlowInstance.setNodes((nodes) => nodes.filter((n) => n.id !== nodeId))
+      reactFlowInstance.setNodes(nodes => nodes.filter(n => n.id !== nodeId))
       // 同时删除连接到该节点的边
-      reactFlowInstance.setEdges((edges) =>
-        edges.filter((e) => e.source !== nodeId && e.target !== nodeId)
+      reactFlowInstance.setEdges(edges =>
+        edges.filter(e => e.source !== nodeId && e.target !== nodeId)
       )
       setIsDirty(true)
     },
@@ -90,13 +90,13 @@ export function GraphContextProvider({ children }: GraphContextProviderProps) {
 
   const deleteEdge = useCallback(
     (edgeId: string) => {
-      const edge = reactFlowInstance.getEdges().find((e) => e.id === edgeId)
+      const edge = reactFlowInstance.getEdges().find(e => e.id === edgeId)
       if (edge?.data?.relation) {
         // 如果是已存在的关系，标记为待删除
         markRelationDeleted(edge.data.relation as Relationship)
       } else {
         // 如果是待保存的关系，从 pending 中移除
-        const pendingRelation = pendingRelations.find((r) => {
+        const pendingRelation = pendingRelations.find(r => {
           const expectedEdgeId = `${r.subject_type}:${r.subject_id}-${r.object_type}:${r.object_id}`
           return edgeId === expectedEdgeId
         })
@@ -104,7 +104,7 @@ export function GraphContextProvider({ children }: GraphContextProviderProps) {
           removePendingRelation(pendingRelation)
         }
       }
-      reactFlowInstance.setEdges((edges) => edges.filter((e) => e.id !== edgeId))
+      reactFlowInstance.setEdges(edges => edges.filter(e => e.id !== edgeId))
       setIsDirty(true)
     },
     [reactFlowInstance, pendingRelations, markRelationDeleted, removePendingRelation]

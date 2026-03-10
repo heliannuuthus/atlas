@@ -26,7 +26,7 @@ export function Breadcrumb() {
 
   const generateBreadcrumbs = (): BreadcrumbProps['items'] => {
     const pathSegments = location.pathname.split('/').filter(Boolean)
-    
+
     if (pathSegments.length === 0) {
       return []
     }
@@ -39,10 +39,10 @@ export function Breadcrumb() {
       currentPath += `/${segment}`
       const isLast = index === pathSegments.length - 1
       const isModuleRoot = index === moduleRootIndex
-      
+
       let title = routeNameMap[segment] || segment
       let path: string | undefined = currentPath
-      
+
       if (index === 0) {
         const business = currentBusiness || businessConfigs[segment]?.module
         if (business) {
@@ -73,7 +73,9 @@ export function Breadcrumb() {
 
       items.push({
         title: (
-          <span className={`${styles.breadcrumbItem} ${isLast ? styles.active : ''} ${isModuleRoot ? styles.moduleRoot : ''}`}>
+          <span
+            className={`${styles.breadcrumbItem} ${isLast ? styles.active : ''} ${isModuleRoot ? styles.moduleRoot : ''}`}
+          >
             {title}
           </span>
         ),

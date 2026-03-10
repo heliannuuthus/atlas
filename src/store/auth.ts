@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { TokenResponse } from '@aegis/sdk'
+import type { TokenResponse } from '@heliannuuthus/aegis-sdk'
 import { getAuth, defaultAuthorizeOptions } from '@/config/auth'
 
 interface AuthState {

@@ -1,7 +1,13 @@
 import { useRequest } from 'ahooks'
 import { Card, Table, Button, Space, Empty, Typography } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
-import { PlusOutlined, EditOutlined, EyeOutlined, ReloadOutlined, TeamOutlined } from '@ant-design/icons'
+import {
+  PlusOutlined,
+  EditOutlined,
+  EyeOutlined,
+  ReloadOutlined,
+  TeamOutlined,
+} from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { groupApi } from '@/services'
 import type { Group } from '@/types/management'
@@ -24,7 +30,7 @@ export function List() {
       dataIndex: 'description',
       key: 'description',
       ellipsis: true,
-      render: (text) => text || <Text type="secondary">-</Text>,
+      render: text => text || <Text type="secondary">-</Text>,
     },
     {
       title: '操作',
@@ -33,8 +39,22 @@ export function List() {
       fixed: 'right',
       render: (_, record) => (
         <Space size={0}>
-          <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => navigate(`/hermes/groups/${record.group_id}`)}>查看</Button>
-          <Button type="link" size="small" icon={<EditOutlined />} onClick={() => navigate(`/hermes/groups/${record.group_id}/edit`)}>编辑</Button>
+          <Button
+            type="link"
+            size="small"
+            icon={<EyeOutlined />}
+            onClick={() => navigate(`/hermes/groups/${record.group_id}`)}
+          >
+            查看
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            icon={<EditOutlined />}
+            onClick={() => navigate(`/hermes/groups/${record.group_id}/edit`)}
+          >
+            编辑
+          </Button>
         </Space>
       ),
     },
@@ -59,11 +79,26 @@ export function List() {
         <div className={styles.header}>
           <div className={styles.title}>组管理</div>
           <Space>
-            <Button icon={<ReloadOutlined />} onClick={refresh}>刷新</Button>
-            <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/hermes/groups/create')}>新建组</Button>
+            <Button icon={<ReloadOutlined />} onClick={refresh}>
+              刷新
+            </Button>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => navigate('/hermes/groups/create')}
+            >
+              新建组
+            </Button>
           </Space>
         </div>
-        <Table columns={columns} dataSource={tableData} loading={loading} rowKey="group_id" scroll={{ x: 600 }} locale={{ emptyText: emptyState }} />
+        <Table
+          columns={columns}
+          dataSource={tableData}
+          loading={loading}
+          rowKey="group_id"
+          scroll={{ x: 600 }}
+          locale={{ emptyText: emptyState }}
+        />
       </Card>
     </div>
   )

@@ -26,7 +26,7 @@ export async function getMiniprogramList(
   if (params.keyword) {
     const keyword = params.keyword.toLowerCase()
     list = list.filter(
-      (item) =>
+      item =>
         item.name.toLowerCase().includes(keyword) ||
         item.appId.toLowerCase().includes(keyword) ||
         item.description?.toLowerCase().includes(keyword)
@@ -35,12 +35,12 @@ export async function getMiniprogramList(
 
   // 平台筛选
   if (params.platform) {
-    list = list.filter((item) => item.platform === params.platform)
+    list = list.filter(item => item.platform === params.platform)
   }
 
   // 状态筛选
   if (params.status) {
-    list = list.filter((item) => item.status === params.status)
+    list = list.filter(item => item.status === params.status)
   }
 
   // 分页
@@ -63,7 +63,7 @@ export async function getMiniprogramList(
 export async function getMiniprogramDetail(id: string): Promise<Miniprogram> {
   await delay(API_DELAY)
 
-  const item = mockMiniprogramList.find((item) => item.id === id)
+  const item = mockMiniprogramList.find(item => item.id === id)
   if (!item) {
     throw new Error(`小程序不存在: ${id}`)
   }
@@ -74,9 +74,7 @@ export async function getMiniprogramDetail(id: string): Promise<Miniprogram> {
 /**
  * 创建小程序
  */
-export async function createMiniprogram(
-  data: Partial<Miniprogram>
-): Promise<Miniprogram> {
+export async function createMiniprogram(data: Partial<Miniprogram>): Promise<Miniprogram> {
   await delay(API_DELAY)
 
   const newItem: Miniprogram = {
@@ -107,7 +105,7 @@ export async function updateMiniprogram(
 ): Promise<Miniprogram> {
   await delay(API_DELAY)
 
-  const index = mockMiniprogramList.findIndex((item) => item.id === id)
+  const index = mockMiniprogramList.findIndex(item => item.id === id)
   if (index === -1) {
     throw new Error(`小程序不存在: ${id}`)
   }
@@ -128,7 +126,7 @@ export async function updateMiniprogram(
 export async function deleteMiniprogram(id: string): Promise<void> {
   await delay(API_DELAY)
 
-  const index = mockMiniprogramList.findIndex((item) => item.id === id)
+  const index = mockMiniprogramList.findIndex(item => item.id === id)
   if (index === -1) {
     throw new Error(`小程序不存在: ${id}`)
   }
@@ -142,7 +140,7 @@ export async function deleteMiniprogram(id: string): Promise<void> {
 export async function publishMiniprogram(id: string): Promise<Miniprogram> {
   await delay(API_DELAY)
 
-  const index = mockMiniprogramList.findIndex((item) => item.id === id)
+  const index = mockMiniprogramList.findIndex(item => item.id === id)
   if (index === -1) {
     throw new Error(`小程序不存在: ${id}`)
   }

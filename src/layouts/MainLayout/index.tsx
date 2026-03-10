@@ -36,24 +36,27 @@ export function MainLayout() {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  const collapseTriggerStyle = useMemo<React.CSSProperties>(() => ({
-    position: 'absolute',
-    right: -18,
-    top: '50%',
-    transform: 'translateY(-50%)',
-    zIndex: 101,
-    width: 20,
-    height: 48,
-    padding: 0,
-    border: 'none',
-    borderRadius: '0 4px 4px 0',
-    background: '#fff',
-    boxShadow: '2px 0 8px rgba(0, 0, 0, 0.08)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: '#595959',
-  }), [])
+  const collapseTriggerStyle = useMemo<React.CSSProperties>(
+    () => ({
+      position: 'absolute',
+      right: -18,
+      top: '50%',
+      transform: 'translateY(-50%)',
+      zIndex: 101,
+      width: 20,
+      height: 48,
+      padding: 0,
+      border: 'none',
+      borderRadius: '0 4px 4px 0',
+      background: '#fff',
+      boxShadow: '2px 0 8px rgba(0, 0, 0, 0.08)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: '#595959',
+    }),
+    []
+  )
 
   return (
     <Layout className={styles.layout}>
@@ -83,10 +86,16 @@ export function MainLayout() {
               style={collapseTriggerStyle}
               onClick={() => setCollapsed(!collapsed)}
               aria-label={collapsed ? '展开侧边栏' : '折叠侧边栏'}
-              icon={collapsed ? <MenuUnfoldOutlined style={{ fontSize: 12 }} /> : <MenuFoldOutlined style={{ fontSize: 12 }} />}
+              icon={
+                collapsed ? (
+                  <MenuUnfoldOutlined style={{ fontSize: 12 }} />
+                ) : (
+                  <MenuFoldOutlined style={{ fontSize: 12 }} />
+                )
+              }
             />
           </div>
-          <Layout 
+          <Layout
             className={styles.innerLayout}
             style={{ '--sider-width': collapsed ? '64px' : '240px' } as React.CSSProperties}
           >

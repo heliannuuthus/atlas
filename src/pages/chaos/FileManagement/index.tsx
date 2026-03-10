@@ -1,21 +1,7 @@
 import { useState } from 'react'
-import {
-  Card,
-  Button,
-  Input,
-  message,
-  Upload,
-  Typography,
-  Space,
-  List,
-  Tag,
-} from 'antd'
+import { Card, Button, Input, message, Upload, Typography, Space, List, Tag } from 'antd'
 import type { UploadProps } from 'antd'
-import {
-  CopyOutlined,
-  CheckCircleOutlined,
-  CloudUploadOutlined,
-} from '@ant-design/icons'
+import { CopyOutlined, CheckCircleOutlined, CloudUploadOutlined } from '@ant-design/icons'
 import styles from './index.module.scss'
 
 const { Text, Paragraph } = Typography
@@ -59,7 +45,7 @@ export function FileManagement() {
       if (info.file.status === 'done') {
         const result = info.file.response as UploadResult
         message.success(`${info.file.name} 上传成功`)
-        setUploadedFiles((prev) => [result, ...prev])
+        setUploadedFiles(prev => [result, ...prev])
       } else if (info.file.status === 'error') {
         message.error(`${info.file.name} 上传失败`)
       }
@@ -79,7 +65,7 @@ export function FileManagement() {
             <Input
               placeholder="例如: images/logo.png（留空则自动生成）"
               value={customPath}
-              onChange={(e) => setCustomPath(e.target.value)}
+              onChange={e => setCustomPath(e.target.value)}
               style={{ width: 400, marginLeft: 8 }}
             />
           </div>
@@ -89,9 +75,7 @@ export function FileManagement() {
               <CloudUploadOutlined style={{ fontSize: 48, color: '#1890ff' }} />
             </p>
             <p className="ant-upload-text">点击或拖拽文件到此区域上传</p>
-            <p className="ant-upload-hint">
-              支持单个或批量上传，文件将上传到 Cloudflare R2
-            </p>
+            <p className="ant-upload-hint">支持单个或批量上传，文件将上传到 Cloudflare R2</p>
           </Dragger>
         </div>
 
@@ -101,7 +85,7 @@ export function FileManagement() {
             <List
               size="small"
               dataSource={uploadedFiles}
-              renderItem={(item) => (
+              renderItem={item => (
                 <List.Item
                   actions={[
                     <Button
@@ -115,11 +99,7 @@ export function FileManagement() {
                   ]}
                 >
                   <List.Item.Meta
-                    avatar={
-                      <CheckCircleOutlined
-                        style={{ fontSize: 20, color: '#52c41a' }}
-                      />
-                    }
+                    avatar={<CheckCircleOutlined style={{ fontSize: 20, color: '#52c41a' }} />}
                     title={
                       <Space>
                         <Text>{item.file_name}</Text>

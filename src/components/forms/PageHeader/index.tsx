@@ -11,12 +11,7 @@ interface PageHeaderProps {
   extra?: ReactNode
 }
 
-export function PageHeader({
-  title,
-  backPath,
-  onBack,
-  extra,
-}: PageHeaderProps) {
+export function PageHeader({ title, backPath, onBack, extra }: PageHeaderProps) {
   const navigate = useNavigate()
 
   const handleBack = () => {

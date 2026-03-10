@@ -1,5 +1,17 @@
 import { useRequest } from 'ahooks'
-import { Card, Descriptions, Spin, message, Tag, Tabs, Table, Empty, Typography, Tooltip, Button } from 'antd'
+import {
+  Card,
+  Descriptions,
+  Spin,
+  message,
+  Tag,
+  Tabs,
+  Table,
+  Empty,
+  Typography,
+  Tooltip,
+  Button,
+} from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { useParams, useNavigate } from 'react-router-dom'
 import { InfoCircleOutlined, ShareAltOutlined, NodeIndexOutlined } from '@ant-design/icons'
@@ -29,15 +41,12 @@ export function Detail() {
   const { serviceId } = useParams<{ serviceId: string }>()
   const navigate = useNavigate()
 
-  const { data, loading } = useRequest(
-    () => serviceApi.getDetail(serviceId!),
-    {
-      ready: !!serviceId,
-      onError: () => {
-        message.error('获取服务信息失败')
-      },
-    }
-  )
+  const { data, loading } = useRequest(() => serviceApi.getDetail(serviceId!), {
+    ready: !!serviceId,
+    onError: () => {
+      message.error('获取服务信息失败')
+    },
+  })
 
   // 获取该服务相关的关系列表
   const { data: relationships, loading: relLoading } = useRequest(
@@ -58,7 +67,9 @@ export function Detail() {
             {subjectTypeLabels[record.subject_type] || record.subject_type}
           </Tag>
           <Tooltip title={record.subject_id}>
-            <Text ellipsis style={{ maxWidth: 120 }}>{record.subject_id}</Text>
+            <Text ellipsis style={{ maxWidth: 120 }}>
+              {record.subject_id}
+            </Text>
           </Tooltip>
         </div>
       ),
@@ -68,7 +79,11 @@ export function Detail() {
       dataIndex: 'relation',
       key: 'relation',
       width: 100,
-      render: (value) => <Tag color="processing" bordered={false}>{value}</Tag>,
+      render: value => (
+        <Tag color="processing" bordered={false}>
+          {value}
+        </Tag>
+      ),
     },
     {
       title: '对象',
@@ -78,7 +93,9 @@ export function Detail() {
         <div className={styles.entityCell}>
           <Tag bordered={false}>{record.object_type}</Tag>
           <Tooltip title={record.object_id}>
-            <Text ellipsis style={{ maxWidth: 120 }}>{record.object_id}</Text>
+            <Text ellipsis style={{ maxWidth: 120 }}>
+              {record.object_id}
+            </Text>
           </Tooltip>
         </div>
       ),
@@ -88,14 +105,10 @@ export function Detail() {
       dataIndex: 'expires_at',
       key: 'expires_at',
       width: 140,
-      render: (text) => {
+      render: text => {
         if (!text) return <Text type="secondary">永久</Text>
         const expiring = isExpiringSoon(text)
-        return (
-          <Text type={expiring ? 'warning' : undefined}>
-            {formatRelativeTime(text)}
-          </Text>
-        )
+        return <Text type={expiring ? 'warning' : undefined}>{formatRelativeTime(text)}</Text>
       },
     },
   ]
@@ -140,12 +153,8 @@ export function Detail() {
           <Descriptions.Item label="Refresh Token 有效期">
             {formatDuration(data.refresh_token_expires_in)}
           </Descriptions.Item>
-          <Descriptions.Item label="创建时间">
-            {formatDateTime(data.created_at)}
-          </Descriptions.Item>
-          <Descriptions.Item label="更新时间">
-            {formatDateTime(data.updated_at)}
-          </Descriptions.Item>
+          <Descriptions.Item label="创建时间">{formatDateTime(data.created_at)}</Descriptions.Item>
+          <Descriptions.Item label="更新时间">{formatDateTime(data.updated_at)}</Descriptions.Item>
         </Descriptions>
       ),
     },
@@ -156,7 +165,9 @@ export function Detail() {
           <ShareAltOutlined />
           关联关系
           {relationships && relationships.length > 0 && (
-            <Tag bordered={false} className={styles.tabBadge}>{relationships.length}</Tag>
+            <Tag bordered={false} className={styles.tabBadge}>
+              {relationships.length}
+            </Tag>
           )}
         </span>
       ),
@@ -179,12 +190,7 @@ export function Detail() {
             size="small"
             pagination={{ pageSize: 10 }}
             locale={{
-              emptyText: (
-                <Empty
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  description="暂无关联关系"
-                />
-              ),
+              emptyText: <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无关联关系" />,
             }}
           />
         </div>

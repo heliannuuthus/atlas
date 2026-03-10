@@ -13,10 +13,7 @@ interface CreateRelationDialogProps {
     id: string
   } | null
   serviceId: string
-  onConfirm: (data: {
-    relation: string
-    expiresAt?: string
-  }) => void
+  onConfirm: (data: { relation: string; expiresAt?: string }) => void
   onCancel: () => void
 }
 
@@ -54,9 +51,7 @@ export function CreateRelationDialog({
       const values = await form.validateFields()
       onConfirm({
         relation: values.relation,
-        expiresAt: values.expiresAt
-          ? (values.expiresAt as Dayjs).toISOString()
-          : undefined,
+        expiresAt: values.expiresAt ? (values.expiresAt as Dayjs).toISOString() : undefined,
       })
     } catch {
       // 表单验证失败
@@ -132,7 +127,7 @@ export function CreateRelationDialog({
             <Select
               placeholder="选择关系类型"
               options={relationOptions}
-              dropdownRender={(menu) => (
+              dropdownRender={menu => (
                 <>
                   {menu}
                   <div
@@ -151,11 +146,7 @@ export function CreateRelationDialog({
 
         {/* 过期时间（可选） */}
         <Form.Item name="expiresAt" label="过期时间（可选）">
-          <DatePicker
-            showTime
-            style={{ width: '100%' }}
-            placeholder="选择过期时间"
-          />
+          <DatePicker showTime style={{ width: '100%' }} placeholder="选择过期时间" />
         </Form.Item>
       </Form>
     </Modal>

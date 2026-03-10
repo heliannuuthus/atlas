@@ -65,7 +65,10 @@ export async function createService(data: ServiceCreateRequest): Promise<Service
 /**
  * 更新服务
  */
-export async function updateService(serviceId: string, data: ServiceUpdateRequest): Promise<{ message: string }> {
+export async function updateService(
+  serviceId: string,
+  data: ServiceUpdateRequest
+): Promise<{ message: string }> {
   return patch<{ message: string }>(`/hermes/services/${serviceId}`, data)
 }
 
@@ -95,14 +98,19 @@ export async function createApplication(data: ApplicationCreateRequest): Promise
 /**
  * 更新应用
  */
-export async function updateApplication(appId: string, data: ApplicationUpdateRequest): Promise<{ message: string }> {
+export async function updateApplication(
+  appId: string,
+  data: ApplicationUpdateRequest
+): Promise<{ message: string }> {
   return patch<{ message: string }>(`/hermes/applications/${appId}`, data)
 }
 
 /**
  * 获取应用可访问的服务关系
  */
-export async function getApplicationServiceRelations(appId: string): Promise<ApplicationServiceRelation[]> {
+export async function getApplicationServiceRelations(
+  appId: string
+): Promise<ApplicationServiceRelation[]> {
   return get<ApplicationServiceRelation[]>(`/hermes/applications/${appId}/applicable`)
 }
 
@@ -114,7 +122,10 @@ export async function setApplicationServiceRelations(
   serviceId: string,
   data: ApplicationServiceRelationRequest
 ): Promise<{ message: string }> {
-  return post<{ message: string }>(`/hermes/applications/${appId}/services/${serviceId}/applicable`, data)
+  return post<{ message: string }>(
+    `/hermes/applications/${appId}/services/${serviceId}/applicable`,
+    data
+  )
 }
 
 // ==================== Relationship 相关 ====================
@@ -147,7 +158,9 @@ export async function updateRelationship(data: RelationshipUpdateRequest): Promi
 /**
  * 删除关系
  */
-export async function deleteRelationship(data: RelationshipDeleteRequest): Promise<{ message: string }> {
+export async function deleteRelationship(
+  data: RelationshipDeleteRequest
+): Promise<{ message: string }> {
   return del<{ message: string }>('/hermes/relationships', data)
 }
 
@@ -177,7 +190,10 @@ export async function createGroup(data: GroupCreateRequest): Promise<Group> {
 /**
  * 更新组
  */
-export async function updateGroup(groupId: string, data: GroupUpdateRequest): Promise<{ message: string }> {
+export async function updateGroup(
+  groupId: string,
+  data: GroupUpdateRequest
+): Promise<{ message: string }> {
   return patch<{ message: string }>(`/hermes/groups/${groupId}`, data)
 }
 

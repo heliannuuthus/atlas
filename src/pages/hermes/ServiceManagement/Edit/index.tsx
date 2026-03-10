@@ -16,7 +16,7 @@ export function Edit() {
     () => serviceApi.getDetail(serviceId!),
     {
       ready: !!serviceId,
-      onSuccess: (_data) => {
+      onSuccess: _data => {
         form.setFieldsValue({
           name: _data.name,
           description: _data.description,
@@ -58,22 +58,10 @@ export function Edit() {
   return (
     <div className={styles.container}>
       <Card>
-        <PageHeader
-          title="编辑服务"
-          backPath={`/hermes/services/${serviceId}`}
-        />
+        <PageHeader title="编辑服务" backPath={`/hermes/services/${serviceId}`} />
 
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSubmit}
-          className={styles.form}
-        >
-          <Form.Item
-            name="name"
-            label="名称"
-            rules={[{ required: true, message: '请输入名称' }]}
-          >
+        <Form form={form} layout="vertical" onFinish={handleSubmit} className={styles.form}>
+          <Form.Item name="name" label="名称" rules={[{ required: true, message: '请输入名称' }]}>
             <Input placeholder="请输入名称" />
           </Form.Item>
 
@@ -81,17 +69,11 @@ export function Edit() {
             <TextArea rows={4} placeholder="请输入描述" />
           </Form.Item>
 
-          <Form.Item
-            name="access_token_expires_in"
-            label="Access Token 过期时间（秒）"
-          >
+          <Form.Item name="access_token_expires_in" label="Access Token 过期时间（秒）">
             <InputNumber min={1} style={{ width: '100%' }} />
           </Form.Item>
 
-          <Form.Item
-            name="refresh_token_expires_in"
-            label="Refresh Token 过期时间（秒）"
-          >
+          <Form.Item name="refresh_token_expires_in" label="Refresh Token 过期时间（秒）">
             <InputNumber min={1} style={{ width: '100%' }} />
           </Form.Item>
 

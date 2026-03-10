@@ -1,15 +1,6 @@
 import { useState } from 'react'
 import { useRequest } from 'ahooks'
-import {
-  Card,
-  Table,
-  Button,
-  Space,
-  Input,
-  Select,
-  message,
-  Popconfirm,
-} from 'antd'
+import { Card, Table, Button, Space, Input, Select, message, Popconfirm } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import {
   PlusOutlined,
@@ -21,10 +12,7 @@ import {
 import { useNavigate } from 'react-router-dom'
 import { getMiniprogramList, deleteMiniprogram } from '@/mock/api/miniprogram'
 import type { Miniprogram } from '@/types/miniprogram'
-import {
-  MiniprogramStatus,
-  MiniprogramPlatform,
-} from '@/types/miniprogram'
+import { MiniprogramStatus, MiniprogramPlatform } from '@/types/miniprogram'
 import { StatusTag } from '@/components/StatusTag'
 import { PlatformTag } from '@/components/PlatformTag'
 import styles from './index.module.scss'
@@ -55,11 +43,7 @@ export function List() {
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
-  const {
-    data,
-    loading,
-    refresh,
-  } = useRequest(
+  const { data, loading, refresh } = useRequest(
     () =>
       getMiniprogramList({
         page,
@@ -91,9 +75,7 @@ export function List() {
       width: 200,
       render: (text, record) => (
         <div className={styles.nameCell}>
-          {record.logo && (
-            <img src={record.logo} alt={text} className={styles.logo} />
-          )}
+          {record.logo && <img src={record.logo} alt={text} className={styles.logo} />}
           <span>{text}</span>
         </div>
       ),
@@ -110,14 +92,14 @@ export function List() {
       dataIndex: 'platform',
       key: 'platform',
       width: 120,
-      render: (platform) => <PlatformTag platform={platform} />,
+      render: platform => <PlatformTag platform={platform} />,
     },
     {
       title: '状态',
       dataIndex: 'status',
       key: 'status',
       width: 100,
-      render: (status) => <StatusTag status={status} />,
+      render: status => <StatusTag status={status} />,
     },
     {
       title: '版本',
@@ -136,7 +118,7 @@ export function List() {
       dataIndex: 'updatedAt',
       key: 'updatedAt',
       width: 180,
-      render: (text) => new Date(text).toLocaleString('zh-CN'),
+      render: text => new Date(text).toLocaleString('zh-CN'),
     },
     {
       title: '操作',
@@ -167,12 +149,7 @@ export function List() {
             okText="确定"
             cancelText="取消"
           >
-            <Button
-              type="link"
-              size="small"
-              danger
-              icon={<DeleteOutlined />}
-            >
+            <Button type="link" size="small" danger icon={<DeleteOutlined />}>
               删除
             </Button>
           </Popconfirm>
@@ -202,7 +179,7 @@ export function List() {
               allowClear
               style={{ width: 300 }}
               value={keyword}
-              onChange={(e) => {
+              onChange={e => {
                 setKeyword(e.target.value)
                 setPage(1)
               }}
@@ -212,7 +189,7 @@ export function List() {
               placeholder="选择状态"
               style={{ width: 150 }}
               value={status}
-              onChange={(value) => {
+              onChange={value => {
                 setStatus(value)
                 setPage(1)
               }}
@@ -222,7 +199,7 @@ export function List() {
               placeholder="选择平台"
               style={{ width: 150 }}
               value={platform}
-              onChange={(value) => {
+              onChange={value => {
                 setPlatform(value)
                 setPage(1)
               }}
@@ -245,7 +222,7 @@ export function List() {
             pageSize,
             total: data?.total,
             showSizeChanger: true,
-            showTotal: (total) => `共 ${total} 条`,
+            showTotal: total => `共 ${total} 条`,
             onChange: (newPage, newPageSize) => {
               setPage(newPage)
               setPageSize(newPageSize)

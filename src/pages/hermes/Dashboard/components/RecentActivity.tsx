@@ -42,7 +42,7 @@ export function RecentActivity({
   const activities: ActivityItem[] = []
 
   // 服务
-  services.slice(0, 3).forEach((s) => {
+  services.slice(0, 3).forEach(s => {
     activities.push({
       type: 'service',
       id: s.service_id,
@@ -53,7 +53,7 @@ export function RecentActivity({
   })
 
   // 应用
-  applications.slice(0, 3).forEach((a) => {
+  applications.slice(0, 3).forEach(a => {
     activities.push({
       type: 'application',
       id: a.app_id,
@@ -64,7 +64,7 @@ export function RecentActivity({
   })
 
   // 组
-  groups.slice(0, 2).forEach((g) => {
+  groups.slice(0, 2).forEach(g => {
     activities.push({
       type: 'group',
       id: g.group_id,
@@ -76,9 +76,9 @@ export function RecentActivity({
 
   // 即将过期的关系
   relationships
-    .filter((r) => r.expires_at && isExpiringSoon(r.expires_at))
+    .filter(r => r.expires_at && isExpiringSoon(r.expires_at))
     .slice(0, 3)
-    .forEach((r) => {
+    .forEach(r => {
       activities.push({
         type: 'relationship',
         id: `${r.subject_id}-${r.object_id}`,
@@ -118,33 +118,44 @@ export function RecentActivity({
     }
   }
 
-  const cardStyles = useMemo<CardProps['styles']>(() => ({
-    body: { padding: '0 16px 16px' },
-  }), [])
+  const cardStyles = useMemo<CardProps['styles']>(
+    () => ({
+      body: { padding: '0 16px 16px' },
+    }),
+    []
+  )
 
-  const listItemStyle = useMemo<React.CSSProperties>(() => ({
-    padding: '12px 0',
-  }), [])
+  const listItemStyle = useMemo<React.CSSProperties>(
+    () => ({
+      padding: '12px 0',
+    }),
+    []
+  )
 
-  const tagStyle = useMemo<React.CSSProperties>(() => ({
-    margin: 0,
-    fontSize: 11,
-    padding: '0 6px',
-    lineHeight: '18px',
-  }), [])
+  const tagStyle = useMemo<React.CSSProperties>(
+    () => ({
+      margin: 0,
+      fontSize: 11,
+      padding: '0 6px',
+      lineHeight: '18px',
+    }),
+    []
+  )
 
   return (
     <Card title="最近动态" className={styles.recentActivity} styles={cardStyles}>
       <List
         loading={loading}
         dataSource={activities.slice(0, 6)}
-        renderItem={(item) => (
+        renderItem={item => (
           <List.Item style={listItemStyle}>
             <div className={styles.activityItem}>
               <div className={styles.activityIcon}>{getIcon(item.type)}</div>
               <div className={styles.activityContent}>
                 <div className={styles.activityTitle}>
-                  <Tag bordered={false} style={tagStyle}>{getTypeLabel(item.type)}</Tag>
+                  <Tag bordered={false} style={tagStyle}>
+                    {getTypeLabel(item.type)}
+                  </Tag>
                   <Text strong>{item.name}</Text>
                 </div>
                 <div className={styles.activityMeta}>

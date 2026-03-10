@@ -16,9 +16,12 @@ export function RelationGraphPreview({ relationships, loading }: RelationGraphPr
 
   const previewRelations = relationships.slice(0, 5)
 
-  const cardStyles = useMemo<CardProps['styles']>(() => ({
-    body: { padding: '16px 20px' },
-  }), [])
+  const cardStyles = useMemo<CardProps['styles']>(
+    () => ({
+      body: { padding: '16px 20px' },
+    }),
+    []
+  )
 
   return (
     <Card
@@ -57,9 +60,7 @@ export function RelationGraphPreview({ relationships, loading }: RelationGraphPr
             ))}
           </div>
           {relationships.length > 5 && (
-            <div className={styles.moreHint}>
-              还有 {relationships.length - 5} 条关系...
-            </div>
+            <div className={styles.moreHint}>还有 {relationships.length - 5} 条关系...</div>
           )}
           <Button
             type="primary"
@@ -71,14 +72,8 @@ export function RelationGraphPreview({ relationships, loading }: RelationGraphPr
           </Button>
         </div>
       ) : (
-        <Empty
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description="暂无关系数据"
-        >
-          <Button
-            type="primary"
-            onClick={() => navigate('/hermes/relationships/graph')}
-          >
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无关系数据">
+          <Button type="primary" onClick={() => navigate('/hermes/relationships/graph')}>
             创建第一条关系
           </Button>
         </Empty>

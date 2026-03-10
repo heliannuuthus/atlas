@@ -1,16 +1,6 @@
 import { useState } from 'react'
 import { useRequest } from 'ahooks'
-import {
-  Card,
-  Table,
-  Button,
-  Space,
-  Input,
-  Select,
-  Tag,
-  Empty,
-  Typography,
-} from 'antd'
+import { Card, Table, Button, Space, Input, Select, Tag, Empty, Typography } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import {
   PlusOutlined,
@@ -35,18 +25,11 @@ export function List() {
 
   const { data: domains } = useRequest(() => domainApi.getList())
 
-  const {
-    data,
-    loading,
-    refresh,
-  } = useRequest(
-    () => serviceApi.getList({ domain_id: domainId }),
-    {
-      refreshDeps: [domainId],
-    }
-  )
+  const { data, loading, refresh } = useRequest(() => serviceApi.getList({ domain_id: domainId }), {
+    refreshDeps: [domainId],
+  })
 
-  const filteredData = (data || []).filter((item) => {
+  const filteredData = (data || []).filter(item => {
     if (!keyword) return true
     return (
       item.name.toLowerCase().includes(keyword.toLowerCase()) ||
@@ -72,14 +55,14 @@ export function List() {
       dataIndex: 'domain_id',
       key: 'domain_id',
       width: 100,
-      render: (value) => <Tag bordered={false}>{value}</Tag>,
+      render: value => <Tag bordered={false}>{value}</Tag>,
     },
     {
       title: '描述',
       dataIndex: 'description',
       key: 'description',
       ellipsis: true,
-      render: (value) => value || <Text type="secondary">-</Text>,
+      render: value => value || <Text type="secondary">-</Text>,
     },
     {
       title: 'Token 有效期',
@@ -103,7 +86,7 @@ export function List() {
       dataIndex: 'status',
       key: 'status',
       width: 80,
-      render: (status) => (
+      render: status => (
         <Tag color={status === 0 ? 'success' : 'error'} bordered={false}>
           {status === 0 ? '启用' : '禁用'}
         </Tag>
@@ -171,7 +154,7 @@ export function List() {
               allowClear
               style={{ width: 300 }}
               value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
+              onChange={e => setKeyword(e.target.value)}
             />
             <Select
               placeholder="选择域"
@@ -180,7 +163,7 @@ export function List() {
               onChange={setDomainId}
               allowClear
             >
-              {domains?.map((domain) => (
+              {domains?.map(domain => (
                 <Select.Option key={domain.domain_id} value={domain.domain_id}>
                   {domain.name}
                 </Select.Option>

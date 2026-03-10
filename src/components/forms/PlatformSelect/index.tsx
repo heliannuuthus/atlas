@@ -20,7 +20,7 @@ export function PlatformSelect({
 }: PlatformSelectProps) {
   return (
     <Select value={value} onChange={onChange} placeholder={placeholder}>
-      {platformOptions.map((option) => (
+      {platformOptions.map(option => (
         <Select.Option key={option.value} value={option.value}>
           {option.label}
         </Select.Option>

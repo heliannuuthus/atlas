@@ -1,12 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Button } from 'antd'
-import {
-  BookOutlined,
-  ApartmentOutlined,
-  CheckOutlined,
-  HomeOutlined,
-} from '@ant-design/icons'
+import { BookOutlined, ApartmentOutlined, CheckOutlined, HomeOutlined } from '@ant-design/icons'
 import { servicePlatforms, type ServicePlatformId } from '@/config/services'
 import type { ServicePlatform } from '@/types/service'
 import styles from './index.module.scss'
@@ -41,7 +36,7 @@ export function ServiceSwitcher() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setPulsing((prev) => !prev)
+      setPulsing(prev => !prev)
     }, 2000)
 
     return () => clearInterval(interval)
@@ -73,27 +68,27 @@ export function ServiceSwitcher() {
     }
   }, [])
 
-  const handleServiceClick = (service: typeof servicePlatforms[number]) => {
+  const handleServiceClick = (service: (typeof servicePlatforms)[number]) => {
     const serviceWithUrl = service as ServicePlatform & { url?: string }
-    
+
     // 如果配置了外部 URL，跳转到外部
     if (serviceWithUrl.url) {
       window.location.assign(serviceWithUrl.url)
       return
     }
-    
+
     // 如果是当前服务，不跳转
     if (service.id === currentServiceId) {
       setOpen(false)
       return
     }
-    
+
     // 跳转到对应服务的默认路由
     const route = serviceRouteMap[service.id]
     if (route) {
       navigate(route)
     }
-    
+
     setOpen(false)
   }
 
@@ -103,30 +98,27 @@ export function ServiceSwitcher() {
     setOpen(false)
   }
 
-  const homeIconButtonStyle = useMemo<React.CSSProperties>(() => ({
-    width: 32,
-    height: 32,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    border: 'none',
-    background: 'transparent',
-    borderRadius: 6,
-    color: '#8c8c8c',
-    fontSize: 18,
-    boxShadow: 'none',
-  }), [])
+  const homeIconButtonStyle = useMemo<React.CSSProperties>(
+    () => ({
+      width: 32,
+      height: 32,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      border: 'none',
+      background: 'transparent',
+      borderRadius: 6,
+      color: '#8c8c8c',
+      fontSize: 18,
+      boxShadow: 'none',
+    }),
+    []
+  )
 
   return (
-    <div
-      ref={containerRef}
-      className={styles.container}
-      onMouseEnter={() => setOpen(true)}
-    >
+    <div ref={containerRef} className={styles.container} onMouseEnter={() => setOpen(true)}>
       <div className={styles.waveBar} onClick={handleWaveBarClick} title="返回主页">
-        <div
-          className={`${styles.waveIndicator} ${pulsing && !open ? styles.pulsing : ''}`}
-        />
+        <div className={`${styles.waveIndicator} ${pulsing && !open ? styles.pulsing : ''}`} />
       </div>
 
       {open && (
@@ -178,7 +170,7 @@ export function ServiceSwitcher() {
             </div>
           </div>
           <div className={styles.platformList}>
-            {servicePlatforms.map((service) => {
+            {servicePlatforms.map(service => {
               const isActive = service.id === currentServiceId
               return (
                 <div
@@ -193,9 +185,7 @@ export function ServiceSwitcher() {
                     <div className={styles.platformName}>{service.name}</div>
                     <div className={styles.platformDesc}>{service.description}</div>
                   </div>
-                  {isActive && (
-                    <CheckOutlined className={styles.checkIcon} />
-                  )}
+                  {isActive && <CheckOutlined className={styles.checkIcon} />}
                 </div>
               )
             })}

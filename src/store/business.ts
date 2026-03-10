@@ -43,24 +43,22 @@ export const useBusinessStore = create<BusinessState>()(
     (set, get) => ({
       currentBusiness: null,
       recentBusinesses: [],
-      setCurrentBusiness: (business) => {
+      setCurrentBusiness: business => {
         set({ currentBusiness: business })
         if (business) {
           get().addRecentBusiness(business)
         }
       },
-      addRecentBusiness: (business) => {
+      addRecentBusiness: business => {
         const { recentBusinesses } = get()
-        const filtered = recentBusinesses.filter((b) => b.id !== business.id)
+        const filtered = recentBusinesses.filter(b => b.id !== business.id)
         const updated = [business, ...filtered].slice(0, MAX_RECENT)
         set({ recentBusinesses: updated })
       },
       getRecentBusinesses: () => {
         const { recentBusinesses } = get()
         const enabled = getEnabledBusinesses()
-        return recentBusinesses.filter((b) =>
-          enabled.some((e) => e.id === b.id)
-        )
+        return recentBusinesses.filter(b => enabled.some(e => e.id === b.id))
       },
     }),
     {

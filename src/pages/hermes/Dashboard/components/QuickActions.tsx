@@ -37,20 +37,26 @@ export function QuickActions() {
     },
   ]
 
-  const cardStyles = useMemo<CardProps['styles']>(() => ({
-    body: { padding: 16 },
-  }), [])
+  const cardStyles = useMemo<CardProps['styles']>(
+    () => ({
+      body: { padding: 16 },
+    }),
+    []
+  )
 
-  const actionButtonStyle = useMemo<React.CSSProperties>(() => ({
-    textAlign: 'left',
-    justifyContent: 'flex-start',
-    height: 40,
-  }), [])
+  const actionButtonStyle = useMemo<React.CSSProperties>(
+    () => ({
+      textAlign: 'left',
+      justifyContent: 'flex-start',
+      height: 40,
+    }),
+    []
+  )
 
   return (
     <Card title="快捷操作" className={styles.quickActions} styles={cardStyles}>
       <Space direction="vertical" style={{ width: '100%' }}>
-        {actions.map((action) => (
+        {actions.map(action => (
           <Button
             key={action.path}
             icon={action.icon}

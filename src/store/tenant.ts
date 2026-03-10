@@ -45,11 +45,11 @@ const customStorage = {
 
 export const useTenantStore = create<TenantState>()(
   persist(
-    (set) => ({
+    set => ({
       currentTenant: null,
       tenantList: [],
-      setCurrentTenant: (tenant) => set({ currentTenant: tenant }),
-      setTenantList: (list) => set({ tenantList: list }),
+      setCurrentTenant: tenant => set({ currentTenant: tenant }),
+      setTenantList: list => set({ tenantList: list }),
     }),
     {
       name: STORAGE_KEYS.CURRENT_TENANT,

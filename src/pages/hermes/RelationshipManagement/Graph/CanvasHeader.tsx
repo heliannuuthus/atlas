@@ -50,7 +50,7 @@ export function CanvasHeader({
             value={selectedServiceId}
             onChange={onServiceChange}
             allowClear
-            options={services.map((s) => ({
+            options={services.map(s => ({
               value: s.service_id,
               label: s.name,
             }))}
