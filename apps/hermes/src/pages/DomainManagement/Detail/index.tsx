@@ -1,7 +1,8 @@
 import { useRequest } from 'ahooks'
 import { Card, Descriptions, Spin, message, Tabs, Table, Empty, Typography, Tag, Button } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import { useAppNavigate } from '@/contexts/DomainContext'
 import { InfoCircleOutlined, CloudServerOutlined, AppstoreAddOutlined } from '@ant-design/icons'
 import { domainApi, serviceApi, applicationApi } from '@/services'
 import type { Service, Application } from '@/types'
@@ -12,7 +13,7 @@ const { Text, Link } = Typography
 
 export function Detail() {
   const { domainId } = useParams<{ domainId: string }>()
-  const navigate = useNavigate()
+  const navigate = useAppNavigate()
 
   const { data, loading } = useRequest(
     () => domainApi.getDetail(domainId!),
@@ -24,20 +25,14 @@ export function Detail() {
     }
   )
 
-  // 获取该域下的服务列表
   const { data: services, loading: servicesLoading } = useRequest(
-    () => serviceApi.getList({ domain_id: domainId }),
-    {
-      ready: !!domainId,
-    }
+    () => serviceApi.getList(domainId!),
+    { ready: !!domainId }
   )
 
-  // 获取该域下的应用列表
   const { data: applications, loading: appsLoading } = useRequest(
-    () => applicationApi.getList({ domain_id: domainId }),
-    {
-      ready: !!domainId,
-    }
+    () => applicationApi.getList(domainId!),
+    { ready: !!domainId }
   )
 
   const serviceColumns: ColumnsType<Service> = [
@@ -57,17 +52,6 @@ export function Detail() {
       dataIndex: 'name',
       key: 'name',
       width: 180,
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      key: 'status',
-      width: 80,
-      render: (value) => (
-        <Tag color={value === 0 ? 'green' : 'red'} bordered={false}>
-          {value === 0 ? '启用' : '禁用'}
-        </Tag>
-      ),
     },
     {
       title: 'Token 有效期',
@@ -142,12 +126,6 @@ export function Detail() {
           <Descriptions.Item label="名称">{data.name}</Descriptions.Item>
           <Descriptions.Item label="描述" span={2}>
             {data.description || <Text type="secondary">-</Text>}
-          </Descriptions.Item>
-          <Descriptions.Item label="创建时间">
-            {formatDateTime(data.created_at)}
-          </Descriptions.Item>
-          <Descriptions.Item label="更新时间">
-            {formatDateTime(data.updated_at)}
           </Descriptions.Item>
         </Descriptions>
       ),

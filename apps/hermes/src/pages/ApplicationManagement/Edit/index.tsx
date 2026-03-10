@@ -1,6 +1,7 @@
 import { useRequest } from 'ahooks'
 import { Form, Input, Card, message, Spin } from 'antd'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import { useAppNavigate, useDomainId } from '@/contexts/DomainContext'
 import { applicationApi } from '@/services'
 import { PageHeader, FormActions } from '@atlas/shared'
 import styles from './index.module.scss'
@@ -9,12 +10,15 @@ const { TextArea } = Input
 
 export function Edit() {
   const { appId } = useParams<{ appId: string }>()
-  const navigate = useNavigate()
+  const domainId = useDomainId()
+  const navigate = useAppNavigate()
   const [form] = Form.useForm()
 
-  const { data: _data, loading: detailLoading } = useRequest(() => applicationApi.getDetail(appId!), {
-    ready: !!appId,
-    onSuccess: (data) => {
+  const { data: _data, loading: detailLoading } = useRequest(
+    () => applicationApi.getDetail(domainId!, appId!),
+    {
+      ready: !!domainId && !!appId,
+      onSuccess: (data) => {
       let redirectUris: string[] = []
       try {
         redirectUris = data.redirect_uris ? JSON.parse(data.redirect_uris) : []
@@ -26,13 +30,14 @@ export function Edit() {
         redirect_uris: redirectUris.join('\n'),
       })
     },
-    onError: () => message.error('获取应用信息失败'),
-  })
+      onError: () => message.error('获取应用信息失败'),
+    }
+  )
 
   const { run: handleSubmit, loading } = useRequest(
     async (values: Record<string, unknown>) => {
       const redirectUris = values.redirect_uris ? (values.redirect_uris as string).split('\n').filter(Boolean) : []
-      await applicationApi.update(appId!, { name: values.name as string, redirect_uris: redirectUris })
+      await applicationApi.update(domainId!, appId!, { name: values.name as string, redirect_uris: redirectUris })
       message.success('更新成功')
       navigate(`/applications/${appId}`)
     },

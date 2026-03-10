@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { useRequest } from 'ahooks'
 import { Card, Table, Button, Space, Select, message, Popconfirm, Tag, Empty, Typography, Tooltip } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
-import { PlusOutlined, ReloadOutlined, DeleteOutlined, ShareAltOutlined, NodeIndexOutlined } from '@ant-design/icons'
-import { useNavigate } from 'react-router-dom'
+import { PlusOutlined, DeleteOutlined, ShareAltOutlined, NodeIndexOutlined } from '@ant-design/icons'
+import { useAppNavigate, useDomainId } from '@/contexts/DomainContext'
 import { relationshipApi, serviceApi } from '@/services'
 import type { Relationship } from '@/types'
 import { formatRelativeTime, isExpiringSoon } from '@atlas/shared'
@@ -26,11 +26,12 @@ const subjectTypeLabels: Record<string, string> = {
 }
 
 export function List() {
-  const navigate = useNavigate()
+  const navigate = useAppNavigate()
+  const domainId = useDomainId()
   const [serviceId, setServiceId] = useState<string | undefined>()
   const [subjectType, setSubjectType] = useState<string | undefined>()
 
-  const { data: services } = useRequest(() => serviceApi.getList())
+  const { data: services } = useRequest(() => serviceApi.getList(domainId!), { ready: !!domainId })
 
   const { data, loading, refresh } = useRequest(
     () => relationshipApi.getList({ service_id: serviceId, subject_type: subjectType }),
@@ -149,10 +150,15 @@ export function List() {
     <div className={styles.container}>
       <Card>
         <div className={styles.header}>
-          <div className={styles.title}>关系列表</div>
+          <div className={styles.headerLeft}>
+            <div className={styles.title}>关系</div>
+            <Typography.Text type="secondary" className={styles.headerDesc}>
+              关系按服务维度存在，格式为「主体 — 关系类型 — 对象」。可在此按服务、主体类型筛选查看，或进入关系图谱可视化编辑。
+            </Typography.Text>
+          </div>
           <Space>
             <Button icon={<NodeIndexOutlined />} onClick={() => navigate('/relationships/graph')}>关系图谱</Button>
-            <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/relationships/create')}>新建关系</Button>
+            <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/relationships/create')}>配置关系</Button>
           </Space>
         </div>
         <div className={styles.filters}>
@@ -165,10 +171,9 @@ export function List() {
               <Select.Option value="group">组</Select.Option>
               <Select.Option value="application">应用</Select.Option>
             </Select>
-            <Button icon={<ReloadOutlined />} onClick={refresh}>刷新</Button>
           </Space>
         </div>
-        <Table columns={columns} dataSource={tableData} loading={loading} rowKey="_id" scroll={{ x: 900 }} locale={{ emptyText: emptyState }} />
+        <Table columns={columns} dataSource={tableData} loading={loading} rowKey={(r) => `${r.service_id}:${r.subject_type}:${r.subject_id}:${r.relation}:${r.object_type}:${r.object_id}`} scroll={{ x: 900 }} locale={{ emptyText: emptyState }} />
       </Card>
     </div>
   )

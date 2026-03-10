@@ -1,7 +1,8 @@
 import { useRequest } from 'ahooks'
 import { Card, Descriptions, Spin, message, Tabs, Table, Empty, Typography, Tag, Tooltip, Button } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import { useAppNavigate, useDomainId } from '@/contexts/DomainContext'
 import { InfoCircleOutlined, ShareAltOutlined, CloudServerOutlined, NodeIndexOutlined } from '@ant-design/icons'
 import { applicationApi, relationshipApi } from '@/services'
 import type { Relationship, ApplicationServiceRelation } from '@/types'
@@ -12,12 +13,13 @@ const { Text, Link } = Typography
 
 export function Detail() {
   const { appId } = useParams<{ appId: string }>()
-  const navigate = useNavigate()
+  const domainId = useDomainId()
+  const navigate = useAppNavigate()
 
-  const { data, loading } = useRequest(() => applicationApi.getDetail(appId!), {
-    ready: !!appId,
-    onError: () => message.error('获取应用信息失败'),
-  })
+  const { data, loading } = useRequest(
+    () => applicationApi.getDetail(domainId!, appId!),
+    { ready: !!domainId && !!appId, onError: () => message.error('获取应用信息失败') }
+  )
 
   // 获取该应用作为主体的关系列表
   const { data: relationships, loading: relLoading } = useRequest(
@@ -27,12 +29,9 @@ export function Detail() {
     }
   )
 
-  // 获取应用服务关系
   const { data: serviceRelations, loading: svcRelLoading } = useRequest(
-    () => applicationApi.getServiceRelations(appId!),
-    {
-      ready: !!appId,
-    }
+    () => applicationApi.getServiceRelations(domainId!, appId!),
+    { ready: !!domainId && !!appId }
   )
 
   const relationColumns: ColumnsType<Relationship> = [
@@ -82,20 +81,24 @@ export function Detail() {
 
   const serviceRelationColumns: ColumnsType<ApplicationServiceRelation> = [
     {
-      title: '服务ID',
+      title: '服务',
       dataIndex: 'service_id',
       key: 'service_id',
+      width: 180,
       render: (value) => (
-        <Link onClick={() => navigate(`/services/${value}`)}>
-          {value}
-        </Link>
+        <Link onClick={() => navigate(`/services/${value}`)}>{value}</Link>
       ),
     },
     {
-      title: '关系类型',
-      dataIndex: 'relation',
-      key: 'relation',
-      render: (value) => <Tag color="processing" bordered={false}>{value}</Tag>,
+      title: '授予的权限',
+      dataIndex: 'relations',
+      key: 'relations',
+      render: (relations: string[]) =>
+        (relations || []).map((r) => (
+          <Tag key={r} color="processing" bordered={false}>
+            {r}
+          </Tag>
+        )),
     },
   ]
 
@@ -155,7 +158,7 @@ export function Detail() {
       label: (
         <span>
           <CloudServerOutlined />
-          可访问服务
+          服务授予的权限
           {serviceRelations && serviceRelations.length > 0 && (
             <Tag bordered={false} className={styles.tabBadge}>{serviceRelations.length}</Tag>
           )}
@@ -164,7 +167,9 @@ export function Detail() {
       children: (
         <div className={styles.relationshipsTab}>
           <div className={styles.tabHeader}>
-            <Text type="secondary">该应用可访问的服务列表</Text>
+            <Text type="secondary">
+              各服务授予本应用的权限类型（ReBAC）。在此配置本应用可访问的服务及每种服务下授予的权限。
+            </Text>
           </div>
           <Table
             columns={serviceRelationColumns}
@@ -177,7 +182,7 @@ export function Detail() {
               emptyText: (
                 <Empty
                   image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  description="暂无可访问服务"
+                  description="暂无服务授予的权限，请配置可访问服务"
                 />
               ),
             }}
@@ -211,7 +216,7 @@ export function Detail() {
             columns={relationColumns}
             dataSource={relationships || []}
             loading={relLoading}
-            rowKey="_id"
+            rowKey={(r) => `${r.service_id}:${r.subject_id}:${r.relation}:${r.object_id}`}
             size="small"
             pagination={{ pageSize: 10 }}
             locale={{

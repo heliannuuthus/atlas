@@ -1,23 +1,21 @@
 import { useRequest } from 'ahooks'
-import { Form, Input, InputNumber, Select, Card, message } from 'antd'
-import { useNavigate } from 'react-router-dom'
-import { serviceApi, domainApi } from '@/services'
+import { Form, Input, InputNumber, Card, message } from 'antd'
+import { useAppNavigate, useDomainId } from '@/contexts/DomainContext'
+import { serviceApi } from '@/services'
 import { PageHeader, FormActions } from '@atlas/shared'
 import styles from './index.module.scss'
 
 const { TextArea } = Input
 
 export function Create() {
-  const navigate = useNavigate()
+  const navigate = useAppNavigate()
+  const domainId = useDomainId()
   const [form] = Form.useForm()
-
-  const { data: domains } = useRequest(() => domainApi.getList())
 
   const { run: handleSubmit, loading } = useRequest(
     async (values: Record<string, unknown>) => {
-      await serviceApi.create({
+      await serviceApi.create(domainId!, {
         service_id: values.service_id as string,
-        domain_id: values.domain_id as string,
         name: values.name as string,
         description: values.description as string | undefined,
         access_token_expires_in: values.access_token_expires_in as number | undefined,
@@ -51,20 +49,6 @@ export function Create() {
             rules={[{ required: true, message: '请输入服务ID' }]}
           >
             <Input placeholder="请输入服务ID" />
-          </Form.Item>
-
-          <Form.Item
-            name="domain_id"
-            label="域"
-            rules={[{ required: true, message: '请选择域' }]}
-          >
-            <Select placeholder="请选择域">
-              {domains?.map((domain) => (
-                <Select.Option key={domain.domain_id} value={domain.domain_id}>
-                  {domain.name} ({domain.domain_id})
-                </Select.Option>
-              ))}
-            </Select>
           </Form.Item>
 
           <Form.Item

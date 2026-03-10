@@ -20,6 +20,7 @@ import type { ColumnsType } from 'antd/es/table'
 import type { ThemeConfig } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons'
 import { serviceApi, applicationApi, groupApi, relationshipApi } from '@/services'
+import { useDomainId } from '@/contexts/DomainContext'
 import type { Relationship } from '@/types'
 import { formatDateTime, isExpiringSoon } from '@atlas/shared'
 import { GraphContextProvider, useGraphContext } from './context/GraphContext'
@@ -71,13 +72,16 @@ function GraphCanvas() {
     target: { type: string; id: string }
   } | null>(null)
 
-  // 获取数据
-  const { data: services, loading: servicesLoading } = useRequest(() =>
-    serviceApi.getList()
+  const domainId = useDomainId()
+
+  const { data: services, loading: servicesLoading } = useRequest(
+    () => serviceApi.getList(domainId!),
+    { ready: !!domainId }
   )
 
-  const { data: applications, loading: applicationsLoading } = useRequest(() =>
-    applicationApi.getList()
+  const { data: applications, loading: applicationsLoading } = useRequest(
+    () => applicationApi.getList(domainId!),
+    { ready: !!domainId }
   )
 
   const { data: groups, loading: groupsLoading } = useRequest(() =>
@@ -248,7 +252,6 @@ function GraphCanvas() {
       if (!pendingConnection || !selectedServiceId) return
 
       const newRelation: Relationship = {
-        _id: 0,
         service_id: selectedServiceId,
         subject_type: pendingConnection.source.type as 'user' | 'group' | 'application',
         subject_id: pendingConnection.source.id,
@@ -457,7 +460,7 @@ function GraphCanvas() {
             columns={columns}
             dataSource={relationships || []}
             loading={relationshipsLoading}
-            rowKey="_id"
+            rowKey={(r) => `${r.service_id}:${r.subject_id}:${r.relation}:${r.object_id}`}
             size="small"
             pagination={{ pageSize: 5 }}
             scroll={{ x: 900 }}

@@ -1,19 +1,18 @@
 import { useRequest } from 'ahooks'
 import { Card, Table, Button, Empty, Typography } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
-import { EyeOutlined, ReloadOutlined, ApartmentOutlined } from '@ant-design/icons'
-import { useNavigate } from 'react-router-dom'
+import { EyeOutlined, ApartmentOutlined } from '@ant-design/icons'
+import { useAppNavigate } from '@/contexts/DomainContext'
 import { domainApi } from '@/services'
 import type { Domain } from '@/types'
-import { formatDateTime } from '@atlas/shared'
 import styles from './index.module.scss'
 
 const { Text } = Typography
 
 export function List() {
-  const navigate = useNavigate()
+  const navigate = useAppNavigate()
 
-  const { data, loading, refresh } = useRequest(() => domainApi.getList(), {
+  const { data, loading } = useRequest(() => domainApi.getList(), {
     refreshDeps: [],
   })
 
@@ -38,20 +37,6 @@ export function List() {
       key: 'description',
       ellipsis: true,
       render: text => text || <Text type="secondary">-</Text>,
-    },
-    {
-      title: '创建时间',
-      dataIndex: 'created_at',
-      key: 'created_at',
-      width: 160,
-      render: text => formatDateTime(text),
-    },
-    {
-      title: '更新时间',
-      dataIndex: 'updated_at',
-      key: 'updated_at',
-      width: 160,
-      render: text => formatDateTime(text),
     },
     {
       title: '操作',
@@ -84,10 +69,12 @@ export function List() {
     <div className={styles.container}>
       <Card>
         <div className={styles.header}>
-          <div className={styles.title}>域管理</div>
-          <Button icon={<ReloadOutlined />} onClick={refresh}>
-            刷新
-          </Button>
+          <div className={styles.headerLeft}>
+            <div className={styles.title}>域</div>
+            <Typography.Text type="secondary" className={styles.headerDesc}>
+              域是身份与权限的隔离边界，当前仅展示该域本身；服务、应用与组均在域下创建与查看。
+            </Typography.Text>
+          </div>
         </div>
 
         <Table

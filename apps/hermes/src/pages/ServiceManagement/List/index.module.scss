@@ -1,37 +1,245 @@
 .container {
   padding: 0;
+  max-width: 1200px;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
+// ─── Hero 说明区 ───
+.hero {
+  padding: 24px 28px;
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 50%, #f0fdf4 100%);
+  border: 1px solid rgba(5, 150, 105, 0.12);
+  border-radius: 14px;
+  border-left: 4px solid #059669;
 }
 
-.title {
-  font-size: 16px;
-  font-weight: 500;
+.heroTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: #065f46;
+  margin: 0 0 10px 0;
+  letter-spacing: -0.3px;
 }
 
-.filters {
-  margin-bottom: 16px;
-}
+.heroDesc {
+  font-size: 14px;
+  line-height: 1.65;
+  color: #047857;
+  margin: 0;
+  max-width: 640px;
 
-// Token 有效期列样式
-.tokenExpiry {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 13px;
-}
-
-.tokenRow {
-  display: flex;
-  gap: 6px;
-
-  span:first-child {
-    width: 50px;
-    flex-shrink: 0;
+  strong {
+    font-weight: 600;
+    color: #065f46;
   }
+}
+
+// ─── Toolbar：搜索 + 创建同一行 ───
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.createBtn {
+  flex-shrink: 0;
+}
+
+.searchCompact {
+  display: inline-flex;
+}
+
+// ─── Grid ───
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+// ─── Card ───
+.cardWrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid #e4e4e7;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    border-color: #a1a1aa;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+
+    .cardOverlay {
+      transform: translateY(0);
+    }
+  }
+}
+
+.card {
+  background: #fff;
+  padding: 18px 20px;
+  position: relative;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cardHead {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.cardIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #f0fdf4;
+  color: #059669;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.cardTitleBlock {
+  min-width: 0;
+}
+
+.cardName {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  color: #18181b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cardId {
+  display: block;
+  font-size: 12px;
+  font-family: ui-monospace, monospace;
+  color: #71717a;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cardDesc {
+  font-size: 13px;
+  color: #52525b;
+  line-height: 1.45;
+  margin: 0 0 12px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cardDescMuted {
+  font-size: 13px;
+  color: #a1a1aa;
+  margin: 0 0 12px 0;
+}
+
+.cardMeta {
+  font-size: 12px;
+  color: #71717a;
+  margin-bottom: 14px;
+
+  .cardMetaDivider {
+    margin: 0 6px;
+    color: #d4d4d8;
+  }
+}
+
+.cardActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-top: 12px;
+  border-top: 1px solid #f4f4f5;
+}
+
+.cardActionBtn {
+  padding: 0 6px;
+  color: #71717a;
+
+  &:hover {
+    color: #059669;
+  }
+}
+
+.cardArrow {
+  margin-left: auto;
+  font-size: 12px;
+  color: #d4d4d8;
+  transition: color 0.2s ease;
+}
+
+.cardWrap:hover .cardArrow {
+  color: #059669;
+}
+
+// 从下往上的 hover 遮罩，右侧编辑/删除
+.cardOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 20px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+  transform: translateY(100%);
+  transition: transform 0.2s ease;
+}
+
+.cardOverlayActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.cardOverlayBtn {
+  color: rgba(255, 255, 255, 0.9);
+
+  &:hover {
+    color: #fff;
+  }
+
+  &.ant-btn-dangerous {
+    color: rgba(255, 255, 255, 0.9);
+
+    &:hover {
+      color: #ff4d4f;
+    }
+  }
+}
+
+// ─── Skeleton ───
+.cardSkeleton {
+  height: 180px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #f4f4f5 25%, #fafafa 50%, #f4f4f5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ─── Empty ───
+.emptyWrap {
+  padding: 48px 24px;
+  text-align: center;
+  background: #fafafa;
+  border: 1px dashed #e4e4e7;
+  border-radius: 12px;
 }

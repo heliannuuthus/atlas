@@ -4,6 +4,7 @@ import type {
   Service,
   Application,
   ApplicationServiceRelation,
+  ServiceApplicationRelation,
   Relationship,
   Group,
   ServiceCreateRequest,
@@ -18,31 +19,47 @@ import type {
   GroupMemberRequest,
 } from '@/types'
 
+const hermes = '/hermes'
+
 export const domainApi = {
-  getList: () => request.get<Domain[]>('/domains'),
-  getDetail: (domainId: string) => request.get<Domain>(`/domains/${domainId}`),
+  getList: () => request.get<Domain[]>(`${hermes}/domains`),
+  getDetail: (domainId: string) => request.get<Domain>(`${hermes}/domains/${domainId}`),
 }
 
 export const serviceApi = {
-  getList: (params?: { domain_id?: string }) =>
-    request.get<Service[]>('/services', { params }),
-  getDetail: (serviceId: string) => request.get<Service>(`/services/${serviceId}`),
-  create: (data: ServiceCreateRequest) => request.post<Service>('/services', data),
-  update: (serviceId: string, data: ServiceUpdateRequest) =>
-    request.patch(`/services/${serviceId}`, data),
+  getList: (domainId: string, params?: { service_id?: string; name?: string }) =>
+    request.get<Service[]>(`${hermes}/domains/${domainId}/services`, { params }),
+  getDetail: (domainId: string, serviceId: string) =>
+    request.get<Service>(`${hermes}/domains/${domainId}/services/${serviceId}`),
+  /** 服务侧：该服务已授权给哪些应用及授予的权限（ReBAC） */
+  getApplicationRelations: (domainId: string, serviceId: string) =>
+    request.get<ServiceApplicationRelation[]>(`${hermes}/domains/${domainId}/services/${serviceId}/applications`),
+  /** 某服务授予某应用的关系列表 */
+  getServiceAppRelations: (domainId: string, serviceId: string, appId: string) =>
+    request.get<{ relations: string[] }>(`${hermes}/domains/${domainId}/services/${serviceId}/applications/${appId}/relations`),
+  /** 设置某服务授予某应用的关系 */
+  setServiceAppRelations: (domainId: string, serviceId: string, appId: string, relations: string[]) =>
+    request.put(`${hermes}/domains/${domainId}/services/${serviceId}/applications/${appId}/relations`, { relations }),
+  create: (domainId: string, data: Omit<ServiceCreateRequest, 'domain_id'>) =>
+    request.post<Service>(`${hermes}/domains/${domainId}/services`, data),
+  update: (domainId: string, serviceId: string, data: ServiceUpdateRequest) =>
+    request.patch(`${hermes}/domains/${domainId}/services/${serviceId}`, data),
+  delete: (domainId: string, serviceId: string) =>
+    request.delete(`${hermes}/domains/${domainId}/services/${serviceId}`),
 }
 
 export const applicationApi = {
-  getList: (params?: { domain_id?: string }) =>
-    request.get<Application[]>('/applications', { params }),
-  getDetail: (appId: string) => request.get<Application>(`/applications/${appId}`),
-  create: (data: ApplicationCreateRequest) => request.post<Application>('/applications', data),
-  update: (appId: string, data: ApplicationUpdateRequest) =>
-    request.patch(`/applications/${appId}`, data),
-  setServiceRelations: (appId: string, serviceId: string, data: ApplicationServiceRelationRequest) =>
-    request.post(`/applications/${appId}/services/${serviceId}/applicable`, data),
-  getServiceRelations: (appId: string) =>
-    request.get<ApplicationServiceRelation[]>(`/applications/${appId}/applicable`),
+  getList: (domainId: string) =>
+    request.get<Application[]>(`${hermes}/domains/${domainId}/applications`),
+  getDetail: (domainId: string, appId: string) =>
+    request.get<Application>(`${hermes}/domains/${domainId}/applications/${appId}`),
+  create: (domainId: string, data: Omit<ApplicationCreateRequest, 'domain_id'>) =>
+    request.post<Application>(`${hermes}/domains/${domainId}/applications`, data),
+  update: (domainId: string, appId: string, data: ApplicationUpdateRequest) =>
+    request.patch(`${hermes}/domains/${domainId}/applications/${appId}`, data),
+  /** 该应用在各服务下被授予的权限（按服务聚合） */
+  getServiceRelations: (domainId: string, appId: string) =>
+    request.get<ApplicationServiceRelation[]>(`${hermes}/domains/${domainId}/applications/${appId}/relations`),
 }
 
 export const relationshipApi = {

@@ -1,6 +1,7 @@
 import { useRequest } from 'ahooks'
 import { Form, Input, Card, message, Spin } from 'antd'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import { useAppNavigate } from '@/contexts/DomainContext'
 import { groupApi } from '@/services'
 import { PageHeader, FormActions } from '@atlas/shared'
 import styles from './index.module.scss'
@@ -9,7 +10,7 @@ const { TextArea } = Input
 
 export function Edit() {
   const { groupId } = useParams<{ groupId: string }>()
-  const navigate = useNavigate()
+  const navigate = useAppNavigate()
   const [form] = Form.useForm()
 
   const { data: _data, loading: detailLoading } = useRequest(() => groupApi.getDetail(groupId!), {

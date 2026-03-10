@@ -15,7 +15,8 @@ import {
   List,
 } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import { useAppNavigate } from '@/contexts/DomainContext'
 import {
   InfoCircleOutlined,
   TeamOutlined,
@@ -32,7 +33,7 @@ const { Text } = Typography
 
 export function Detail() {
   const { groupId } = useParams<{ groupId: string }>()
-  const navigate = useNavigate()
+  const navigate = useAppNavigate()
 
   const { data, loading } = useRequest(() => groupApi.getDetail(groupId!), {
     ready: !!groupId,
@@ -207,7 +208,7 @@ export function Detail() {
             columns={relationColumns}
             dataSource={relationships || []}
             loading={relLoading}
-            rowKey="_id"
+            rowKey={(r) => `${r.service_id}:${r.subject_id}:${r.relation}:${r.object_id}`}
             size="small"
             pagination={{ pageSize: 10 }}
             locale={{

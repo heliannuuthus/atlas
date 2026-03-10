@@ -1,15 +1,16 @@
 import { useRequest } from 'ahooks'
 import { Form, Input, Select, Card, message, DatePicker } from 'antd'
-import { useNavigate } from 'react-router-dom'
+import { useAppNavigate, useDomainId } from '@/contexts/DomainContext'
 import { relationshipApi, serviceApi } from '@/services'
 import { PageHeader, FormActions } from '@atlas/shared'
 import dayjs from 'dayjs'
 import styles from './index.module.scss'
 
 export function Create() {
-  const navigate = useNavigate()
+  const navigate = useAppNavigate()
+  const domainId = useDomainId()
   const [form] = Form.useForm()
-  const { data: services } = useRequest(() => serviceApi.getList())
+  const { data: services } = useRequest(() => serviceApi.getList(domainId!), { ready: !!domainId })
 
   const { run: handleSubmit, loading } = useRequest(
     async (values: Record<string, unknown>) => {

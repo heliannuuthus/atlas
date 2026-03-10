@@ -6,27 +6,30 @@ import {
   TeamOutlined,
   ShareAltOutlined,
 } from '@ant-design/icons'
+import { useBasePath } from '@/contexts/DomainContext'
 import styles from '../index.module.scss'
 
 const actions = [
-  { icon: <CloudServerOutlined />, label: '新建服务', path: '/services/create', color: '#18181b' },
-  { icon: <AppstoreAddOutlined />, label: '新建应用', path: '/applications/create', color: '#059669' },
-  { icon: <TeamOutlined />, label: '新建组', path: '/groups/create', color: '#059669' },
-  { icon: <ShareAltOutlined />, label: '新建关系', path: '/relationships/graph', color: '#d97706' },
+  { icon: <CloudServerOutlined />, label: '创建服务', path: 'services/create', color: '#18181b' },
+  { icon: <AppstoreAddOutlined />, label: '创建应用', path: 'applications/create', color: '#059669' },
+  { icon: <TeamOutlined />, label: '创建组', path: 'groups/create', color: '#059669' },
+  { icon: <ShareAltOutlined />, label: '配置关系', path: 'relationships/graph', color: '#d97706' },
 ]
 
 export function QuickActions() {
   const navigate = useNavigate()
+  const basePath = useBasePath()
 
   return (
     <div className={styles.quickActionsCard}>
       <div className={styles.cardLabel}>快捷操作</div>
+      <div className={styles.cardDescSmall}>创建服务、应用或组，或打开关系图谱配置主体与对象的权限。</div>
       <div className={styles.quickGrid}>
         {actions.map((action) => (
           <button
             key={action.path}
             className={styles.quickBtn}
-            onClick={() => navigate(action.path)}
+            onClick={() => navigate(`${basePath}/${action.path}`)}
             type="button"
           >
             <span className={styles.quickBtnIcon}>

@@ -1,19 +1,198 @@
 .container {
   padding: 0;
+  max-width: 1200px;
 }
 
-.header {
+// ─── Hero 说明区 ───
+.hero {
+  padding: 24px 28px;
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, #eff6ff 0%, #eff6ff 50%, #dbeafe 100%);
+  border: 1px solid rgba(37, 99, 235, 0.12);
+  border-radius: 14px;
+  border-left: 4px solid #2563eb;
+}
+
+.heroTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1e40af;
+  margin: 0 0 10px 0;
+  letter-spacing: -0.3px;
+}
+
+.heroDesc {
+  font-size: 14px;
+  line-height: 1.65;
+  color: #1d4ed8;
+  margin: 0;
+  max-width: 640px;
+
+  strong {
+    font-weight: 600;
+    color: #1e40af;
+  }
+}
+
+// ─── Toolbar：搜索 + 创建同一行 ───
+.toolbar {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
-.title {
-  font-size: 16px;
-  font-weight: 500;
+.createBtn {
+  flex-shrink: 0;
 }
 
-.filters {
-  margin-bottom: 16px;
+.searchCompact {
+  display: inline-flex;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.cardWrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid #e4e4e7;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    border-color: #a1a1aa;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+
+    .cardOverlay {
+      transform: translateY(0);
+    }
+  }
+}
+
+.card {
+  background: #fff;
+  padding: 18px 20px;
+  position: relative;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cardHead {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.cardIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.cardTitleBlock {
+  min-width: 0;
+}
+
+.cardName {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  color: #18181b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cardId {
+  display: block;
+  font-size: 12px;
+  font-family: ui-monospace, monospace;
+  color: #71717a;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cardDesc {
+  font-size: 13px;
+  color: #52525b;
+  line-height: 1.45;
+  margin: 0 0 12px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cardArrow {
+  margin-left: auto;
+  font-size: 12px;
+  color: #d4d4d8;
+  transition: color 0.2s ease;
+}
+
+.cardWrap:hover .cardArrow {
+  color: #2563eb;
+}
+
+.cardOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 20px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+  transform: translateY(100%);
+  transition: transform 0.2s ease;
+}
+
+.cardOverlayActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.cardOverlayBtn {
+  color: rgba(255, 255, 255, 0.9);
+
+  &:hover {
+    color: #fff;
+  }
+}
+
+.cardSkeleton {
+  height: 180px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #f4f4f5 25%, #fafafa 50%, #f4f4f5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.emptyWrap {
+  padding: 48px 24px;
+  text-align: center;
+  background: #fafafa;
+  border: 1px dashed #e4e4e7;
+  border-radius: 12px;
 }

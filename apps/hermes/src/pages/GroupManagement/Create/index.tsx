@@ -1,6 +1,6 @@
 import { useRequest } from 'ahooks'
 import { Form, Input, Card, message } from 'antd'
-import { useNavigate } from 'react-router-dom'
+import { useAppNavigate } from '@/contexts/DomainContext'
 import { groupApi } from '@/services'
 import { PageHeader, FormActions } from '@atlas/shared'
 import styles from './index.module.scss'
@@ -8,7 +8,7 @@ import styles from './index.module.scss'
 const { TextArea } = Input
 
 export function Create() {
-  const navigate = useNavigate()
+  const navigate = useAppNavigate()
   const [form] = Form.useForm()
 
   const { run: handleSubmit, loading } = useRequest(

@@ -5,13 +5,26 @@
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 16px;
+  gap: 16px;
+}
+
+.headerLeft {
+  min-width: 0;
 }
 
 .title {
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.headerDesc {
+  font-size: 12px;
+  display: block;
+  line-height: 1.45;
+  max-width: 480px;
 }
 
 .filters {

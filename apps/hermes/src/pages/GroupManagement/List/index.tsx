@@ -1,8 +1,8 @@
 import { useRequest } from 'ahooks'
 import { Card, Table, Button, Space, Empty, Typography } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
-import { PlusOutlined, EditOutlined, EyeOutlined, ReloadOutlined, TeamOutlined } from '@ant-design/icons'
-import { useNavigate } from 'react-router-dom'
+import { PlusOutlined, EditOutlined, EyeOutlined, TeamOutlined } from '@ant-design/icons'
+import { useAppNavigate } from '@/contexts/DomainContext'
 import { groupApi } from '@/services'
 import type { Group } from '@/types'
 import styles from './index.module.scss'
@@ -10,9 +10,9 @@ import styles from './index.module.scss'
 const { Text } = Typography
 
 export function List() {
-  const navigate = useNavigate()
+  const navigate = useAppNavigate()
 
-  const { data, loading, refresh } = useRequest(() => groupApi.getList())
+  const { data, loading } = useRequest(() => groupApi.getList())
 
   const tableData = data || []
 
@@ -57,11 +57,13 @@ export function List() {
     <div className={styles.container}>
       <Card>
         <div className={styles.header}>
-          <div className={styles.title}>组管理</div>
-          <Space>
-            <Button icon={<ReloadOutlined />} onClick={refresh}>刷新</Button>
-            <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/groups/create')}>新建组</Button>
-          </Space>
+          <div className={styles.headerLeft}>
+            <div className={styles.title}>组</div>
+            <Typography.Text type="secondary" className={styles.headerDesc}>
+              组用于将多个用户或身份聚合，在关系中可将组作为主体或对象，便于批量授权与维护。
+            </Typography.Text>
+          </div>
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/groups/create')}>创建组</Button>
         </div>
         <Table columns={columns} dataSource={tableData} loading={loading} rowKey="group_id" scroll={{ x: 600 }} locale={{ emptyText: emptyState }} />
       </Card>

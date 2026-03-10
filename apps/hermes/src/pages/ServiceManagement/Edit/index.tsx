@@ -1,6 +1,7 @@
 import { useRequest } from 'ahooks'
-import { Form, Input, InputNumber, Card, message, Switch, Spin } from 'antd'
-import { useParams, useNavigate } from 'react-router-dom'
+import { Form, Input, InputNumber, Card, message, Spin } from 'antd'
+import { useParams } from 'react-router-dom'
+import { useAppNavigate, useDomainId } from '@/contexts/DomainContext'
 import { serviceApi } from '@/services'
 import { PageHeader, FormActions } from '@atlas/shared'
 import styles from './index.module.scss'
@@ -9,20 +10,20 @@ const { TextArea } = Input
 
 export function Edit() {
   const { serviceId } = useParams<{ serviceId: string }>()
-  const navigate = useNavigate()
+  const domainId = useDomainId()
+  const navigate = useAppNavigate()
   const [form] = Form.useForm()
 
   const { data: _data, loading: detailLoading } = useRequest(
-    () => serviceApi.getDetail(serviceId!),
+    () => serviceApi.getDetail(domainId!, serviceId!),
     {
-      ready: !!serviceId,
+      ready: !!domainId && !!serviceId,
       onSuccess: (_data) => {
         form.setFieldsValue({
           name: _data.name,
           description: _data.description,
           access_token_expires_in: _data.access_token_expires_in,
           refresh_token_expires_in: _data.refresh_token_expires_in,
-          status: _data.status === 0,
         })
       },
       onError: () => {
@@ -33,12 +34,11 @@ export function Edit() {
 
   const { run: handleSubmit, loading } = useRequest(
     async (values: Record<string, unknown>) => {
-      await serviceApi.update(serviceId!, {
+      await serviceApi.update(domainId!, serviceId!, {
         name: values.name as string | undefined,
         description: values.description as string | undefined,
         access_token_expires_in: values.access_token_expires_in as number | undefined,
         refresh_token_expires_in: values.refresh_token_expires_in as number | undefined,
-        status: values.status ? 0 : 1,
       })
       message.success('更新成功')
       navigate(`/services/${serviceId}`)
@@ -93,10 +93,6 @@ export function Edit() {
             label="Refresh Token 过期时间（秒）"
           >
             <InputNumber min={1} style={{ width: '100%' }} />
-          </Form.Item>
-
-          <Form.Item name="status" label="状态" valuePropName="checked">
-            <Switch checkedChildren="启用" unCheckedChildren="禁用" />
           </Form.Item>
 
           <Form.Item>

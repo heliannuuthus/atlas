@@ -1,0 +1,65 @@
+.wrapper {
+  min-height: 100vh;
+  background: #fafafa;
+  padding: 24px;
+}
+
+.header {
+  max-width: 800px;
+  margin: 0 auto 32px;
+  text-align: center;
+}
+
+.title {
+  margin: 0 0 8px !important;
+  font-weight: 600;
+}
+
+.desc {
+  display: block;
+  font-size: 13px;
+  line-height: 1.55;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.main {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 48px 0;
+}
+
+.domainCard {
+  height: 100%;
+
+  :global(.ant-card-body) {
+    padding: 16px;
+  }
+}
+
+.cardBody {
+  min-width: 0;
+}
+
+.cardName {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #18181b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cardId {
+  font-size: 12px;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

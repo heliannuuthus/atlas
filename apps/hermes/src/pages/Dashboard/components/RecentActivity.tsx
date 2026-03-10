@@ -69,6 +69,7 @@ export function RecentActivity({
     return (
       <div className={styles.activityCard}>
         <div className={styles.cardLabel}>最近动态</div>
+        <div className={styles.cardDescSmall}>基于更新时间与即将过期的关系汇总，便于快速关注变更与即将到期的权限。</div>
         <div className={styles.activityEmpty}>加载中...</div>
       </div>
     )
@@ -77,6 +78,7 @@ export function RecentActivity({
   return (
     <div className={styles.activityCard}>
       <div className={styles.cardLabel}>最近动态</div>
+      <div className={styles.cardDescSmall}>基于更新时间与即将过期的关系汇总，便于快速关注变更与即将到期的权限。</div>
       {activities.length === 0 ? (
         <div className={styles.activityEmpty}>暂无动态</div>
       ) : (

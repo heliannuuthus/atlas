@@ -13,14 +13,15 @@ import {
   Button,
 } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
-import { useParams, useNavigate } from 'react-router-dom'
-import { InfoCircleOutlined, ShareAltOutlined, NodeIndexOutlined } from '@ant-design/icons'
+import { useParams } from 'react-router-dom'
+import { useAppNavigate, useDomainId } from '@/contexts/DomainContext'
+import { InfoCircleOutlined, ShareAltOutlined, NodeIndexOutlined, AppstoreOutlined } from '@ant-design/icons'
 import { serviceApi, relationshipApi } from '@/services'
-import type { Relationship } from '@/types'
+import type { Relationship, ServiceApplicationRelation } from '@/types'
 import { PageHeader, formatDuration, formatDateTime, formatRelativeTime, isExpiringSoon } from '@atlas/shared'
 import styles from './index.module.scss'
 
-const { Text } = Typography
+const { Text, Link } = Typography
 
 // 主体类型标签颜色映射
 const subjectTypeColors: Record<string, string> = {
@@ -38,22 +39,51 @@ const subjectTypeLabels: Record<string, string> = {
 
 export function Detail() {
   const { serviceId } = useParams<{ serviceId: string }>()
-  const navigate = useNavigate()
+  const domainId = useDomainId()
+  const navigate = useAppNavigate()
 
-  const { data, loading } = useRequest(() => serviceApi.getDetail(serviceId!), {
-    ready: !!serviceId,
-    onError: () => {
-      message.error('获取服务信息失败')
-    },
-  })
+  const { data, loading } = useRequest(
+    () => serviceApi.getDetail(domainId!, serviceId!),
+    { ready: !!domainId && !!serviceId, onError: () => message.error('获取服务信息失败') }
+  )
 
-  // 获取该服务相关的关系列表
+  const { data: appRelations, loading: appRelLoading } = useRequest(
+    () => serviceApi.getApplicationRelations(domainId!, serviceId!),
+    { ready: !!domainId && !!serviceId }
+  )
+
+  // 获取该服务相关的关系列表（ReBAC 关系图）
   const { data: relationships, loading: relLoading } = useRequest(
     () => relationshipApi.getList({ service_id: serviceId }),
     {
       ready: !!serviceId,
     }
   )
+
+  const appRelationColumns: ColumnsType<ServiceApplicationRelation> = [
+    {
+      title: '应用',
+      dataIndex: 'app_id',
+      key: 'app_id',
+      width: 180,
+      render: (value) => (
+        <Link onClick={() => navigate(`/applications/${value}`)} ellipsis>
+          {value}
+        </Link>
+      ),
+    },
+    {
+      title: '授予的权限',
+      dataIndex: 'relations',
+      key: 'relations',
+      render: (relations: string[]) =>
+        (relations || []).map((r) => (
+          <Tag key={r} color="processing" bordered={false}>
+            {r}
+          </Tag>
+        )),
+    },
+  ]
 
   const relationColumns: ColumnsType<Relationship> = [
     {
@@ -138,11 +168,6 @@ export function Detail() {
           <Descriptions.Item label="服务ID">{data.service_id}</Descriptions.Item>
           <Descriptions.Item label="名称">{data.name}</Descriptions.Item>
           <Descriptions.Item label="域ID">{data.domain_id}</Descriptions.Item>
-          <Descriptions.Item label="状态">
-            <Tag color={data.status === 0 ? 'green' : 'red'} bordered={false}>
-              {data.status === 0 ? '启用' : '禁用'}
-            </Tag>
-          </Descriptions.Item>
           <Descriptions.Item label="描述" span={2}>
             {data.description || <Text type="secondary">-</Text>}
           </Descriptions.Item>
@@ -155,6 +180,42 @@ export function Detail() {
           <Descriptions.Item label="创建时间">{formatDateTime(data.created_at)}</Descriptions.Item>
           <Descriptions.Item label="更新时间">{formatDateTime(data.updated_at)}</Descriptions.Item>
         </Descriptions>
+      ),
+    },
+    {
+      key: 'granted-apps',
+      label: (
+        <span>
+          <AppstoreOutlined />
+          已授权应用
+          {appRelations && appRelations.length > 0 && (
+            <Tag bordered={false} className={styles.tabBadge}>
+              {appRelations.length}
+            </Tag>
+          )}
+        </span>
+      ),
+      children: (
+        <div className={styles.relationshipsTab}>
+          <div className={styles.tabHeader}>
+            <Text type="secondary">
+              本服务已授权给以下应用及其可用的权限类型（ReBAC）。具体授权在应用详情中配置。
+            </Text>
+          </div>
+          <Table
+            columns={appRelationColumns}
+            dataSource={appRelations || []}
+            loading={appRelLoading}
+            rowKey="app_id"
+            size="small"
+            pagination={{ pageSize: 10 }}
+            locale={{
+              emptyText: (
+                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无已授权应用" />
+              ),
+            }}
+          />
+        </div>
       ),
     },
     {
@@ -173,7 +234,7 @@ export function Detail() {
       children: (
         <div className={styles.relationshipsTab}>
           <div className={styles.tabHeader}>
-            <Text type="secondary">展示该服务下的所有授权关系</Text>
+            <Text type="secondary">该服务下的主体-关系-对象授权关系，可在关系图谱中编辑</Text>
             <Button
               icon={<NodeIndexOutlined />}
               onClick={() => navigate('/relationships/graph')}
@@ -185,7 +246,7 @@ export function Detail() {
             columns={relationColumns}
             dataSource={relationships || []}
             loading={relLoading}
-            rowKey="_id"
+            rowKey={(r) => `${r.service_id}:${r.subject_id}:${r.relation}:${r.object_id}`}
             size="small"
             pagination={{ pageSize: 10 }}
             locale={{

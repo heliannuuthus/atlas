@@ -32,7 +32,7 @@ export function AuthCallback() {
 
     handleCallback(code, state ?? undefined)
       .then(async () => {
-        const returnTo = await consumeReturnTo() || '/dashboard'
+        const returnTo = await consumeReturnTo() || '/'
         navigate(returnTo, { replace: true })
       })
       .catch(() => {

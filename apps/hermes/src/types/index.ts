@@ -1,41 +1,34 @@
-// Hermes 身份与访问管理类型定义
+// Hermes 身份与访问管理类型定义（与后端 DTO 一致，无 _id）
 
 export interface Domain {
-  _id: number
   domain_id: string
   name: string
   description?: string
-  created_at: string
-  updated_at: string
 }
 
 export interface Service {
-  _id: number
   service_id: string
   domain_id: string
   name: string
   description?: string
-  encrypted_key?: string // 后端通常不返回，前端不需要
   access_token_expires_in: number
   refresh_token_expires_in: number
-  status: number // 0=active, 1=disabled
   created_at: string
   updated_at: string
 }
 
 export interface Application {
-  _id: number
   domain_id: string
   app_id: string
   name: string
-  redirect_uris?: string[] // JSON 数组字符串或数组
-  encrypted_key?: string[] // 后端通常不返回
+  logo_url?: string
+  redirect_uris?: string[]
+  allowed_origins?: string[]
   created_at: string
   updated_at: string
 }
 
 export interface Relationship {
-  _id: number
   service_id: string
   subject_type: 'user' | 'group' | 'application'
   subject_id: string
@@ -47,8 +40,8 @@ export interface Relationship {
 }
 
 export interface Group {
-  _id: number
   group_id: string
+  service_id: string
   name: string
   description?: string
   created_at: string
@@ -57,7 +50,13 @@ export interface Group {
 
 export interface ApplicationServiceRelation {
   service_id: string
-  relations: string[] // ["*"] 表示全部
+  relations: string[] // 该服务授予本应用的权限类型，["*"] 表示全部
+}
+
+/** 服务侧：该服务已授权给哪些应用及授予的权限（ReBAC） */
+export interface ServiceApplicationRelation {
+  app_id: string
+  relations: string[]
 }
 
 // 请求类型

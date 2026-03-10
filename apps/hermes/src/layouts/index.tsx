@@ -1,6 +1,6 @@
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation, useParams } from 'react-router-dom'
+import { useRequest } from 'ahooks'
 import {
-  ApartmentOutlined,
   CloudServerOutlined,
   AppstoreAddOutlined,
   ShareAltOutlined,
@@ -8,34 +8,34 @@ import {
   DashboardOutlined,
   NodeIndexOutlined,
   UnorderedListOutlined,
-  SettingOutlined,
-  FileSearchOutlined,
 } from '@ant-design/icons'
-import { MainLayout, Sidebar, Breadcrumb, Header, UserMenu, SearchTrigger } from '@atlas/ui'
+import { Select } from 'antd'
+import { MainLayout, Sidebar, Header, UserMenu, SearchTrigger } from '@atlas/ui'
 import type { SidebarMenuItem } from '@atlas/ui'
+import { DomainContext } from '@/contexts/DomainContext'
+import { domainApi } from '@/services'
 
 const BRAND_COLOR = '#059669'
 
-const hermesMenus: SidebarMenuItem[] = [
-  { key: 'dashboard', label: '概览', icon: <DashboardOutlined />, path: '/dashboard' },
-  { key: 'domains', label: '域管理', icon: <ApartmentOutlined />, path: '/domains', section: '身份管理' },
-  { key: 'services', label: '服务管理', icon: <CloudServerOutlined />, path: '/services' },
-  { key: 'applications', label: '应用管理', icon: <AppstoreAddOutlined />, path: '/applications' },
-  {
-    key: 'relationships',
-    label: '关系管理',
-    icon: <ShareAltOutlined />,
-    path: '/relationships',
-    section: '访问控制',
-    children: [
-      { key: 'rel-list', label: '关系列表', icon: <UnorderedListOutlined />, path: '/relationships' },
-      { key: 'rel-graph', label: '关系图谱', icon: <NodeIndexOutlined />, path: '/relationships/graph' },
-    ],
-  },
-  { key: 'groups', label: '组管理', icon: <TeamOutlined />, path: '/groups' },
-  { key: 'logs', label: '审计日志', icon: <FileSearchOutlined />, path: '/logs', bottom: true },
-  { key: 'settings', label: '设置', icon: <SettingOutlined />, path: '/settings', bottom: true },
-]
+function buildMenus(basePath: string): SidebarMenuItem[] {
+  return [
+    { key: 'home', label: '概览', icon: <DashboardOutlined />, path: basePath },
+    { key: 'applications', label: '应用', icon: <AppstoreAddOutlined />, path: `${basePath}/applications` },
+    { key: 'services', label: '服务', icon: <CloudServerOutlined />, path: `${basePath}/services` },
+    {
+      key: 'relationships',
+      label: '关系',
+      icon: <ShareAltOutlined />,
+      path: `${basePath}/relationships`,
+      section: '访问控制',
+      children: [
+        { key: 'rel-list', label: '列表', icon: <UnorderedListOutlined />, path: `${basePath}/relationships` },
+        { key: 'rel-graph', label: '图谱', icon: <NodeIndexOutlined />, path: `${basePath}/relationships/graph` },
+      ],
+    },
+    { key: 'groups', label: '组', icon: <TeamOutlined />, path: `${basePath}/groups` },
+  ]
+}
 
 const hermesLogo = {
   icon: (
@@ -47,45 +47,60 @@ const hermesLogo = {
   text: 'Hermes',
 }
 
-const breadcrumbConfig = {
-  appName: 'Hermes',
-  defaultPath: '/dashboard',
-  routeNameMap: {
-    domains: '域管理',
-    services: '服务管理',
-    applications: '应用管理',
-    relationships: '关系管理',
-    groups: '组管理',
-    graph: '关系图谱',
-    logs: '审计日志',
-    settings: '设置',
-  },
-}
-
 export function HermesLayout() {
   const navigate = useNavigate()
   const location = useLocation()
+  const { domainId } = useParams<{ domainId: string }>()
+  const { data: domains = [] } = useRequest(() => domainApi.getList())
+
+  if (!domainId) {
+    navigate('/', { replace: true })
+    return null
+  }
+
+  const basePath = `/d/${encodeURIComponent(domainId)}`
+  const menus = buildMenus(basePath)
+
+  const handleDomainChange = (newDomainId: string) => {
+    if (newDomainId === domainId) return
+    const prefix = `/d/${encodeURIComponent(domainId)}`
+    const rest = location.pathname === prefix || location.pathname === `${prefix}/`
+      ? ''
+      : location.pathname.slice(prefix.length) || ''
+    navigate(`/d/${encodeURIComponent(newDomainId)}${rest}`)
+  }
 
   return (
-    <MainLayout
-      renderSidebar={(collapsed) => (
-        <Sidebar
-          collapsed={collapsed}
-          menus={hermesMenus}
-          logo={hermesLogo}
-          brandColor={BRAND_COLOR}
-          onLogoClick={() => navigate('/dashboard')}
-          selectedKeys={[location.pathname]}
-          onMenuClick={(key) => navigate(key)}
-        />
-      )}
-      header={
-        <Header
-          left={<Breadcrumb config={breadcrumbConfig} />}
-          center={<SearchTrigger />}
-          right={<UserMenu brandColor={BRAND_COLOR} />}
-        />
-      }
-    />
+    <DomainContext.Provider value={domainId}>
+      <MainLayout
+        renderSidebar={(collapsed) => (
+          <Sidebar
+            collapsed={collapsed}
+            menus={menus}
+            logo={hermesLogo}
+            brandColor={BRAND_COLOR}
+            onLogoClick={() => navigate(basePath)}
+            selectedKeys={[location.pathname]}
+            onMenuClick={(key) => navigate(key)}
+          />
+        )}
+        header={
+          <Header
+            left={
+              <Select
+                value={domainId}
+                onChange={handleDomainChange}
+                options={domains.map((d) => ({ label: d.name || d.domain_id, value: d.domain_id }))}
+                placeholder="选择域"
+                style={{ minWidth: 160 }}
+                size="middle"
+              />
+            }
+            center={<SearchTrigger />}
+            right={<UserMenu brandColor={BRAND_COLOR} />}
+          />
+        }
+      />
+    </DomainContext.Provider>
   )
 }

@@ -7,6 +7,8 @@ import styles from './index.module.scss'
 interface BreadcrumbConfig {
   appName: string
   defaultPath: string
+  /** 若提供，面包屑只显示该路径之后的片段，且 navigate 时会拼回此前缀 */
+  basePath?: string
   routeNameMap?: Record<string, string>
 }
 
@@ -27,8 +29,23 @@ export function Breadcrumb({ config }: AppBreadcrumbProps) {
   const routeNameMap = { ...defaultRouteNames, ...config.routeNameMap }
 
   const generateBreadcrumbs = (): BreadcrumbProps['items'] => {
-    const pathSegments = location.pathname.split('/').filter(Boolean)
-    if (pathSegments.length === 0) return []
+    const basePath = config.basePath ?? ''
+    const pathForBreadcrumb = basePath
+      ? location.pathname === basePath
+        ? ''
+        : location.pathname.startsWith(basePath + '/')
+          ? location.pathname.slice(basePath.length)
+          : location.pathname
+      : location.pathname
+    const pathSegments = pathForBreadcrumb.split('/').filter(Boolean)
+    const homeTitle = routeNameMap['home'] ?? '首页'
+
+    if (pathSegments.length === 0) {
+      return [
+        { title: <span className={`${styles.breadcrumbItem} ${styles.moduleRoot}`}>{config.appName}</span> },
+        { title: <span className={`${styles.breadcrumbItem} ${styles.active}`}>{homeTitle}</span> },
+      ]
+    }
 
     const items: BreadcrumbProps['items'] = [
       {
@@ -40,9 +57,9 @@ export function Breadcrumb({ config }: AppBreadcrumbProps) {
       },
     ]
 
-    let currentPath = ''
+    let currentPath = basePath
     pathSegments.forEach((segment, index) => {
-      currentPath += `/${segment}`
+      currentPath += (currentPath.endsWith('/') ? '' : '/') + segment
       const isLast = index === pathSegments.length - 1
       const title = routeNameMap[segment] || segment
 
