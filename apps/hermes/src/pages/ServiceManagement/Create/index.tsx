@@ -17,7 +17,7 @@ export function Create() {
       await serviceApi.create(domainId!, {
         service_id: values.service_id as string,
         name: values.name as string,
-        description: values.description as string | undefined,
+        description: (values.description as string)?.trim() ?? '',
         access_token_expires_in: values.access_token_expires_in as number | undefined,
         refresh_token_expires_in: values.refresh_token_expires_in as number | undefined,
       })
@@ -58,8 +58,12 @@ export function Create() {
             <Input placeholder="请输入名称" />
           </Form.Item>
 
-          <Form.Item name="description" label="描述">
-            <TextArea rows={4} placeholder="请输入描述" />
+          <Form.Item
+            name="description"
+            label="描述"
+            rules={[{ required: true, message: '请输入描述' }]}
+          >
+            <TextArea rows={3} placeholder="请输入描述" />
           </Form.Item>
 
           <Form.Item

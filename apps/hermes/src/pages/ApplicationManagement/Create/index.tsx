@@ -18,8 +18,9 @@ export function Create() {
         ? (values.redirect_uris as string).split('\n').filter(Boolean)
         : []
       await applicationApi.create(domainId!, {
-        app_id: values.app_id as string,
+        app_id: (values.app_id as string)?.trim() ?? '',
         name: values.name as string,
+        description: (values.description as string)?.trim() ?? '',
         redirect_uris: redirectUris,
         need_key: values.need_key as boolean,
       })
@@ -34,15 +35,14 @@ export function Create() {
       <PageHeader title="新建应用" onBack={() => navigate('/applications')} />
       <Card bordered={false}>
         <Form form={form} layout="vertical" onFinish={handleSubmit} className={styles.form}>
-          <Form.Item
-            name="app_id"
-            label="应用ID"
-            rules={[{ required: true, message: '请输入应用ID' }]}
-          >
-            <Input placeholder="请输入应用ID" />
+          <Form.Item name="app_id" label="应用标识">
+            <Input placeholder="选填，不填则自动生成" />
           </Form.Item>
           <Form.Item name="name" label="名称" rules={[{ required: true, message: '请输入名称' }]}>
             <Input placeholder="请输入名称" />
+          </Form.Item>
+          <Form.Item name="description" label="描述" rules={[{ required: true, message: '请输入描述' }]}>
+            <TextArea rows={3} placeholder="请输入描述" />
           </Form.Item>
           <Form.Item name="redirect_uris" label="重定向URI（每行一个）">
             <TextArea rows={4} placeholder="请输入重定向URI，每行一个" />

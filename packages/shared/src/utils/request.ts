@@ -2,7 +2,6 @@ import { message } from 'antd'
 import type { AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios'
 import axios from 'axios'
 import { getServiceUrl, apiEndpoints, type ServiceName } from '../config/env'
-import { useAuthStore } from '../store/auth'
 import { getAuth } from '../config/auth'
 
 const serviceAudienceMap: Record<string, string> = {
@@ -59,7 +58,7 @@ function responseErrorHandler(error: AxiosError<ApiResponse>) {
         errorMsg = '未授权，请重新登录'
         const audience = resolveAudienceFromError(error)
         getAuth().refreshToken(undefined, audience).catch(() => {
-          useAuthStore.getState().logout()
+          getAuth().logout()
         })
         break
       }

@@ -1,8 +1,12 @@
 import { hermesRequest as request } from '@atlas/shared'
 import type {
   Domain,
+  DomainIDP,
   Service,
   Application,
+  ApplicationIDPConfig,
+  ApplicationIDPConfigCreateRequest,
+  ApplicationIDPConfigUpdateRequest,
   ApplicationServiceRelation,
   ServiceApplicationRelation,
   Relationship,
@@ -23,6 +27,7 @@ import type {
 export const domainApi = {
   getList: () => request.get<Domain[]>('/domains'),
   getDetail: (domainId: string) => request.get<Domain>(`/domains/${domainId}`),
+  getIDPs: (domainId: string) => request.get<DomainIDP[]>(`/domains/${domainId}/idps`),
 }
 
 export const serviceApi = {
@@ -61,6 +66,14 @@ export const applicationApi = {
     request.get<ApplicationServiceRelation[]>(`/domains/${domainId}/applications/${appId}/relations`),
   delete: (domainId: string, appId: string) =>
     request.delete(`/domains/${domainId}/applications/${appId}`),
+  getIDPConfigs: (domainId: string, appId: string) =>
+    request.get<ApplicationIDPConfig[]>(`/domains/${domainId}/applications/${appId}/idp-configs`),
+  createIDPConfig: (domainId: string, appId: string, data: ApplicationIDPConfigCreateRequest) =>
+    request.post(`/domains/${domainId}/applications/${appId}/idp-configs`, data),
+  updateIDPConfig: (domainId: string, appId: string, idpType: string, data: ApplicationIDPConfigUpdateRequest) =>
+    request.patch(`/domains/${domainId}/applications/${appId}/idp-configs/${idpType}`, data),
+  deleteIDPConfig: (domainId: string, appId: string, idpType: string) =>
+    request.delete(`/domains/${domainId}/applications/${appId}/idp-configs/${idpType}`),
 }
 
 export const relationshipApi = {

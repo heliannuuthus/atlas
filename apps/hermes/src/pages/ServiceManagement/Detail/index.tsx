@@ -11,6 +11,7 @@ import {
   Typography,
   Tooltip,
   Button,
+  Space,
 } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { useParams } from 'react-router-dom'

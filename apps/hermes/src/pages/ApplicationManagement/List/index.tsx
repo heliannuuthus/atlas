@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useRequest, useDebounce } from 'ahooks'
-import { Button, Input, Form, Select, Space, Typography, Modal, Tooltip, Avatar, message } from 'antd'
+import { Button, Input, Form, Select, Space, Typography, Modal, Tooltip, Avatar, Row, Col, Card, Flex, message } from 'antd'
 import {
   PlusOutlined,
   EditOutlined,
@@ -43,10 +43,11 @@ export function List() {
   })
 
   const { run: runCreate, loading: createLoading } = useRequest(
-    async (values: { app_id: string; name: string }) => {
+    async (values: { app_id: string; name: string; description: string }) => {
       await applicationApi.create(domainId!, {
         app_id: values.app_id,
         name: values.name,
+        description: values.description,
         redirect_uris: [],
         need_key: false,
       })
@@ -80,7 +81,7 @@ export function List() {
             style={{ width: 88 }}
           />
           <Input
-            placeholder={searchBy === 'id' ? '输入应用 ID' : '输入应用名称'}
+            placeholder={searchBy === 'id' ? '输入应用标识' : '输入应用名称'}
             allowClear
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
@@ -90,105 +91,117 @@ export function List() {
       </div>
 
       {loading ? (
-        <div className={styles.grid}>
+        <Row gutter={[24, 24]}>
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className={styles.cardSkeleton} />
+            <Col key={i} xs={24} sm={12} md={8} lg={8} xl={6}>
+              <Card loading className={styles.cardSkeleton} />
+            </Col>
           ))}
-        </div>
+        </Row>
       ) : (
-        <div className={styles.grid}>
-          <Button
-            type="text"
-            className={`${styles.cardWrap} ${styles.createCard}`}
-            onClick={() => setCreateModalOpen(true)}
-          >
-            <article className={styles.card}>
-              <div className={styles.createCardInner}>
-                <div className={styles.createCardIcon}>
-                  <PlusOutlined />
-                </div>
-                <span className={styles.createCardText}>创建应用</span>
-                <span className={styles.createCardHint}>配置重定向 URI 与授权</span>
-              </div>
-            </article>
-          </Button>
-          {list.map((app) => (
+        <Row gutter={[24, 24]}>
+          <Col xs={24} sm={12} md={8} lg={8} xl={6}>
             <div
-              key={app.app_id}
-              className={styles.cardWrap}
-              onClick={() => navigate(`/applications/${app.app_id}`)}
+              className={`${styles.cardWrap} ${styles.createCard}`}
+              onClick={() => setCreateModalOpen(true)}
+              onKeyDown={(e) => e.key === 'Enter' && setCreateModalOpen(true)}
+              role="button"
+              tabIndex={0}
             >
-              <article className={styles.card}>
-                <div className={styles.cardHead}>
+              <Card className={styles.card} bordered={false}>
+                <Flex gap={14} align="flex-start" className={styles.cardHead}>
                   <div className={styles.cardIcon}>
-                    {app.logo_url ? (
-                      <Avatar src={app.logo_url} shape="square" size={44} />
-                    ) : (
-                      <AppstoreAddOutlined />
-                    )}
+                    <PlusOutlined />
                   </div>
-                  <div className={styles.cardTitleBlock}>
+                  <Flex vertical gap={2} className={styles.cardTitleBlock}>
                     <div className={styles.cardIdWrap}>
-                      <Typography.Text
-                        copyable={{ text: app.app_id, tooltips: ['复制标识', '已复制'] }}
-                        className={styles.cardId}
-                      >
-                        {app.app_id}
-                      </Typography.Text>
+                      <span className={styles.cardId}>创建应用</span>
                     </div>
-                    <span className={styles.cardName}>{app.name || app.app_id}</span>
-                  </div>
-                </div>
-                {app.description ? (
-                  <p className={styles.cardDesc}>{app.description}</p>
-                ) : (
-                  <p className={styles.cardDescMuted}>暂无描述</p>
-                )}
-              </article>
-
-              <div className={styles.rightTrigger} />
-              <div className={styles.overlayRight} onClick={(e) => e.stopPropagation()}>
-                <Tooltip title="查看详情" placement="left">
-                  <Button
-                    type="text"
-                    icon={<EyeOutlined />}
-                    className={styles.overlayBtn}
-                    onClick={() => navigate(`/applications/${app.app_id}`)}
-                  />
-                </Tooltip>
-                <Tooltip title="编辑应用" placement="left">
-                  <Button
-                    type="text"
-                    icon={<EditOutlined />}
-                    className={styles.overlayBtn}
-                    onClick={() => navigate(`/applications/${app.app_id}/edit`)}
-                  />
-                </Tooltip>
-                <Tooltip title="删除应用" placement="left">
-                  <Button
-                    type="text"
-                    danger
-                    icon={<DeleteOutlined />}
-                    className={`${styles.overlayBtn} ${styles.deleteBtn}`}
-                    onClick={() => {
-                      Modal.confirm({
-                        title: '删除应用',
-                        content: `确定删除应用「${app.name || app.app_id}」？删除后无法恢复。`,
-                        okText: '删除',
-                        okType: 'danger',
-                        cancelText: '取消',
-                        onOk: async () => {
-                          await applicationApi.delete(domainId!, app.app_id)
-                          refresh()
-                        },
-                      })
-                    }}
-                  />
-                </Tooltip>
-              </div>
+                    <span className={styles.cardName}>配置重定向 URI 与授权</span>
+                  </Flex>
+                </Flex>
+                <p className={styles.cardDescMuted}>点击创建新应用</p>
+              </Card>
             </div>
+          </Col>
+          {list.map((app) => (
+            <Col key={app.app_id} xs={24} sm={12} md={8} lg={8} xl={6}>
+              <div
+                className={styles.cardWrap}
+                onClick={() => navigate(`/applications/${app.app_id}`)}
+              >
+                <Card className={styles.card} bordered={false}>
+                  <Flex gap={14} align="flex-start" className={styles.cardHead}>
+                    <div className={styles.cardIcon}>
+                      {app.logo_url ? (
+                        <Avatar src={app.logo_url} shape="square" size={44} />
+                      ) : (
+                        <AppstoreAddOutlined />
+                      )}
+                    </div>
+                    <Flex vertical gap={2} className={styles.cardTitleBlock}>
+                      <div className={styles.cardIdWrap}>
+                        <Typography.Text
+                          copyable={{ text: app.app_id, tooltips: ['复制标识', '已复制'] }}
+                          className={styles.cardId}
+                        >
+                          {app.app_id}
+                        </Typography.Text>
+                      </div>
+                      <span className={styles.cardName}>{app.name || app.app_id}</span>
+                    </Flex>
+                  </Flex>
+                  {app.description ? (
+                    <p className={styles.cardDesc}>{app.description}</p>
+                  ) : (
+                    <p className={styles.cardDescMuted}>暂无描述</p>
+                  )}
+                </Card>
+
+                <div className={styles.rightTrigger} />
+                <div className={styles.overlayRight} onClick={(e) => e.stopPropagation()}>
+                  <Tooltip title="查看详情" placement="left">
+                    <Button
+                      type="text"
+                      icon={<EyeOutlined />}
+                      className={styles.overlayBtn}
+                      onClick={() => navigate(`/applications/${app.app_id}`)}
+                    />
+                  </Tooltip>
+                  <Tooltip title="编辑应用" placement="left">
+                    <Button
+                      type="text"
+                      icon={<EditOutlined />}
+                      className={styles.overlayBtn}
+                      onClick={() => navigate(`/applications/${app.app_id}/edit`)}
+                    />
+                  </Tooltip>
+                  <Tooltip title="删除应用" placement="left">
+                    <Button
+                      type="text"
+                      danger
+                      icon={<DeleteOutlined />}
+                      className={`${styles.overlayBtn} ${styles.deleteBtn}`}
+                      onClick={() => {
+                        Modal.confirm({
+                          title: '删除应用',
+                          content: `确定删除应用「${app.name || app.app_id}」？删除后无法恢复。`,
+                          okText: '删除',
+                          okType: 'danger',
+                          cancelText: '取消',
+                          onOk: async () => {
+                            await applicationApi.delete(domainId!, app.app_id)
+                            refresh()
+                          },
+                        })
+                      }}
+                    />
+                  </Tooltip>
+                </div>
+              </div>
+            </Col>
           ))}
-        </div>
+        </Row>
       )}
 
       <Modal
@@ -197,18 +210,20 @@ export function List() {
         onCancel={() => { setCreateModalOpen(false); form.resetFields() }}
         footer={null}
         destroyOnClose
+        width={400}
       >
         <Form
           form={form}
           layout="vertical"
-          onFinish={(v) => runCreate(v as { app_id: string; name: string })}
+          onFinish={(v) =>
+            runCreate({
+              ...v,
+              app_id: (v as { app_id?: string }).app_id?.trim() ?? '',
+            } as { app_id: string; name: string; description: string })
+          }
         >
-          <Form.Item
-            name="app_id"
-            label="应用 ID"
-            rules={[{ required: true, message: '请输入应用 ID' }]}
-          >
-            <Input placeholder="请输入应用 ID" />
+          <Form.Item name="app_id" label="应用标识">
+            <Input placeholder="选填，不填则自动生成" />
           </Form.Item>
           <Form.Item
             name="name"
@@ -216,6 +231,13 @@ export function List() {
             rules={[{ required: true, message: '请输入名称' }]}
           >
             <Input placeholder="请输入名称" />
+          </Form.Item>
+          <Form.Item
+            name="description"
+            label="描述"
+            rules={[{ required: true, message: '请输入描述' }]}
+          >
+            <Input.TextArea placeholder="请输入描述" rows={3} />
           </Form.Item>
           <Form.Item className={styles.modalFooter}>
             <Space>

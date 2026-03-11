@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useRequest } from 'ahooks'
 import {
   Card,
@@ -13,44 +13,285 @@ import {
   Button,
   Form,
   Input,
+  InputNumber,
+  Modal,
+  Select,
+  Popconfirm,
+  Space,
 } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { useParams } from 'react-router-dom'
 import { useAppNavigate, useDomainId } from '@/contexts/DomainContext'
 import {
-  InfoCircleOutlined,
+  SettingOutlined,
   CloudServerOutlined,
-  LinkOutlined,
   ArrowLeftOutlined,
   SaveOutlined,
   PlusOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  ApiOutlined,
 } from '@ant-design/icons'
-import { applicationApi } from '@/services'
-import type { ApplicationServiceRelation } from '@/types'
+import { applicationApi, domainApi } from '@/services'
+import type { ApplicationServiceRelation, ApplicationIDPConfig } from '@/types'
 import { formatDateTime } from '@atlas/shared'
 import styles from './index.module.scss'
 
 const { Text, Link } = Typography
 const { TextArea } = Input
 
+const IDP_TYPE_LABELS: Record<string, string> = {
+  user: '账号密码',
+  staff: '员工账号',
+  github: 'GitHub',
+  google: 'Google',
+  'wechat-mp': '微信小程序',
+  'wechat-web': '微信网页',
+  'tt-mp': '抖音小程序',
+  'tt-web': '抖音网页',
+  'alipay-mp': '支付宝小程序',
+  'alipay-web': '支付宝网页',
+  wecom: '企业微信',
+  passkey: 'Passkey',
+  global: '全局身份',
+}
+
+function idpLabel(type: string) {
+  return IDP_TYPE_LABELS[type] ?? type
+}
+
 export function Detail() {
   const { appId } = useParams<{ appId: string }>()
   const domainId = useDomainId()
   const navigate = useAppNavigate()
-  const [activeTab, setActiveTab] = useState('info')
-  const [appInfoForm] = Form.useForm()
-  const [callbackForm] = Form.useForm()
+  const [activeTab, setActiveTab] = useState('settings')
+  const [settingsForm] = Form.useForm()
+  const [idpModalOpen, setIdpModalOpen] = useState(false)
+  const [editingIdp, setEditingIdp] = useState<ApplicationIDPConfig | null>(null)
+  const [idpForm] = Form.useForm()
 
   const { data, loading, refresh } = useRequest(
     () => applicationApi.getDetail(domainId!, appId!),
-    { ready: !!domainId && !!appId, onError: () => message.error('获取应用信息失败') }
+    { ready: !!domainId && !!appId, onError: () => message.error('获取应用信息失败') },
   )
 
-  // 仅切换到「服务授予的权限」时再请求，不预读
   const { data: serviceRelations, loading: svcRelLoading } = useRequest(
     () => applicationApi.getServiceRelations(domainId!, appId!),
-    { ready: !!domainId && !!appId && activeTab === 'services' }
+    { ready: !!domainId && !!appId && activeTab === 'permissions' },
   )
+
+  const {
+    data: idpConfigs,
+    loading: idpLoading,
+    refresh: refreshIdpConfigs,
+  } = useRequest(() => applicationApi.getIDPConfigs(domainId!, appId!), {
+    ready: !!domainId && !!appId && activeTab === 'idp',
+  })
+
+  const { data: domainIdps } = useRequest(() => domainApi.getIDPs(domainId!), {
+    ready: !!domainId && idpModalOpen,
+  })
+
+  const availableIdpTypes = useMemo(() => {
+    if (!domainIdps) return []
+    const configured = new Set((idpConfigs ?? []).map((c) => c.type))
+    return domainIdps
+      .filter((d) => !configured.has(d.idp_type) || editingIdp?.type === d.idp_type)
+      .map((d) => ({ label: idpLabel(d.idp_type), value: d.idp_type }))
+  }, [domainIdps, idpConfigs, editingIdp])
+
+  const { run: runSaveSettings, loading: saving } = useRequest(
+    async (values: {
+      name: string
+      description?: string
+      redirect_uris?: string
+      allowed_origins?: string
+      id_token_expires_in?: number
+      refresh_token_expires_in?: number
+      refresh_token_absolute_expires_in?: number
+    }) => {
+      const redirectUris = values.redirect_uris
+        ? values.redirect_uris.split('\n').filter(Boolean)
+        : []
+      await applicationApi.update(domainId!, appId!, {
+        name: values.name,
+        description: values.description || undefined,
+        redirect_uris: redirectUris,
+        id_token_expires_in: values.id_token_expires_in,
+        refresh_token_expires_in: values.refresh_token_expires_in,
+        refresh_token_absolute_expires_in: values.refresh_token_absolute_expires_in,
+      })
+      refresh()
+      message.success('已保存')
+    },
+    { manual: true, onError: () => message.error('保存失败') },
+  )
+
+  const { run: runCreateIdp, loading: creatingIdp } = useRequest(
+    async (values: { type: string; priority?: number; strategy?: string; delegate?: string; require?: string }) => {
+      await applicationApi.createIDPConfig(domainId!, appId!, values)
+      refreshIdpConfigs()
+      setIdpModalOpen(false)
+      idpForm.resetFields()
+      message.success('已添加')
+    },
+    { manual: true, onError: () => message.error('添加失败') },
+  )
+
+  const { run: runUpdateIdp, loading: updatingIdp } = useRequest(
+    async (idpType: string, values: { priority?: number; strategy?: string; delegate?: string; require?: string }) => {
+      await applicationApi.updateIDPConfig(domainId!, appId!, idpType, values)
+      refreshIdpConfigs()
+      setIdpModalOpen(false)
+      setEditingIdp(null)
+      idpForm.resetFields()
+      message.success('已更新')
+    },
+    { manual: true, onError: () => message.error('更新失败') },
+  )
+
+  const { run: runDeleteIdp } = useRequest(
+    async (idpType: string) => {
+      await applicationApi.deleteIDPConfig(domainId!, appId!, idpType)
+      refreshIdpConfigs()
+      message.success('已删除')
+    },
+    { manual: true, onError: () => message.error('删除失败') },
+  )
+
+  useEffect(() => {
+    if (!data) return
+    let uris: string[] = []
+    try {
+      uris = Array.isArray(data.redirect_uris)
+        ? data.redirect_uris
+        : data.redirect_uris
+          ? JSON.parse(data.redirect_uris)
+          : []
+    } catch {
+      /* ignore */
+    }
+    let origins: string[] = []
+    try {
+      origins = Array.isArray(data.allowed_origins)
+        ? data.allowed_origins
+        : data.allowed_origins
+          ? JSON.parse(data.allowed_origins)
+          : []
+    } catch {
+      /* ignore */
+    }
+    settingsForm.setFieldsValue({
+      name: data.name,
+      description: data.description ?? '',
+      redirect_uris: uris.join('\n'),
+      allowed_origins: origins.join('\n'),
+      id_token_expires_in: data.id_token_expires_in || undefined,
+      refresh_token_expires_in: data.refresh_token_expires_in || undefined,
+      refresh_token_absolute_expires_in: data.refresh_token_absolute_expires_in || undefined,
+    })
+  }, [data, settingsForm])
+
+  const handleSaveSettings = async () => {
+    try {
+      const values = await settingsForm.validateFields()
+      await runSaveSettings(values)
+    } catch (e: unknown) {
+      if (e && typeof e === 'object' && 'errorFields' in e) return
+    }
+  }
+
+  const handleIdpModalOk = async () => {
+    try {
+      const values = await idpForm.validateFields()
+      if (editingIdp) {
+        await runUpdateIdp(editingIdp.type, values)
+      } else {
+        await runCreateIdp(values)
+      }
+    } catch (e: unknown) {
+      if (e && typeof e === 'object' && 'errorFields' in e) return
+    }
+  }
+
+  const openEditIdp = (record: ApplicationIDPConfig) => {
+    setEditingIdp(record)
+    idpForm.setFieldsValue({
+      type: record.type,
+      priority: record.priority,
+      strategy: record.strategy ?? undefined,
+      delegate: record.delegate ?? undefined,
+      require: record.require ?? undefined,
+    })
+    setIdpModalOpen(true)
+  }
+
+  const openAddIdp = () => {
+    setEditingIdp(null)
+    idpForm.resetFields()
+    setIdpModalOpen(true)
+  }
+
+  const idpColumns: ColumnsType<ApplicationIDPConfig> = [
+    {
+      title: '类型',
+      dataIndex: 'type',
+      key: 'type',
+      width: 160,
+      render: (t: string) => (
+        <Tag color="blue" bordered={false}>
+          {idpLabel(t)}
+        </Tag>
+      ),
+    },
+    {
+      title: '优先级',
+      dataIndex: 'priority',
+      key: 'priority',
+      width: 80,
+      sorter: (a, b) => a.priority - b.priority,
+    },
+    {
+      title: '策略',
+      dataIndex: 'strategy',
+      key: 'strategy',
+      width: 120,
+      render: (v: string) => v || <Text type="secondary">—</Text>,
+    },
+    {
+      title: '委托',
+      dataIndex: 'delegate',
+      key: 'delegate',
+      width: 120,
+      render: (v: string) => v || <Text type="secondary">—</Text>,
+    },
+    {
+      title: '必需',
+      dataIndex: 'require',
+      key: 'require',
+      width: 120,
+      render: (v: string) => v || <Text type="secondary">—</Text>,
+    },
+    {
+      title: '操作',
+      key: 'actions',
+      width: 100,
+      render: (_, record) => (
+        <Space size="small">
+          <Button type="text" size="small" icon={<EditOutlined />} onClick={() => openEditIdp(record)} />
+          <Popconfirm
+            title="确认删除该身份源配置？"
+            onConfirm={() => runDeleteIdp(record.type)}
+            okText="删除"
+            cancelText="取消"
+            okButtonProps={{ danger: true }}
+          >
+            <Button type="text" size="small" danger icon={<DeleteOutlined />} />
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ]
 
   const serviceRelationColumns: ColumnsType<ApplicationServiceRelation> = [
     {
@@ -75,23 +316,6 @@ export function Detail() {
     },
   ]
 
-  const { run: runUpdateAppInfo, loading: savingAppInfo } = useRequest(
-    async (values: { name: string; description?: string }) => {
-      await applicationApi.update(domainId!, appId!, { name: values.name, description: values.description || undefined })
-      refresh()
-    },
-    { manual: true, onError: () => message.error('保存失败') }
-  )
-
-  const { run: runUpdateCallback, loading: savingCallback } = useRequest(
-    async (values: { redirect_uris?: string }) => {
-      const uris = values.redirect_uris ? values.redirect_uris.split('\n').filter(Boolean) : []
-      await applicationApi.update(domainId!, appId!, { redirect_uris: uris })
-      refresh()
-    },
-    { manual: true, onError: () => message.error('保存失败') }
-  )
-
   if (loading) {
     return (
       <div className={styles.loading}>
@@ -102,136 +326,167 @@ export function Detail() {
 
   if (!data) return null
 
-  let redirectUris: string[] = []
-  try {
-    redirectUris = Array.isArray(data.redirect_uris)
-      ? data.redirect_uris
-      : data.redirect_uris
-        ? JSON.parse(data.redirect_uris)
-        : []
-  } catch {
-    redirectUris = []
-  }
-
-  useEffect(() => {
-    if (!data) return
-    appInfoForm.setFieldsValue({ name: data.name, description: data.description ?? '' })
-    let uris: string[] = []
-    try {
-      uris = Array.isArray(data.redirect_uris) ? data.redirect_uris : data.redirect_uris ? JSON.parse(data.redirect_uris) : []
-    } catch { /* ignore */ }
-    callbackForm.setFieldsValue({ redirect_uris: uris.join('\n') })
-  }, [data])
-
-  const handleSaveBasicInfo = async () => {
-    try {
-      const appInfoValues = await appInfoForm.validateFields()
-      await runUpdateAppInfo(appInfoValues)
-      const callbackValues = callbackForm.getFieldsValue()
-      await runUpdateCallback(callbackValues)
-      message.success('已保存')
-    } catch (e) {
-      if (e?.errorFields) return
-    }
-  }
-
   const tabItems = [
     {
-      key: 'info',
+      key: 'settings',
       label: (
         <span className={styles.tabLabel}>
-          <InfoCircleOutlined />
-          基本信息
+          <SettingOutlined />
+          设置
         </span>
       ),
       children: (
-        <div className={styles.infoTab}>
-          <div className={styles.infoTabHeader}>
-            <span className={styles.infoTabTitle}>基本信息</span>
+        <div className={styles.settingsTab}>
+          <div className={styles.settingsActions}>
             <Button
               type="primary"
-              size="middle"
               icon={<SaveOutlined />}
-              loading={savingAppInfo || savingCallback}
-              onClick={handleSaveBasicInfo}
+              loading={saving}
+              onClick={handleSaveSettings}
             >
               保存
             </Button>
           </div>
-          <div className={styles.infoSections}>
-            <div className={styles.infoSection}>
-              <div className={styles.infoSectionTitle}>
-                <InfoCircleOutlined />
-                应用信息
-              </div>
-              <div className={styles.appInfoBody}>
-                <div className={styles.logoSection}>
-                  <div className={styles.logoUpload}>
-                    {data.logo_url ? (
-                      <img src={data.logo_url} alt="" className={styles.logoImg} />
-                    ) : (
-                      <div className={styles.logoPlaceholder}>
-                        <PlusOutlined />
-                        <span>上传 Logo</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className={styles.appInfoFields}>
-                  <Form form={appInfoForm} layout="vertical" className={styles.inlineForm}>
-                    <Form.Item name="name" label="名称" rules={[{ required: true, message: '请输入名称' }]}>
-                      <Input placeholder="请输入名称" />
-                    </Form.Item>
-                    <Form.Item name="description" label="描述">
-                      <Input.TextArea rows={2} placeholder="选填" />
-                    </Form.Item>
-                  </Form>
-                </div>
-              </div>
-            </div>
-            <div className={styles.infoSectionDivider} />
-            <div className={styles.infoSection}>
-              <div className={styles.infoSectionTitle}>
-                <LinkOutlined />
-                回调与安全
-              </div>
-              <Text type="secondary" className={styles.fieldHint}>
-                登录或授权后允许跳转的 URI，需与请求中的 redirect_uri 完全一致。每行一个。
-              </Text>
-              <Form form={callbackForm} layout="vertical" className={styles.inlineForm}>
-                <Form.Item name="redirect_uris" label="重定向 URI">
-                  <TextArea rows={4} placeholder="每行一个 URI" />
+
+          <Form form={settingsForm} layout="vertical" className={styles.settingsForm}>
+            <div className={styles.section}>
+              <div className={styles.sectionTitle}>基本信息</div>
+              <div className={styles.sectionBody}>
+                <Form.Item name="name" label="名称" rules={[{ required: true, message: '请输入应用名称' }]}>
+                  <Input placeholder="应用名称" />
                 </Form.Item>
-              </Form>
-              <Text type="secondary" className={styles.fieldHintSecondary}>
-                登出回调 URI、跨域白名单等能力规划中。
-              </Text>
+                <Form.Item name="description" label="描述">
+                  <TextArea rows={2} placeholder="可选的应用描述" />
+                </Form.Item>
+              </div>
             </div>
-          </div>
+
+            <div className={styles.sectionDivider} />
+
+            <div className={styles.section}>
+              <div className={styles.sectionTitle}>回调地址</div>
+              <Text type="secondary" className={styles.sectionHint}>
+                登录或授权后允许跳转的 URI，需与请求中的 redirect_uri 完全一致。每行填写一个地址。
+              </Text>
+              <div className={styles.sectionBody}>
+                <Form.Item name="redirect_uris" label="重定向 URI">
+                  <TextArea rows={3} placeholder="https://example.com/callback" />
+                </Form.Item>
+                <Form.Item
+                  name="allowed_origins"
+                  label="允许的来源 (CORS)"
+                  tooltip="允许从浏览器端发起跨域请求的来源。每行一个。"
+                >
+                  <TextArea rows={2} placeholder="https://example.com" />
+                </Form.Item>
+              </div>
+            </div>
+
+            <div className={styles.sectionDivider} />
+
+            <div className={styles.section}>
+              <div className={styles.sectionTitle}>Token 配置</div>
+              <Text type="secondary" className={styles.sectionHint}>
+                配置各类 Token 的有效期（单位：秒）。设为 0 或留空则使用系统默认值。
+              </Text>
+              <div className={styles.sectionBody}>
+                <div className={styles.tokenFields}>
+                  <Form.Item name="id_token_expires_in" label="ID Token 有效期">
+                    <InputNumber
+                      min={0}
+                      style={{ width: '100%' }}
+                      placeholder="默认"
+                      addonAfter="秒"
+                    />
+                  </Form.Item>
+                  <Form.Item name="refresh_token_expires_in" label="Refresh Token 有效期">
+                    <InputNumber
+                      min={0}
+                      style={{ width: '100%' }}
+                      placeholder="默认"
+                      addonAfter="秒"
+                    />
+                  </Form.Item>
+                  <Form.Item name="refresh_token_absolute_expires_in" label="Refresh Token 绝对有效期">
+                    <InputNumber
+                      min={0}
+                      style={{ width: '100%' }}
+                      placeholder="默认"
+                      addonAfter="秒"
+                    />
+                  </Form.Item>
+                </div>
+              </div>
+            </div>
+          </Form>
         </div>
       ),
     },
     {
-      key: 'services',
+      key: 'idp',
       label: (
         <span className={styles.tabLabel}>
-          <CloudServerOutlined />
-          服务授予的权限
-          {serviceRelations != null && serviceRelations.length > 0 && (
-            <Tag bordered={false} className={styles.tabBadge}>{serviceRelations.length}</Tag>
+          <ApiOutlined />
+          身份源
+          {idpConfigs != null && idpConfigs.length > 0 && (
+            <Tag bordered={false} className={styles.tabBadge}>
+              {idpConfigs.length}
+            </Tag>
           )}
         </span>
       ),
       children: (
-        <div className={styles.relationshipsTab}>
-          <div className={styles.tabHeader}>
+        <div className={styles.idpTab}>
+          <div className={styles.idpHeader}>
             <Text type="secondary">
-              各服务授予本应用的权限类型（ReBAC）。在此配置本应用可访问的服务及每种服务下授予的权限。
+              配置本应用允许使用的身份提供商（IDP）。优先级数值越小越优先。
+            </Text>
+            <Button type="primary" icon={<PlusOutlined />} onClick={openAddIdp}>
+              添加身份源
+            </Button>
+          </div>
+          <Table
+            columns={idpColumns}
+            dataSource={idpConfigs ?? []}
+            loading={idpLoading}
+            rowKey="type"
+            size="small"
+            pagination={false}
+            locale={{
+              emptyText: (
+                <Empty
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description="尚未配置身份源"
+                />
+              ),
+            }}
+          />
+        </div>
+      ),
+    },
+    {
+      key: 'permissions',
+      label: (
+        <span className={styles.tabLabel}>
+          <CloudServerOutlined />
+          权限
+          {serviceRelations != null && serviceRelations.length > 0 && (
+            <Tag bordered={false} className={styles.tabBadge}>
+              {serviceRelations.length}
+            </Tag>
+          )}
+        </span>
+      ),
+      children: (
+        <div className={styles.permissionsTab}>
+          <div className={styles.permissionsHeader}>
+            <Text type="secondary">
+              各服务授予本应用的权限类型（ReBAC）。在此查看本应用可访问的服务及每种服务下授予的权限。
             </Text>
           </div>
           <Table
             columns={serviceRelationColumns}
-            dataSource={serviceRelations || []}
+            dataSource={serviceRelations ?? []}
             loading={svcRelLoading}
             rowKey="service_id"
             size="small"
@@ -240,7 +495,7 @@ export function Detail() {
               emptyText: (
                 <Empty
                   image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  description="暂无服务授予的权限，请配置可访问服务"
+                  description="暂无服务授予的权限"
                 />
               ),
             }}
@@ -268,49 +523,95 @@ export function Detail() {
             </Typography.Title>
           </div>
         </div>
-        <div className={styles.overviewBody}>
-          <div className={styles.overviewMeta}>
-            <div className={styles.metaBlock}>
-              <div className={styles.metaRow}>
-                <dt>应用标识</dt>
-                <dd>
-                  <Text copyable={{ text: data.app_id, tooltips: ['复制', '已复制'] }} className={styles.metaValue}>
-                    {data.app_id}
-                  </Text>
-                </dd>
-              </div>
-              <div className={styles.metaRow}>
-                <dt>域标识</dt>
-                <dd>
-                  <Text copyable={data.domain_id ? { text: data.domain_id, tooltips: ['复制', '已复制'] } : false} className={styles.metaValue}>
-                    {data.domain_id}
-                  </Text>
-                </dd>
-              </div>
+        <div className={styles.overviewMeta}>
+          <div className={styles.metaBlock}>
+            <div className={styles.metaRow}>
+              <dt>应用标识</dt>
+              <dd>
+                <Text
+                  copyable={{ text: data.app_id, tooltips: ['复制', '已复制'] }}
+                  className={styles.metaValue}
+                >
+                  {data.app_id}
+                </Text>
+              </dd>
             </div>
-            <div className={styles.metaBlock}>
-              <div className={styles.metaRow}>
-                <dt>创建时间</dt>
-                <dd className={styles.metaValue}>{formatDateTime(data.created_at)}</dd>
-              </div>
-              <div className={styles.metaRow}>
-                <dt>更新时间</dt>
-                <dd className={styles.metaValue}>{formatDateTime(data.updated_at)}</dd>
-              </div>
+            <div className={styles.metaRow}>
+              <dt>域标识</dt>
+              <dd>
+                <Text
+                  copyable={
+                    data.domain_id
+                      ? { text: data.domain_id, tooltips: ['复制', '已复制'] }
+                      : false
+                  }
+                  className={styles.metaValue}
+                >
+                  {data.domain_id}
+                </Text>
+              </dd>
+            </div>
+          </div>
+          <div className={styles.metaBlock}>
+            <div className={styles.metaRow}>
+              <dt>创建时间</dt>
+              <dd className={styles.metaValue}>{formatDateTime(data.created_at)}</dd>
+            </div>
+            <div className={styles.metaRow}>
+              <dt>更新时间</dt>
+              <dd className={styles.metaValue}>{formatDateTime(data.updated_at)}</dd>
             </div>
           </div>
         </div>
       </Card>
-      <div className={styles.content}>
-        <Card bordered={false} className={styles.mainCard}>
-          <Tabs
-            activeKey={activeTab}
-            onChange={setActiveTab}
-            items={tabItems}
-            className={styles.tabs}
-          />
-        </Card>
-      </div>
+
+      <Card bordered={false} className={styles.mainCard}>
+        <Tabs
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          items={tabItems}
+          className={styles.tabs}
+        />
+      </Card>
+
+      <Modal
+        title={editingIdp ? '编辑身份源' : '添加身份源'}
+        open={idpModalOpen}
+        onOk={handleIdpModalOk}
+        onCancel={() => {
+          setIdpModalOpen(false)
+          setEditingIdp(null)
+          idpForm.resetFields()
+        }}
+        confirmLoading={creatingIdp || updatingIdp}
+        destroyOnClose
+      >
+        <Form form={idpForm} layout="vertical" className={styles.idpModalForm}>
+          <Form.Item
+            name="type"
+            label="身份源类型"
+            rules={[{ required: true, message: '请选择身份源类型' }]}
+          >
+            <Select
+              options={availableIdpTypes}
+              placeholder="选择身份源类型"
+              disabled={!!editingIdp}
+            />
+          </Form.Item>
+          <Form.Item name="priority" label="优先级" tooltip="数值越小优先级越高，默认 0">
+            <InputNumber min={0} style={{ width: '100%' }} placeholder="0" />
+          </Form.Item>
+          <Form.Item name="strategy" label="策略">
+            <Input placeholder="如：password" allowClear />
+          </Form.Item>
+          <Form.Item name="delegate" label="委托">
+            <Input placeholder="委托身份源" allowClear />
+          </Form.Item>
+          <Form.Item name="require" label="必需条件">
+            <Input placeholder="必需条件" allowClear />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   )
 }

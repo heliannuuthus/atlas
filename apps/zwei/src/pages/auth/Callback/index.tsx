@@ -2,13 +2,13 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Spin, Button } from 'antd'
 import { CloseCircleOutlined, HomeOutlined, ReloadOutlined } from '@ant-design/icons'
-import { useAuthStore } from '@atlas/shared'
+import { useAtlasAuth } from '@atlas/shared'
 import styles from './index.module.scss'
 
 export function AuthCallback() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const { handleCallback, consumeReturnTo, error, clearError } = useAuthStore()
+  const { handleCallback, error } = useAtlasAuth()
   const [processing, setProcessing] = useState(true)
   const initiatedRef = useRef(false)
 
@@ -31,25 +31,13 @@ export function AuthCallback() {
     }
 
     handleCallback(code, state ?? undefined)
-      .then(async () => {
-        const returnTo = await consumeReturnTo() || '/'
-        navigate(returnTo, { replace: true })
-      })
-      .catch(() => {
-        queueMicrotask(() => setProcessing(false))
-      })
+      .then(({ returnTo }) => navigate(returnTo || '/', { replace: true }))
+      .catch(() => queueMicrotask(() => setProcessing(false)))
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const handleGoHome = () => {
-    clearError()
-    navigate('/', { replace: true })
-  }
-
-  const handleRetry = () => {
-    clearError()
-    window.location.reload()
-  }
+  const handleGoHome = () => navigate('/', { replace: true })
+  const handleRetry = () => window.location.reload()
 
   if (processing && !error) {
     return (

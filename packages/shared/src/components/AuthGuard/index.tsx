@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { Spin } from 'antd'
-import { useAuthStore } from '../../store/auth'
+import { useAtlasAuth } from '../../hooks/useAtlasAuth'
 import styles from './index.module.scss'
 
 interface AuthGuardProps {
@@ -10,7 +10,7 @@ interface AuthGuardProps {
 
 export function AuthGuard({ children }: AuthGuardProps) {
   const location = useLocation()
-  const { isAuthenticated, isLoading, initialize, login } = useAuthStore()
+  const { isAuthenticated, isLoading, initialize, login } = useAtlasAuth()
   const isCallbackRoute = location.pathname === '/auth/callback'
 
   useEffect(() => {

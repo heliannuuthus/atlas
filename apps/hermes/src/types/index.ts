@@ -25,8 +25,28 @@ export interface Application {
   logo_url?: string
   redirect_uris?: string[]
   allowed_origins?: string[]
+  id_token_expires_in: number
+  refresh_token_expires_in: number
+  refresh_token_absolute_expires_in: number
   created_at: string
   updated_at: string
+}
+
+export interface ApplicationIDPConfig {
+  app_id: string
+  type: string
+  priority: number
+  strategy?: string
+  delegate?: string
+  require?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface DomainIDP {
+  domain_id: string
+  idp_type: string
+  created_at: string
 }
 
 export interface Relationship {
@@ -65,7 +85,7 @@ export interface ServiceCreateRequest {
   service_id: string
   domain_id: string
   name: string
-  description?: string
+  description: string
   access_token_expires_in?: number
   refresh_token_expires_in?: number
 }
@@ -82,7 +102,7 @@ export interface ApplicationCreateRequest {
   domain_id: string
   app_id: string
   name: string
-  description?: string
+  description: string
   redirect_uris?: string[]
   need_key?: boolean
 }
@@ -91,6 +111,24 @@ export interface ApplicationUpdateRequest {
   name?: string
   description?: string
   redirect_uris?: string[]
+  id_token_expires_in?: number
+  refresh_token_expires_in?: number
+  refresh_token_absolute_expires_in?: number
+}
+
+export interface ApplicationIDPConfigCreateRequest {
+  type: string
+  priority?: number
+  strategy?: string
+  delegate?: string
+  require?: string
+}
+
+export interface ApplicationIDPConfigUpdateRequest {
+  priority?: number
+  strategy?: string
+  delegate?: string
+  require?: string
 }
 
 export interface ApplicationServiceRelationRequest {

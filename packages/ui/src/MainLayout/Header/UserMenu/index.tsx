@@ -7,7 +7,7 @@ import {
   BellOutlined,
   BookOutlined,
 } from '@ant-design/icons'
-import { useAuthStore } from '@atlas/shared'
+import { useAtlasAuth } from '@atlas/shared'
 import styles from './index.module.scss'
 
 const getUserInitials = (name?: string) => {
@@ -30,7 +30,7 @@ interface UserMenuProps {
 }
 
 export function UserMenu({ brandColor = '#7c3aed', docUrl }: UserMenuProps) {
-  const { logout, user } = useAuthStore()
+  const { logout, user } = useAtlasAuth()
   const userName = user?.nic
   const userAvatar = user?.pic ?? null
 

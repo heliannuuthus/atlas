@@ -83,7 +83,7 @@ export function HermesLayout() {
                 placeholder="选择域"
                 style={{ minWidth: 160 }}
                 size="middle"
-                dropdownRender={(menu) => (
+                popupRender={(menu) => (
                   <>
                     {menu}
                     <Divider style={{ margin: '8px 0' }} />
@@ -91,12 +91,11 @@ export function HermesLayout() {
                       <Button
                         type="text"
                         size="small"
-                        icon={<ArrowLeftOutlined />}
                         block
                         style={{ textAlign: 'left' }}
                         onClick={() => navigate('/', { replace: true })}
                       >
-                        回到域选择
+                        前往域列表
                       </Button>
                     </div>
                   </>
