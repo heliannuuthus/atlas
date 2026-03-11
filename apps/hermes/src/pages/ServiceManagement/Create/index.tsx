@@ -34,9 +34,8 @@ export function Create() {
 
   return (
     <div className={styles.container}>
-      <Card>
-        <PageHeader title="新建服务" backPath="/services" />
-
+      <PageHeader title="新建服务" onBack={() => navigate('/services')} />
+      <Card bordered={false}>
         <Form
           form={form}
           layout="vertical"

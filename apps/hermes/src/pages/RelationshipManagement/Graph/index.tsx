@@ -44,6 +44,7 @@ const edgeTypes: EdgeTypes = {
 }
 
 function GraphCanvas() {
+  const { serviceId: urlServiceId } = useParams<{ serviceId: string }>()
   const reactFlowWrapper = useRef<HTMLDivElement>(null)
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
@@ -61,6 +62,13 @@ function GraphCanvas() {
     clearDirty: _clearDirty,
     deleteEdge: _contextDeleteEdge,
   } = useGraphContext()
+
+  // 如果 URL 中有 serviceId，自动同步到 Context
+  useEffect(() => {
+    if (urlServiceId && urlServiceId !== selectedServiceId) {
+      setSelectedServiceId(urlServiceId)
+    }
+  }, [urlServiceId, selectedServiceId, setSelectedServiceId])
 
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -410,6 +418,7 @@ function GraphCanvas() {
         isDirty={isDirty}
         saving={saving}
         relationCount={relationships?.length || 0}
+        isLocked={!!urlServiceId}
       />
 
       <div className={styles.graphContainer}>

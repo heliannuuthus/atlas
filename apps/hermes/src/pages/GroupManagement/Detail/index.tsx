@@ -124,7 +124,7 @@ export function Detail() {
         </span>
       ),
       children: (
-        <Descriptions column={2} bordered className={styles.descriptions}>
+        <Descriptions column={2} className={styles.descriptions}>
           <Descriptions.Item label="组ID">{data.group_id}</Descriptions.Item>
           <Descriptions.Item label="名称">{data.name}</Descriptions.Item>
           <Descriptions.Item label="描述" span={2}>
@@ -222,10 +222,20 @@ export function Detail() {
 
   return (
     <div className={styles.container}>
-      <Card>
-        <PageHeader title="组详情" backPath="/groups" />
-        <Tabs items={tabItems} className={styles.tabs} />
-      </Card>
+      <PageHeader
+        title={data.name || '组详情'}
+        onBack={() => navigate('/groups')}
+        extra={
+          <Button type="primary" onClick={() => navigate(`/groups/${groupId}/edit`)}>
+            编辑组
+          </Button>
+        }
+      />
+      <div className={styles.content}>
+        <Card bordered={false} className={styles.mainCard}>
+          <Tabs items={tabItems} className={styles.tabs} />
+        </Card>
+      </div>
     </div>
   )
 }

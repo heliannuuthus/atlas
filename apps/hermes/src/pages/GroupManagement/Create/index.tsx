@@ -26,8 +26,8 @@ export function Create() {
 
   return (
     <div className={styles.container}>
-      <Card>
-        <PageHeader title="新建组" backPath="/groups" />
+      <PageHeader title="新建组" onBack={() => navigate('/groups')} />
+      <Card bordered={false}>
         <Form form={form} layout="vertical" onFinish={handleSubmit} className={styles.form}>
           <Form.Item
             name="group_id"

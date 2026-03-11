@@ -1,6 +1,6 @@
-import { useNavigate } from 'react-router-dom'
+import { Button } from 'antd'
 import { ShareAltOutlined, NodeIndexOutlined } from '@ant-design/icons'
-import { useBasePath } from '@/contexts/DomainContext'
+import { useAppNavigate, useBasePath } from '@/contexts/DomainContext'
 import type { Relationship, Service } from '@/types'
 import styles from '../index.module.scss'
 
@@ -15,7 +15,7 @@ export function RelationsByServiceSection({
   services,
   loading,
 }: RelationsByServiceSectionProps) {
-  const navigate = useNavigate()
+  const navigate = useAppNavigate()
   const basePath = useBasePath()
 
   const byService = services
@@ -44,13 +44,13 @@ export function RelationsByServiceSection({
         <p className={styles.sectionDesc}>
           关系按「服务」维度配置，用于表达谁（用户/组/应用）对该服务下的资源拥有何种权限。当前域下尚无服务，请先创建一个服务，再在「关系 → 图谱」中为该服务配置主体与对象的关系。
         </p>
-        <button
-          type="button"
+        <Button
+          type="primary"
           className={styles.relationByServiceBtn}
-          onClick={() => navigate(`${basePath}/services/create`)}
+          onClick={() => navigate('/services', { state: { openCreate: true } })}
         >
           创建服务
-        </button>
+        </Button>
       </section>
     )
   }
@@ -85,25 +85,25 @@ export function RelationsByServiceSection({
             ) : (
               <p className={styles.relationByServiceEmpty}>暂无关系</p>
             )}
-            <button
-              type="button"
+            <Button
+              type="default"
               className={styles.relationByServiceBtn}
+              icon={<NodeIndexOutlined />}
               onClick={() => navigate(`${basePath}/relationships`, { state: { service_id: service.service_id } })}
             >
-              <NodeIndexOutlined />
               {count > 0 ? '查看关系' : '配置关系'}
-            </button>
+            </Button>
           </div>
         ))}
       </div>
-      <button
-        type="button"
+      <Button
+        type="default"
         className={styles.relationByServiceFull}
+        icon={<ShareAltOutlined />}
         onClick={() => navigate(`${basePath}/relationships/graph`)}
       >
-        <ShareAltOutlined />
         打开关系图谱
-      </button>
+      </Button>
     </section>
   )
 }

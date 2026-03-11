@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useRequest } from 'ahooks'
 import { Card, Table, Button, Space, Select, message, Popconfirm, Tag, Empty, Typography, Tooltip } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { PlusOutlined, DeleteOutlined, ShareAltOutlined, NodeIndexOutlined } from '@ant-design/icons'
+import { useParams } from 'react-router-dom'
 import { useAppNavigate, useDomainId } from '@/contexts/DomainContext'
 import { relationshipApi, serviceApi } from '@/services'
 import type { Relationship } from '@/types'
@@ -26,16 +27,21 @@ const subjectTypeLabels: Record<string, string> = {
 }
 
 export function List() {
+  const { serviceId: urlServiceId } = useParams<{ serviceId: string }>()
   const navigate = useAppNavigate()
   const domainId = useDomainId()
-  const [serviceId, setServiceId] = useState<string | undefined>()
   const [subjectType, setSubjectType] = useState<string | undefined>()
 
-  const { data: services } = useRequest(() => serviceApi.getList(domainId!), { ready: !!domainId })
+  const { data: services } = useRequest(
+    () => serviceApi.getList(domainId!),
+    { ready: !!domainId && !urlServiceId }
+  )
+
+  const currentServiceId = urlServiceId
 
   const { data, loading, refresh } = useRequest(
-    () => relationshipApi.getList({ service_id: serviceId, subject_type: subjectType }),
-    { refreshDeps: [serviceId, subjectType] }
+    () => relationshipApi.getList({ service_id: currentServiceId, subject_type: subjectType }),
+    { refreshDeps: [currentServiceId, subjectType] }
   )
 
   const tableData = data || []
@@ -57,76 +63,84 @@ export function List() {
     }
   }
 
-  const columns: ColumnsType<Relationship> = [
-    {
-      title: '服务',
-      dataIndex: 'service_id',
-      key: 'service_id',
-      width: 120,
-      render: (value) => <Tag bordered={false}>{value}</Tag>,
-    },
-    {
-      title: '主体',
-      key: 'subject',
-      width: 200,
-      render: (_, record) => (
-        <div className={styles.entityCell}>
-          <Tag color={subjectTypeColors[record.subject_type]} bordered={false}>
-            {subjectTypeLabels[record.subject_type] || record.subject_type}
-          </Tag>
-          <Tooltip title={record.subject_id}>
-            <Text ellipsis style={{ maxWidth: 120 }}>{record.subject_id}</Text>
-          </Tooltip>
-        </div>
-      ),
-    },
-    {
-      title: '关系',
-      dataIndex: 'relation',
-      key: 'relation',
-      width: 100,
-      render: (value) => <Tag color="processing" bordered={false}>{value}</Tag>,
-    },
-    {
-      title: '对象',
-      key: 'object',
-      width: 200,
-      render: (_, record) => (
-        <div className={styles.entityCell}>
-          <Tag bordered={false}>{record.object_type}</Tag>
-          <Tooltip title={record.object_id}>
-            <Text ellipsis style={{ maxWidth: 120 }}>{record.object_id}</Text>
-          </Tooltip>
-        </div>
-      ),
-    },
-    {
-      title: '过期时间',
-      dataIndex: 'expires_at',
-      key: 'expires_at',
-      width: 140,
-      render: (text) => {
-        if (!text) return <Text type="secondary">永久</Text>
-        const expiring = isExpiringSoon(text)
-        return (
-          <Text type={expiring ? 'warning' : undefined}>
-            {formatRelativeTime(text)}
-          </Text>
-        )
+  const columns: ColumnsType<Relationship> = useMemo(() => {
+    const cols: ColumnsType<Relationship> = [
+      {
+        title: '主体',
+        key: 'subject',
+        width: 200,
+        render: (_, record) => (
+          <div className={styles.entityCell}>
+            <Tag color={subjectTypeColors[record.subject_type]} bordered={false}>
+              {subjectTypeLabels[record.subject_type] || record.subject_type}
+            </Tag>
+            <Tooltip title={record.subject_id}>
+              <Text ellipsis style={{ maxWidth: 120 }}>{record.subject_id}</Text>
+            </Tooltip>
+          </div>
+        ),
       },
-    },
-    {
-      title: '操作',
-      key: 'action',
-      width: 80,
-      fixed: 'right',
-      render: (_, record) => (
-        <Popconfirm title="确定要删除吗？" onConfirm={() => handleDelete(record)}>
-          <Button type="link" size="small" danger icon={<DeleteOutlined />}>删除</Button>
-        </Popconfirm>
-      ),
-    },
-  ]
+      {
+        title: '关系',
+        dataIndex: 'relation',
+        key: 'relation',
+        width: 100,
+        render: (value) => <Tag color="processing" bordered={false}>{value}</Tag>,
+      },
+      {
+        title: '对象',
+        key: 'object',
+        width: 200,
+        render: (_, record) => (
+          <div className={styles.entityCell}>
+            <Tag bordered={false}>{record.object_type}</Tag>
+            <Tooltip title={record.object_id}>
+              <Text ellipsis style={{ maxWidth: 120 }}>{record.object_id}</Text>
+            </Tooltip>
+          </div>
+        ),
+      },
+      {
+        title: '过期时间',
+        dataIndex: 'expires_at',
+        key: 'expires_at',
+        width: 140,
+        render: (text) => {
+          if (!text) return <Text type="secondary">永久</Text>
+          const expiring = isExpiringSoon(text)
+          return (
+            <Text type={expiring ? 'warning' : undefined}>
+              {formatRelativeTime(text)}
+            </Text>
+          )
+        },
+      },
+      {
+        title: '操作',
+        key: 'action',
+        width: 80,
+        fixed: 'right',
+        render: (_, record) => (
+          <Popconfirm title="确定要删除吗？" onConfirm={() => handleDelete(record)}>
+            <Button type="link" size="small" danger icon={<DeleteOutlined />}>删除</Button>
+          </Popconfirm>
+        ),
+      },
+    ]
+
+    // 如果没有全局 serviceId，则显示服务列
+    if (!urlServiceId) {
+      cols.unshift({
+        title: '服务',
+        dataIndex: 'service_id',
+        key: 'service_id',
+        width: 120,
+        render: (value) => <Tag bordered={false}>{value}</Tag>,
+      })
+    }
+
+    return cols
+  }, [urlServiceId])
 
   // 空状态组件
   const emptyState = (
@@ -136,10 +150,16 @@ export function List() {
       description="暂无关系数据"
     >
       <Space>
-        <Button type="primary" onClick={() => navigate('/relationships/create')}>
+        <Button
+          type="primary"
+          onClick={() => navigate(urlServiceId ? `/services/${urlServiceId}/relationships/create` : 'create')}
+        >
           创建关系
         </Button>
-        <Button icon={<NodeIndexOutlined />} onClick={() => navigate('/relationships/graph')}>
+        <Button
+          icon={<NodeIndexOutlined />}
+          onClick={() => navigate(urlServiceId ? `/services/${urlServiceId}/relationships/graph` : 'graph')}
+        >
           使用关系图谱
         </Button>
       </Space>
@@ -151,21 +171,29 @@ export function List() {
       <Card>
         <div className={styles.header}>
           <div className={styles.headerLeft}>
-            <div className={styles.title}>关系</div>
+            <div className={styles.title}>关系管理 {urlServiceId && <Text type="secondary" style={{ fontSize: 14, marginLeft: 8 }}>({urlServiceId})</Text>}</div>
             <Typography.Text type="secondary" className={styles.headerDesc}>
-              关系按服务维度存在，格式为「主体 — 关系类型 — 对象」。可在此按服务、主体类型筛选查看，或进入关系图谱可视化编辑。
+              该服务下的主体-关系-对象授权关系，格式为「主体 — 关系类型 — 对象」。
             </Typography.Text>
           </div>
           <Space>
-            <Button icon={<NodeIndexOutlined />} onClick={() => navigate('/relationships/graph')}>关系图谱</Button>
-            <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/relationships/create')}>配置关系</Button>
+            <Button
+              icon={<NodeIndexOutlined />}
+              onClick={() => navigate(urlServiceId ? `/services/${urlServiceId}/relationships/graph` : '/relationships/graph')}
+            >
+              关系图谱
+            </Button>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => navigate(urlServiceId ? `/services/${urlServiceId}/relationships/create` : '/relationships/create')}
+            >
+              配置关系
+            </Button>
           </Space>
         </div>
         <div className={styles.filters}>
           <Space size="middle">
-            <Select placeholder="选择服务" style={{ width: 200 }} value={serviceId} onChange={setServiceId} allowClear>
-              {services?.map((s) => <Select.Option key={s.service_id} value={s.service_id}>{s.name}</Select.Option>)}
-            </Select>
             <Select placeholder="选择主体类型" style={{ width: 150 }} value={subjectType} onChange={setSubjectType} allowClear>
               <Select.Option value="user">用户</Select.Option>
               <Select.Option value="group">组</Select.Option>

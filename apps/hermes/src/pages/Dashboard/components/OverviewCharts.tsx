@@ -101,23 +101,13 @@ export function OverviewCharts({
   }, [loading, services, relationshipCountByServiceId])
 
   if (loading) {
-    return (
-      <section className={styles.section}>
-        <h3 className={styles.sectionTitle}>统计图表</h3>
-        <div className={styles.chartShimmer} />
-      </section>
-    )
+    return <div className={styles.chartShimmer} />
   }
 
   const hasResourceData = serviceCount + appCount + relationshipCount + groupCount > 0
 
   return (
-    <section className={styles.section}>
-      <h3 className={styles.sectionTitle}>统计图表</h3>
-      <p className={styles.sectionDesc}>
-        当前域下资源数量与各服务关系分布。
-      </p>
-      <div className={styles.chartsRow}>
+    <div className={styles.chartsRow}>
         <div className={styles.chartBox}>
           <div className={styles.chartLabel}>资源概览</div>
           {hasResourceData ? (
@@ -135,6 +125,5 @@ export function OverviewCharts({
           )}
         </div>
       </div>
-    </section>
   )
 }

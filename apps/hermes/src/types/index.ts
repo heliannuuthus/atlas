@@ -21,6 +21,7 @@ export interface Application {
   domain_id: string
   app_id: string
   name: string
+  description?: string
   logo_url?: string
   redirect_uris?: string[]
   allowed_origins?: string[]
@@ -81,12 +82,14 @@ export interface ApplicationCreateRequest {
   domain_id: string
   app_id: string
   name: string
+  description?: string
   redirect_uris?: string[]
   need_key?: boolean
 }
 
 export interface ApplicationUpdateRequest {
   name?: string
+  description?: string
   redirect_uris?: string[]
 }
 

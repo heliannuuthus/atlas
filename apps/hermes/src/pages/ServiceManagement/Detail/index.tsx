@@ -15,7 +15,7 @@ import {
 import type { ColumnsType } from 'antd/es/table'
 import { useParams } from 'react-router-dom'
 import { useAppNavigate, useDomainId } from '@/contexts/DomainContext'
-import { InfoCircleOutlined, ShareAltOutlined, NodeIndexOutlined, AppstoreOutlined } from '@ant-design/icons'
+import { InfoCircleOutlined, ShareAltOutlined, NodeIndexOutlined, AppstoreOutlined, PlusOutlined } from '@ant-design/icons'
 import { serviceApi, relationshipApi } from '@/services'
 import type { Relationship, ServiceApplicationRelation } from '@/types'
 import { PageHeader, formatDuration, formatDateTime, formatRelativeTime, isExpiringSoon } from '@atlas/shared'
@@ -164,7 +164,7 @@ export function Detail() {
         </span>
       ),
       children: (
-        <Descriptions column={2} bordered className={styles.descriptions}>
+        <Descriptions column={2} className={styles.descriptions}>
           <Descriptions.Item label="服务ID">{data.service_id}</Descriptions.Item>
           <Descriptions.Item label="名称">{data.name}</Descriptions.Item>
           <Descriptions.Item label="域ID">{data.domain_id}</Descriptions.Item>
@@ -235,12 +235,21 @@ export function Detail() {
         <div className={styles.relationshipsTab}>
           <div className={styles.tabHeader}>
             <Text type="secondary">该服务下的主体-关系-对象授权关系，可在关系图谱中编辑</Text>
-            <Button
-              icon={<NodeIndexOutlined />}
-              onClick={() => navigate('/relationships/graph')}
-            >
-              在图谱中查看
-            </Button>
+            <Space>
+              <Button
+                icon={<PlusOutlined />}
+                type="primary"
+                onClick={() => navigate(`/services/${serviceId}/relationships/create`)}
+              >
+                配置关系
+              </Button>
+              <Button
+                icon={<NodeIndexOutlined />}
+                onClick={() => navigate(`/services/${serviceId}/relationships/graph`)}
+              >
+                在图谱中查看
+              </Button>
+            </Space>
           </div>
           <Table
             columns={relationColumns}
@@ -260,10 +269,20 @@ export function Detail() {
 
   return (
     <div className={styles.container}>
-      <Card>
-        <PageHeader title="服务详情" backPath="/services" />
-        <Tabs items={tabItems} className={styles.tabs} />
-      </Card>
+      <PageHeader
+        title={data.name || '服务详情'}
+        onBack={() => navigate('/services')}
+        extra={
+          <Button type="primary" onClick={() => navigate(`/services/${serviceId}/edit`)}>
+            编辑服务
+          </Button>
+        }
+      />
+      <div className={styles.content}>
+        <Card bordered={false} className={styles.mainCard}>
+          <Tabs items={tabItems} className={styles.tabs} />
+        </Card>
+      </div>
     </div>
   )
 }

@@ -48,8 +48,8 @@ export function Edit() {
 
   return (
     <div className={styles.container}>
-      <Card>
-        <PageHeader title="编辑应用" backPath={`/applications/${appId}`} />
+      <PageHeader title="编辑应用" onBack={() => navigate(`/applications/${appId}`)} />
+      <Card bordered={false}>
         <Form form={form} layout="vertical" onFinish={handleSubmit} className={styles.form}>
           <Form.Item name="name" label="名称" rules={[{ required: true, message: '请输入名称' }]}>
             <Input placeholder="请输入名称" />

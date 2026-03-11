@@ -23,11 +23,11 @@
 }
 
 .content {
-  margin-top: 52px;
+  margin-top: 72px;
   padding: 20px 24px;
   background: transparent;
   transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow-y: auto;
   overflow-x: hidden;
-  height: calc(100vh - 52px);
+  height: calc(100vh - 72px);
 }

@@ -31,8 +31,8 @@ export function Create() {
 
   return (
     <div className={styles.container}>
-      <Card>
-        <PageHeader title="新建应用" backPath="/applications" />
+      <PageHeader title="新建应用" onBack={() => navigate('/applications')} />
+      <Card bordered={false}>
         <Form form={form} layout="vertical" onFinish={handleSubmit} className={styles.form}>
           <Form.Item
             name="app_id"

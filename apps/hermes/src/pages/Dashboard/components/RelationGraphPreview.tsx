@@ -17,14 +17,14 @@ export function RelationGraphPreview({ relationships, loading }: RelationGraphPr
     <div className={styles.graphCard}>
       <div className={styles.graphCardHeader}>
         <span className={styles.cardLabel}>关系图谱预览</span>
-        <button
+        <Button
+          type="text"
           className={styles.graphExpandBtn}
+          icon={<FullscreenOutlined />}
           onClick={() => navigate('/relationships/graph')}
-          type="button"
         >
-          <FullscreenOutlined />
           全屏
-        </button>
+        </Button>
       </div>
 
       {loading ? (

@@ -19,6 +19,7 @@ interface CanvasHeaderProps {
   isDirty: boolean
   saving: boolean
   relationCount: number
+  isLocked?: boolean
 }
 
 export function CanvasHeader({
@@ -32,29 +33,34 @@ export function CanvasHeader({
   isDirty,
   saving,
   relationCount,
+  isLocked,
 }: CanvasHeaderProps) {
   return (
     <div className={styles.canvasHeader}>
       <div className={styles.headerLeft}>
         <span className={styles.headerTitle}>关系图谱</span>
-        <span className={styles.relationCount}>
-          已建立 <strong>{relationCount}</strong> 条关系
-        </span>
+        {selectedServiceId && (
+          <span className={styles.relationCount}>
+            服务: <strong>{selectedServiceId}</strong> | 已建立 <strong>{relationCount}</strong> 条关系
+          </span>
+        )}
       </div>
 
       <div className={styles.headerRight}>
         <Space size="middle">
-          <Select
-            placeholder="选择服务"
-            style={{ width: 200 }}
-            value={selectedServiceId}
-            onChange={onServiceChange}
-            allowClear
-            options={services.map(s => ({
-              value: s.service_id,
-              label: s.name,
-            }))}
-          />
+          {!isLocked && (
+            <Select
+              placeholder="选择服务"
+              style={{ width: 200 }}
+              value={selectedServiceId}
+              onChange={onServiceChange}
+              allowClear
+              options={services.map(s => ({
+                value: s.service_id,
+                label: s.name,
+              }))}
+            />
+          )}
 
           <Tooltip title="重置画布">
             <Button icon={<ReloadOutlined />} onClick={onReset}>

@@ -11,7 +11,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@aegis/sdk": "link:../../../aegis-sdk",
+    "@heliannuuthus/aegis-sdk": "*",
     "@ant-design/icons": "^6.1.0",
     "@atlas/shared": "workspace:*",
     "@atlas/ui": "workspace:*",

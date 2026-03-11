@@ -1,3 +1,4 @@
+import { Button } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { ApartmentOutlined } from '@ant-design/icons'
 import { useBasePath } from '@/contexts/DomainContext'
@@ -42,9 +43,9 @@ export function DomainSection({ domains, services, applications, loading }: Doma
       </p>
       <div className={styles.domainGrid}>
         {domainStats.map((d) => (
-          <button
+          <Button
             key={d.domain_id}
-            type="button"
+            type="text"
             className={styles.domainCard}
             onClick={() => navigate(`${basePath}/domains`)}
           >
@@ -57,7 +58,7 @@ export function DomainSection({ domains, services, applications, loading }: Doma
                 {d.appCount} 应用 · {d.serviceCount} 服务
               </span>
             </div>
-          </button>
+          </Button>
         ))}
       </div>
     </section>

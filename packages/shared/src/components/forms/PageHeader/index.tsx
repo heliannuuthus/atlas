@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
-import { Button } from 'antd'
-import { ArrowLeftOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
+import { Button, Tooltip } from 'antd'
+import { ArrowLeftOutlined } from '@ant-design/icons'
 import styles from './index.module.scss'
 
 interface PageHeaderProps {
@@ -22,12 +22,23 @@ export function PageHeader({ title, backPath, onBack, extra }: PageHeaderProps) 
     }
   }
 
+  const showBack = !!backPath || !!onBack
+
   return (
     <div className={styles.header}>
-      <Button icon={<ArrowLeftOutlined />} onClick={handleBack}>
-        返回
-      </Button>
-      <div className={styles.title}>{title}</div>
+      <div className={styles.titleRow}>
+        {showBack && (
+          <Tooltip title="返回" placement="bottomLeft">
+            <Button
+              type="text"
+              icon={<ArrowLeftOutlined style={{ fontSize: '16px' }} />}
+              onClick={handleBack}
+              className={styles.backBtn}
+            />
+          </Tooltip>
+        )}
+        <div className={styles.title}>{title}</div>
+      </div>
       {extra && <div className={styles.extra}>{extra}</div>}
     </div>
   )

@@ -1,3 +1,4 @@
+import { Button } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { CloudServerOutlined, AppstoreAddOutlined, LinkOutlined } from '@ant-design/icons'
 import { useBasePath } from '@/contexts/DomainContext'
@@ -50,26 +51,26 @@ export function AppsAndServicesSection({
                 <li key={d.domain_id} className={styles.appServiceGroup}>
                   <span className={styles.appServiceGroupName}>{d.name || d.domain_id}</span>
                   {domainServices.map((s) => (
-                    <button
+                    <Button
                       key={s.service_id}
-                      type="button"
+                      type="text"
                       className={styles.appServiceItem}
                       onClick={() => navigate(`${basePath}/services/${s.service_id}`)}
                     >
                       {s.name || s.service_id}
-                    </button>
+                    </Button>
                   ))}
                 </li>
               )
             })}
           </ul>
-          <button
-            type="button"
+          <Button
+            type="text"
             className={styles.appServiceMore}
             onClick={() => navigate(`${basePath}/services`)}
           >
             服务 →
-          </button>
+          </Button>
         </div>
         <div className={styles.appServiceCol}>
           <div className={styles.appServiceColHeader}>
@@ -85,26 +86,26 @@ export function AppsAndServicesSection({
                 <li key={d.domain_id} className={styles.appServiceGroup}>
                   <span className={styles.appServiceGroupName}>{d.name || d.domain_id}</span>
                   {domainApps.map((a) => (
-                    <button
+                    <Button
                       key={a.app_id}
-                      type="button"
+                      type="text"
                       className={styles.appServiceItem}
                       onClick={() => navigate(`${basePath}/applications/${a.app_id}`)}
                     >
                       {a.name || a.app_id}
-                    </button>
+                    </Button>
                   ))}
                 </li>
               )
             })}
           </ul>
-          <button
-            type="button"
+          <Button
+            type="text"
             className={styles.appServiceMore}
             onClick={() => navigate(`${basePath}/applications`)}
           >
             应用 →
-          </button>
+          </Button>
         </div>
       </div>
       <div className={styles.appServiceHint}>

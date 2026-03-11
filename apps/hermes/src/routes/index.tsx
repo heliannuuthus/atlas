@@ -18,7 +18,6 @@ export function AppRoutes() {
         <Route index element={<Dashboard />} />
         <Route path="services/*" element={<ServiceManagement />} />
         <Route path="applications/*" element={<ApplicationManagement />} />
-        <Route path="relationships/*" element={<RelationshipManagement />} />
         <Route path="groups/*" element={<GroupManagement />} />
         <Route path="*" element={<NotFound />} />
       </Route>

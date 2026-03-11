@@ -1,5 +1,6 @@
 import { useRequest } from 'ahooks'
 import { Form, Input, Select, Card, message, DatePicker } from 'antd'
+import { useParams } from 'react-router-dom'
 import { useAppNavigate, useDomainId } from '@/contexts/DomainContext'
 import { relationshipApi, serviceApi } from '@/services'
 import { PageHeader, FormActions } from '@atlas/shared'
@@ -7,15 +8,20 @@ import dayjs from 'dayjs'
 import styles from './index.module.scss'
 
 export function Create() {
+  const { serviceId: urlServiceId } = useParams<{ serviceId: string }>()
   const navigate = useAppNavigate()
   const domainId = useDomainId()
   const [form] = Form.useForm()
-  const { data: services } = useRequest(() => serviceApi.getList(domainId!), { ready: !!domainId })
+  const { data: services } = useRequest(
+    () => serviceApi.getList(domainId!),
+    { ready: !!domainId && !urlServiceId }
+  )
 
   const { run: handleSubmit, loading } = useRequest(
     async (values: Record<string, unknown>) => {
+      const serviceId = urlServiceId || (values.service_id as string)
       await relationshipApi.create({
-        service_id: values.service_id as string,
+        service_id: serviceId,
         subject_type: values.subject_type as string,
         subject_id: values.subject_id as string,
         relation: values.relation as string,
@@ -24,21 +30,32 @@ export function Create() {
         expires_at: values.expires_at ? (values.expires_at as typeof dayjs.Dayjs).toISOString() : undefined,
       })
       message.success('创建成功')
-      navigate('/relationships')
+      navigate(urlServiceId ? `/services/${urlServiceId}` : '/relationships')
     },
     { manual: true, onError: () => message.error('创建失败') }
   )
 
   return (
     <div className={styles.container}>
-      <Card>
-        <PageHeader title="新建关系" backPath="/relationships" />
-        <Form form={form} layout="vertical" onFinish={handleSubmit} className={styles.form}>
-          <Form.Item name="service_id" label="服务" rules={[{ required: true, message: '请选择服务' }]}>
-            <Select placeholder="请选择服务">
-              {services?.map((s) => <Select.Option key={s.service_id} value={s.service_id}>{s.name}</Select.Option>)}
-            </Select>
-          </Form.Item>
+      <PageHeader
+        title="新建关系"
+        onBack={() => navigate(urlServiceId ? `/services/${urlServiceId}` : '/relationships')}
+      />
+      <Card bordered={false}>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+          className={styles.form}
+          initialValues={{ service_id: urlServiceId }}
+        >
+          {!urlServiceId && (
+            <Form.Item name="service_id" label="服务" rules={[{ required: true, message: '请选择服务' }]}>
+              <Select placeholder="请选择服务">
+                {services?.map((s) => <Select.Option key={s.service_id} value={s.service_id}>{s.name}</Select.Option>)}
+              </Select>
+            </Form.Item>
+          )}
           <Form.Item name="subject_type" label="主体类型" rules={[{ required: true, message: '请选择主体类型' }]}>
             <Select placeholder="请选择主体类型">
               <Select.Option value="user">用户</Select.Option>
@@ -65,7 +82,11 @@ export function Create() {
             <DatePicker showTime style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item>
-            <FormActions loading={loading} submitText="创建" cancelPath="/relationships" />
+            <FormActions
+              loading={loading}
+              submitText="创建"
+              cancelPath={urlServiceId ? `/services/${urlServiceId}` : '/relationships'}
+            />
           </Form.Item>
         </Form>
       </Card>

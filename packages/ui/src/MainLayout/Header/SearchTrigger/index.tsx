@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react'
-import { Input, Modal, Empty } from 'antd'
+import { Button, Input, Modal, Empty } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import styles from './index.module.scss'
 
@@ -22,11 +22,11 @@ export function SearchTrigger() {
 
   return (
     <>
-      <button className={styles.trigger} onClick={() => setOpen(true)} type="button">
+      <Button type="text" className={styles.trigger} onClick={() => setOpen(true)}>
         <SearchOutlined className={styles.icon} />
         <span className={styles.placeholder}>搜索...</span>
         <kbd className={styles.kbd}>{isMac ? '⌘' : 'Ctrl'} K</kbd>
-      </button>
+      </Button>
 
       <Modal
         open={open}

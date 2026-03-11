@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useRequest } from 'ahooks'
-import { Card, Typography, Row, Col, Spin, Empty } from 'antd'
+import { Card, Typography, Row, Col, Spin, Empty, message } from 'antd'
+import { PlusOutlined } from '@ant-design/icons'
 import { domainApi } from '@/services'
 import styles from './index.module.scss'
 
@@ -26,11 +27,9 @@ export function DomainPicker() {
           <div className={styles.loading}>
             <Spin size="large" />
           </div>
-        ) : !domains?.length ? (
-          <Empty description="暂无域，请联系管理员创建域" />
         ) : (
-          <Row gutter={[16, 16]}>
-            {domains.map((d) => (
+          <Row gutter={[20, 20]}>
+            {domains?.map((d) => (
               <Col key={d.domain_id} xs={24} sm={12} md={8}>
                 <Card
                   hoverable
@@ -39,6 +38,9 @@ export function DomainPicker() {
                 >
                   <div className={styles.cardBody}>
                     <div className={styles.cardName}>{d.name || d.domain_id}</div>
+                    {d.description && (
+                      <div className={styles.cardDesc}>{d.description}</div>
+                    )}
                     <Text type="secondary" className={styles.cardId}>
                       {d.domain_id}
                     </Text>
@@ -46,6 +48,18 @@ export function DomainPicker() {
                 </Card>
               </Col>
             ))}
+            <Col xs={24} sm={12} md={8}>
+              <Card
+                hoverable
+                className={styles.domainCardAdd}
+                onClick={() => message.info('请联系管理员创建域')}
+              >
+                <div className={styles.cardAddBody}>
+                  <PlusOutlined className={styles.cardAddIcon} />
+                  <span className={styles.cardAddText}>添加域</span>
+                </div>
+              </Card>
+            </Col>
           </Row>
         )}
       </main>

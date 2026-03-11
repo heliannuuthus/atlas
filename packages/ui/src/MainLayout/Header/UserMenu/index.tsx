@@ -1,11 +1,10 @@
-import { Avatar, Tooltip, Dropdown } from 'antd'
+import { Avatar, Button, Tooltip, Dropdown, Typography } from 'antd'
 import type { MenuProps } from 'antd'
 import {
   UserOutlined,
   SettingOutlined,
   LogoutOutlined,
   BellOutlined,
-  QuestionCircleOutlined,
   BookOutlined,
 } from '@ant-design/icons'
 import { useAuthStore } from '@atlas/shared'
@@ -18,6 +17,11 @@ const getUserInitials = (name?: string) => {
   const parts = chars.split(/\s+/)
   if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
   return chars.substring(0, 2).toUpperCase()
+}
+
+const truncateOpenId = (openId: string, head = 8, tail = 4) => {
+  if (openId.length <= head + tail + 3) return openId
+  return `${openId.slice(0, head)}…${openId.slice(-tail)}`
 }
 
 interface UserMenuProps {
@@ -43,17 +47,6 @@ export function UserMenu({ brandColor = '#7c3aed', docUrl }: UserMenuProps) {
   }
 
   const menuItems: MenuProps['items'] = [
-    {
-      key: 'user-info',
-      label: (
-        <div className={styles.userInfo}>
-          <div className={styles.userInfoName}>{userName || '用户'}</div>
-          <div className={styles.userInfoEmail}>{user?.sub || ''}</div>
-        </div>
-      ),
-      disabled: true,
-    },
-    { type: 'divider' },
     { key: 'profile', icon: <UserOutlined />, label: '个人中心' },
     { key: 'settings', icon: <SettingOutlined />, label: '设置' },
     { type: 'divider' },
@@ -70,32 +63,40 @@ export function UserMenu({ brandColor = '#7c3aed', docUrl }: UserMenuProps) {
         </Tooltip>
       )}
 
-      <Tooltip title="帮助" placement="bottom">
-        <button className={styles.iconBtn} type="button">
-          <QuestionCircleOutlined />
-        </button>
-      </Tooltip>
-
       <Tooltip title="通知" placement="bottom">
-        <button className={styles.iconBtn} type="button">
-          <BellOutlined />
-        </button>
+        <Button type="text" className={styles.iconBtn} icon={<BellOutlined />} />
       </Tooltip>
 
       <Dropdown
         menu={{ items: menuItems, onClick: handleMenuClick }}
         placement="bottomRight"
-        trigger={['click']}
+        trigger={['hover', 'click']}
+        mouseEnterDelay={0.15}
+        mouseLeaveDelay={0.15}
+        dropdownStyle={{ minWidth: 160, width: 'auto', maxWidth: 220 }}
       >
-        <button className={styles.avatarBtn} type="button">
-          {userAvatar ? (
-            <Avatar src={userAvatar} size={26} />
-          ) : (
-            <Avatar size={26} style={{ backgroundColor: brandColor, fontSize: 12 }}>
-              {getUserInitials(userName)}
-            </Avatar>
-          )}
-        </button>
+        <div className={styles.userTrigger} role="button" tabIndex={0}>
+          <Avatar
+            src={userAvatar ?? undefined}
+            size={40}
+            className={styles.userTriggerAvatar}
+            style={!userAvatar ? { backgroundColor: brandColor, fontSize: 16 } : undefined}
+          >
+            {!userAvatar ? getUserInitials(userName) : null}
+          </Avatar>
+          <div className={styles.userTriggerText}>
+            <span className={styles.userTriggerName}>{userName || '用户'}</span>
+            {user?.sub && (
+              <Typography.Text
+                className={styles.userTriggerOpenid}
+                copyable={{ text: user.sub, tooltips: ['复制 OpenID', '已复制'] }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {truncateOpenId(user.sub)}
+              </Typography.Text>
+            )}
+          </div>
+        </div>
       </Dropdown>
     </div>
   )

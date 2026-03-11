@@ -1,3 +1,4 @@
+import { Button } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import type { ReactNode } from 'react'
 import styles from '../index.module.scss'
@@ -23,7 +24,7 @@ export function StatCard({ icon, title, count, color, path, loading }: StatCardP
   }
 
   return (
-    <button className={styles.stat} onClick={() => navigate(path)} type="button">
+    <Button type="text" className={styles.stat} onClick={() => navigate(path)}>
       <div className={styles.statIcon} style={{ color, background: `${color}0c` }}>
         {icon}
       </div>
@@ -31,6 +32,6 @@ export function StatCard({ icon, title, count, color, path, loading }: StatCardP
         <span className={styles.statCount}>{count}</span>
         <span className={styles.statTitle}>{title}</span>
       </div>
-    </button>
+    </Button>
   )
 }

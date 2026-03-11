@@ -1,24 +1,33 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { useRequest, useDebounce } from 'ahooks'
-import { Button, Input, Empty, Modal, Select, Space } from 'antd'
+import { Button, Input, Form, Modal, Select, Space, Typography, Tooltip, Avatar, message } from 'antd'
 import {
   PlusOutlined,
   EditOutlined,
   CloudServerOutlined,
-  RightOutlined,
   DeleteOutlined,
+  EyeOutlined,
 } from '@ant-design/icons'
 import { useAppNavigate, useDomainId } from '@/contexts/DomainContext'
 import { serviceApi } from '@/services'
-import type { Service } from '@/types'
-import { formatDuration } from '@atlas/shared'
 import styles from './index.module.scss'
 
 export function List() {
   const navigate = useAppNavigate()
+  const location = useLocation()
   const domainId = useDomainId()
   const [keyword, setKeyword] = useState('')
   const [searchBy, setSearchBy] = useState<'id' | 'name'>('name')
+  const [createModalOpen, setCreateModalOpen] = useState(false)
+  const [form] = Form.useForm()
+
+  useEffect(() => {
+    if ((location.state as { openCreate?: boolean })?.openCreate) {
+      setCreateModalOpen(true)
+      navigate(location.pathname, { replace: true, state: {} })
+    }
+  }, [location.state, location.pathname, navigate])
 
   const trimmedKeyword = keyword.trim()
   const debouncedKeyword = useDebounce(trimmedKeyword, { wait: 300 })
@@ -35,6 +44,20 @@ export function List() {
   )
 
   const list = data ?? []
+
+  const { run: runCreate, loading: createLoading } = useRequest(
+    async (values: { service_id: string; name: string }) => {
+      await serviceApi.create(domainId!, {
+        service_id: values.service_id,
+        name: values.name,
+      })
+      message.success('创建成功')
+      setCreateModalOpen(false)
+      form.resetFields()
+      refresh()
+    },
+    { manual: true, onError: () => message.error('创建失败') }
+  )
 
   return (
     <div className={styles.container}>
@@ -65,14 +88,6 @@ export function List() {
             style={{ width: 220 }}
           />
         </Space.Compact>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => navigate('/services/create')}
-          className={styles.createBtn}
-        >
-          创建服务
-        </Button>
       </div>
 
       {loading ? (
@@ -81,20 +96,23 @@ export function List() {
             <div key={i} className={styles.cardSkeleton} />
           ))}
         </div>
-      ) : list.length === 0 ? (
-        <div className={styles.emptyWrap}>
-          <Empty
-            image={<CloudServerOutlined style={{ fontSize: 56, color: '#d9d9d9' }} />}
-            imageStyle={{ height: 72 }}
-            description="暂无服务"
-          >
-            <Button type="primary" onClick={() => navigate('/services/create')}>
-              创建第一个服务
-            </Button>
-          </Empty>
-        </div>
       ) : (
         <div className={styles.grid}>
+          <Button
+            type="text"
+            className={`${styles.cardWrap} ${styles.createCard}`}
+            onClick={() => setCreateModalOpen(true)}
+          >
+            <article className={styles.card}>
+              <div className={styles.createCardInner}>
+                <div className={styles.createCardIcon}>
+                  <PlusOutlined />
+                </div>
+                <span className={styles.createCardText}>创建服务</span>
+                <span className={styles.createCardHint}>配置关系与 Token 有效期</span>
+              </div>
+            </article>
+          </Button>
           {list.map((service) => (
             <div
               key={service.service_id}
@@ -103,12 +121,23 @@ export function List() {
             >
               <article className={styles.card}>
                 <div className={styles.cardHead}>
-                  <span className={styles.cardIcon}>
-                    <CloudServerOutlined />
-                  </span>
+                  <div className={styles.cardIcon}>
+                    {service.logo_url ? (
+                      <Avatar src={service.logo_url} shape="square" size={44} />
+                    ) : (
+                      <CloudServerOutlined />
+                    )}
+                  </div>
                   <div className={styles.cardTitleBlock}>
+                    <div className={styles.cardIdWrap}>
+                      <Typography.Text
+                        copyable={{ text: service.service_id, tooltips: ['复制标识', '已复制'] }}
+                        className={styles.cardId}
+                      >
+                        {service.service_id}
+                      </Typography.Text>
+                    </div>
                     <span className={styles.cardName}>{service.name || service.service_id}</span>
-                    <span className={styles.cardId}>{service.service_id}</span>
                   </div>
                 </div>
                 {service.description ? (
@@ -116,39 +145,32 @@ export function List() {
                 ) : (
                   <p className={styles.cardDescMuted}>暂无描述</p>
                 )}
-                <div className={styles.cardMeta}>
-                  <span title="Access Token 有效期">
-                    Access {formatDuration(service.access_token_expires_in)}
-                  </span>
-                  <span className={styles.cardMetaDivider}>·</span>
-                  <span title="Refresh Token 有效期">
-                    Refresh {formatDuration(service.refresh_token_expires_in)}
-                  </span>
-                </div>
-                <span className={styles.cardArrow}>
-                  <RightOutlined />
-                </span>
               </article>
-              <div
-                className={styles.cardOverlay}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className={styles.cardOverlayActions}>
+
+              <div className={styles.rightTrigger} />
+              <div className={styles.overlayRight} onClick={(e) => e.stopPropagation()}>
+                <Tooltip title="查看详情" placement="left">
                   <Button
                     type="text"
-                    size="small"
+                    icon={<EyeOutlined />}
+                    className={styles.overlayBtn}
+                    onClick={() => navigate(`/services/${service.service_id}`)}
+                  />
+                </Tooltip>
+                <Tooltip title="编辑服务" placement="left">
+                  <Button
+                    type="text"
                     icon={<EditOutlined />}
-                    className={styles.cardOverlayBtn}
+                    className={styles.overlayBtn}
                     onClick={() => navigate(`/services/${service.service_id}/edit`)}
-                  >
-                    编辑
-                  </Button>
+                  />
+                </Tooltip>
+                <Tooltip title="删除服务" placement="left">
                   <Button
                     type="text"
-                    size="small"
                     danger
                     icon={<DeleteOutlined />}
-                    className={styles.cardOverlayBtn}
+                    className={`${styles.overlayBtn} ${styles.deleteBtn}`}
                     onClick={() => {
                       Modal.confirm({
                         title: '删除服务',
@@ -162,15 +184,52 @@ export function List() {
                         },
                       })
                     }}
-                  >
-                    删除
-                  </Button>
-                </div>
+                  />
+                </Tooltip>
               </div>
             </div>
           ))}
         </div>
       )}
+
+      <Modal
+        title="新建服务"
+        open={createModalOpen}
+        onCancel={() => { setCreateModalOpen(false); form.resetFields() }}
+        footer={null}
+        destroyOnClose
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={(v) => runCreate(v as { service_id: string; name: string })}
+        >
+          <Form.Item
+            name="service_id"
+            label="服务 ID"
+            rules={[{ required: true, message: '请输入服务 ID' }]}
+          >
+            <Input placeholder="请输入服务 ID" />
+          </Form.Item>
+          <Form.Item
+            name="name"
+            label="名称"
+            rules={[{ required: true, message: '请输入名称' }]}
+          >
+            <Input placeholder="请输入名称" />
+          </Form.Item>
+          <Form.Item className={styles.modalFooter}>
+            <Space>
+              <Button onClick={() => { setCreateModalOpen(false); form.resetFields() }}>
+                取消
+              </Button>
+              <Button type="primary" htmlType="submit" loading={createLoading}>
+                创建
+              </Button>
+            </Space>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   )
 }

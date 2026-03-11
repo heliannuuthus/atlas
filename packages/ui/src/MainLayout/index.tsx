@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, type ReactNode } from 'react'
 import { Outlet } from 'react-router-dom'
-import { Layout } from 'antd'
+import { Button, Layout } from 'antd'
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import styles from './index.module.scss'
 
@@ -73,15 +73,14 @@ export function MainLayout({ renderSidebar, header, guideBall }: MainLayoutProps
         >
           {renderSidebar(collapsed)}
         </Sider>
-        <button
-          type="button"
+        <Button
+          type="text"
           data-collapse-btn
           style={triggerStyle}
           onClick={() => setCollapsed(!collapsed)}
           aria-label={collapsed ? '展开侧边栏' : '折叠侧边栏'}
-        >
-          {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-        </button>
+          icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+        />
       </div>
       <Layout
         className={styles.innerLayout}

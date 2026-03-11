@@ -121,7 +121,7 @@ export function Detail() {
         </span>
       ),
       children: (
-        <Descriptions column={2} bordered className={styles.descriptions}>
+        <Descriptions column={2} className={styles.descriptions}>
           <Descriptions.Item label="域ID">{data.domain_id}</Descriptions.Item>
           <Descriptions.Item label="名称">{data.name}</Descriptions.Item>
           <Descriptions.Item label="描述" span={2}>
@@ -147,7 +147,7 @@ export function Detail() {
             <Text type="secondary">该域下的所有服务</Text>
             <Button
               type="primary"
-              onClick={() => navigate('/services/create')}
+              onClick={() => navigate('/services', { state: { openCreate: true } })}
             >
               新建服务
             </Button>
@@ -188,7 +188,7 @@ export function Detail() {
             <Text type="secondary">该域下的所有应用</Text>
             <Button
               type="primary"
-              onClick={() => navigate('/applications/create')}
+              onClick={() => navigate('/applications', { state: { openCreate: true } })}
             >
               新建应用
             </Button>
@@ -216,10 +216,12 @@ export function Detail() {
 
   return (
     <div className={styles.container}>
-      <Card>
-        <PageHeader title="域详情" backPath="/domains" />
-        <Tabs items={tabItems} className={styles.tabs} />
-      </Card>
+      <PageHeader title={data.name || '域详情'} onBack={() => navigate('/')} />
+      <div className={styles.content}>
+        <Card bordered={false} className={styles.mainCard}>
+          <Tabs items={tabItems} className={styles.tabs} />
+        </Card>
+      </div>
     </div>
   )
 }

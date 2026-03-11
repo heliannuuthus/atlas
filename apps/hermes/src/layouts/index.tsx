@@ -8,8 +8,9 @@ import {
   DashboardOutlined,
   NodeIndexOutlined,
   UnorderedListOutlined,
+  ArrowLeftOutlined,
 } from '@ant-design/icons'
-import { Select } from 'antd'
+import { Select, Divider, Button } from 'antd'
 import { MainLayout, Sidebar, Header, UserMenu, SearchTrigger } from '@atlas/ui'
 import type { SidebarMenuItem } from '@atlas/ui'
 import { DomainContext } from '@/contexts/DomainContext'
@@ -19,21 +20,9 @@ const BRAND_COLOR = '#059669'
 
 function buildMenus(basePath: string): SidebarMenuItem[] {
   return [
-    { key: 'home', label: '概览', icon: <DashboardOutlined />, path: basePath },
     { key: 'applications', label: '应用', icon: <AppstoreAddOutlined />, path: `${basePath}/applications` },
     { key: 'services', label: '服务', icon: <CloudServerOutlined />, path: `${basePath}/services` },
-    {
-      key: 'relationships',
-      label: '关系',
-      icon: <ShareAltOutlined />,
-      path: `${basePath}/relationships`,
-      section: '访问控制',
-      children: [
-        { key: 'rel-list', label: '列表', icon: <UnorderedListOutlined />, path: `${basePath}/relationships` },
-        { key: 'rel-graph', label: '图谱', icon: <NodeIndexOutlined />, path: `${basePath}/relationships/graph` },
-      ],
-    },
-    { key: 'groups', label: '组', icon: <TeamOutlined />, path: `${basePath}/groups` },
+    { key: 'groups', label: '组', icon: <TeamOutlined />, path: `${basePath}/groups`, section: '平台管理' },
   ]
 }
 
@@ -94,6 +83,24 @@ export function HermesLayout() {
                 placeholder="选择域"
                 style={{ minWidth: 160 }}
                 size="middle"
+                dropdownRender={(menu) => (
+                  <>
+                    {menu}
+                    <Divider style={{ margin: '8px 0' }} />
+                    <div style={{ padding: '0 4px 4px' }}>
+                      <Button
+                        type="text"
+                        size="small"
+                        icon={<ArrowLeftOutlined />}
+                        block
+                        style={{ textAlign: 'left' }}
+                        onClick={() => navigate('/', { replace: true })}
+                      >
+                        回到域选择
+                      </Button>
+                    </div>
+                  </>
+                )}
               />
             }
             center={<SearchTrigger />}
