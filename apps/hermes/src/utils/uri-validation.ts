@@ -54,6 +54,30 @@ export function validateRedirectUrisMultiLine(value: string): string | null {
   return null
 }
 
+export function validateRedirectUrisArray(uris: string[]): string | null {
+  for (let i = 0; i < uris.length; i++) {
+    const err = validateRedirectUri(uris[i])
+    if (err) return `第 ${i + 1} 项: ${err}`
+  }
+  return null
+}
+
+export function validateAllowedOriginsArray(origins: string[]): string | null {
+  for (let i = 0; i < origins.length; i++) {
+    const err = validateAllowedOrigin(origins[i])
+    if (err) return `第 ${i + 1} 项: ${err}`
+  }
+  return null
+}
+
+export function validateLogoutUrisArray(uris: string[]): string | null {
+  for (let i = 0; i < uris.length; i++) {
+    const err = validateRedirectUri(uris[i])
+    if (err) return `第 ${i + 1} 项: ${err}`
+  }
+  return null
+}
+
 export function validateAllowedOriginsMultiLine(value: string): string | null {
   const lines = value.split('\n').map((s) => s.trim()).filter(Boolean)
   for (let i = 0; i < lines.length; i++) {

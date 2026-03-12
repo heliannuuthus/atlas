@@ -113,6 +113,7 @@ export interface ApplicationCreateRequest {
 export interface ApplicationUpdateRequest {
   name?: string
   description?: string
+  logo_url?: string
   allowed_redirect_uris?: string[]
   allowed_origins?: string[]
   allowed_logout_uris?: string[]

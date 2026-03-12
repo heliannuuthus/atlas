@@ -1,0 +1,173 @@
+$brand: #059669;
+$brand-light: #34d399;
+$brand-dark: #047857;
+$text: #1f2937;
+$text-secondary: #4b5563;
+$text-muted: #9ca3af;
+$bg-hover: rgba(0, 0, 0, 0.04);
+$border: #e5e7eb;
+
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  text-align: left;
+  min-width: 140px;
+
+  &:hover {
+    background: $bg-hover;
+  }
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.name {
+  font-size: 14px;
+  font-weight: 600;
+  color: $text;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevron {
+  font-size: 10px;
+  color: $text-muted;
+  transition: transform 0.2s;
+}
+
+.trigger:hover .chevron {
+  color: $text-secondary;
+  transform: translateY(1px);
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: $text-muted;
+}
+
+.domainId {
+  font-family: 'SF Mono', Monaco, Consolas, monospace !important;
+  color: $text-secondary !important;
+  
+  :global(.ant-typography-copy) {
+    color: $text-muted;
+    margin-left: 4px;
+    font-size: 12px;
+    
+    &:hover {
+      color: $brand;
+    }
+  }
+}
+
+// Dropdown Styles
+.dropdown {
+  :global(.ant-dropdown-menu) {
+    padding: 8px;
+    min-width: 240px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15), 
+                0 4px 10px -4px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+  }
+
+  :global(.ant-dropdown-menu-item) {
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    transition: all 0.15s;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    &:hover {
+      background: $bg-hover !important;
+    }
+  }
+
+  :global(.ant-dropdown-menu-item-group-title) {
+    font-size: 11px;
+    color: $text-muted;
+    padding: 4px 12px 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.menuHeader {
+  font-weight: 600;
+  color: $text-muted;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.activeItem {
+  background: rgba(5, 150, 105, 0.06) !important;
+  
+  .menuName {
+    color: $brand-dark;
+  }
+}
+
+.menuContent {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.menuRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.menuName {
+  font-size: 14px;
+  font-weight: 500;
+  color: $text;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.checkIcon {
+  color: $brand;
+  font-size: 14px;
+}
+
+.menuId {
+  font-size: 11px;
+  color: $text-muted;
+  font-family: 'SF Mono', Monaco, Consolas, monospace;
+}
+

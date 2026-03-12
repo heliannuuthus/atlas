@@ -24,9 +24,16 @@ import type {
 } from '@/types'
 
 // hermesRequest 的 baseURL 已指向 hermes 服务根（如 .../api 经网关到 /hermes），路径不要再加 /hermes，否则会变成 /hermes/hermes/domains
+export interface DomainUpdateRequest {
+  name?: string
+  description?: string | null
+}
+
 export const domainApi = {
   getList: () => request.get<Domain[]>('/domains'),
   getDetail: (domainId: string) => request.get<Domain>(`/domains/${domainId}`),
+  update: (domainId: string, data: DomainUpdateRequest) =>
+    request.patch<Domain>(`/domains/${domainId}`, data),
   getIDPs: (domainId: string) => request.get<DomainIDP[]>(`/domains/${domainId}/idps`),
 }
 

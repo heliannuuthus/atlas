@@ -7,6 +7,8 @@ import { ServiceManagement } from '@/pages/ServiceManagement'
 import { ApplicationManagement } from '@/pages/ApplicationManagement'
 import { RelationshipManagement } from '@/pages/RelationshipManagement'
 import { GroupManagement } from '@/pages/GroupManagement'
+import { UserManagement } from '@/pages/UserManagement'
+import { CredentialManagement } from '@/pages/CredentialManagement'
 import { NotFound } from '@/pages/NotFound'
 
 export function AppRoutes() {
@@ -19,6 +21,8 @@ export function AppRoutes() {
         <Route path="services/*" element={<ServiceManagement />} />
         <Route path="applications/*" element={<ApplicationManagement />} />
         <Route path="groups/*" element={<GroupManagement />} />
+        <Route path="users" element={<UserManagement />} />
+        <Route path="credentials" element={<CredentialManagement />} />
         <Route path="*" element={<NotFound />} />
       </Route>
       <Route path="*" element={<NotFound />} />

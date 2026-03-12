@@ -3,26 +3,25 @@ import { useRequest } from 'ahooks'
 import {
   CloudServerOutlined,
   AppstoreAddOutlined,
-  ShareAltOutlined,
+  UserOutlined,
   TeamOutlined,
-  DashboardOutlined,
-  NodeIndexOutlined,
-  UnorderedListOutlined,
-  ArrowLeftOutlined,
+  SafetyOutlined,
 } from '@ant-design/icons'
-import { Select, Divider, Button } from 'antd'
 import { MainLayout, Sidebar, Header, UserMenu, SearchTrigger } from '@atlas/ui'
 import type { SidebarMenuItem } from '@atlas/ui'
 import { DomainContext } from '@/contexts/DomainContext'
 import { domainApi } from '@/services'
+import { DomainSwitcher } from './DomainSwitcher'
 
 const BRAND_COLOR = '#059669'
 
 function buildMenus(basePath: string): SidebarMenuItem[] {
   return [
-    { key: 'applications', label: '应用', icon: <AppstoreAddOutlined />, path: `${basePath}/applications` },
-    { key: 'services', label: '服务', icon: <CloudServerOutlined />, path: `${basePath}/services` },
-    { key: 'groups', label: '组', icon: <TeamOutlined />, path: `${basePath}/groups`, section: '平台管理' },
+    { key: 'applications', label: '应用管理', icon: <AppstoreAddOutlined />, path: `${basePath}/applications` },
+    { key: 'services', label: '服务管理', icon: <CloudServerOutlined />, path: `${basePath}/services` },
+    { key: 'users', label: '用户管理', icon: <UserOutlined />, path: `${basePath}/users`, section: '平台管理' },
+    { key: 'groups', label: '用户组管理', icon: <TeamOutlined />, path: `${basePath}/groups`, section: '平台管理' },
+    { key: 'credentials', label: '凭证管理', icon: <SafetyOutlined />, path: `${basePath}/credentials`, section: '平台管理' },
   ]
 }
 
@@ -40,7 +39,7 @@ export function HermesLayout() {
   const navigate = useNavigate()
   const location = useLocation()
   const { domainId } = useParams<{ domainId: string }>()
-  const { data: domains = [] } = useRequest(() => domainApi.getList())
+  const { data: domains = [], refresh: refreshDomains } = useRequest(() => domainApi.getList())
 
   if (!domainId) {
     navigate('/', { replace: true })
@@ -59,6 +58,9 @@ export function HermesLayout() {
     navigate(`/d/${encodeURIComponent(newDomainId)}${rest}`)
   }
 
+  const currentDomain = domains.find((d) => d.domain_id === domainId)
+  const currentDomainLabel = currentDomain?.name || domainId
+
   return (
     <DomainContext.Provider value={domainId}>
       <MainLayout
@@ -76,30 +78,11 @@ export function HermesLayout() {
         header={
           <Header
             left={
-              <Select
-                value={domainId}
-                onChange={handleDomainChange}
-                options={domains.map((d) => ({ label: d.name || d.domain_id, value: d.domain_id }))}
-                placeholder="选择域"
-                style={{ minWidth: 160 }}
-                size="middle"
-                popupRender={(menu) => (
-                  <>
-                    {menu}
-                    <Divider style={{ margin: '8px 0' }} />
-                    <div style={{ padding: '0 4px 4px' }}>
-                      <Button
-                        type="text"
-                        size="small"
-                        block
-                        style={{ textAlign: 'left' }}
-                        onClick={() => navigate('/', { replace: true })}
-                      >
-                        前往域列表
-                      </Button>
-                    </div>
-                  </>
-                )}
+              <DomainSwitcher
+                domainId={domainId}
+                domains={domains}
+                currentLabel={currentDomainLabel}
+                onDomainChange={handleDomainChange}
               />
             }
             center={<SearchTrigger />}
