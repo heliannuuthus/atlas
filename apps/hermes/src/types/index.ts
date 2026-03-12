@@ -23,8 +23,9 @@ export interface Application {
   name: string
   description?: string
   logo_url?: string
-  redirect_uris?: string[]
+  allowed_redirect_uris?: string[]
   allowed_origins?: string[]
+  allowed_logout_uris?: string[]
   id_token_expires_in: number
   refresh_token_expires_in: number
   refresh_token_absolute_expires_in: number
@@ -103,14 +104,18 @@ export interface ApplicationCreateRequest {
   app_id: string
   name: string
   description: string
-  redirect_uris?: string[]
+  allowed_redirect_uris?: string[]
+  allowed_origins?: string[]
+  allowed_logout_uris?: string[]
   need_key?: boolean
 }
 
 export interface ApplicationUpdateRequest {
   name?: string
   description?: string
-  redirect_uris?: string[]
+  allowed_redirect_uris?: string[]
+  allowed_origins?: string[]
+  allowed_logout_uris?: string[]
   id_token_expires_in?: number
   refresh_token_expires_in?: number
   refresh_token_absolute_expires_in?: number

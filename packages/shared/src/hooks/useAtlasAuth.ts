@@ -1,7 +1,6 @@
-import { useAuth } from '@heliannuuthus/aegis-sdk'
-import { getAuth, getAuthorizeOptions } from '../config/auth'
+import { useAtlasAuthContext } from '../contexts/AuthContext'
 
-/** useAuth with Atlas auth config. */
+/** useAuth with Atlas auth config. Must be used within AuthProvider. */
 export function useAtlasAuth() {
-  return useAuth({ getAuth, getAuthorizeOptions })
+  return useAtlasAuthContext()
 }

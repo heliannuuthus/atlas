@@ -1,6 +1,14 @@
 .container {
+  width: 100%;
+  min-width: 320px;
+  max-width: 1400px;
+  margin: 0 auto;
   padding: 24px;
-  max-width: 960px;
+
+  @media (max-width: 768px) {
+    min-width: 0;
+    padding: 16px;
+  }
 }
 
 .loading {
@@ -62,15 +70,17 @@
 
 .overviewMeta {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 24px;
+  gap: 16px 24px;
 }
 
 .metaBlock {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-width: 0;
 }
 
 .metaRow {
@@ -110,6 +120,10 @@
 .mainCard {
   :global(.ant-card-body) {
     padding: 0 24px 24px;
+
+    @media (max-width: 768px) {
+      padding: 0 16px 16px;
+    }
   }
 }
 
@@ -144,12 +158,6 @@
 
 .settingsTab {
   padding-top: 20px;
-}
-
-.settingsActions {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 20px;
 }
 
 .settingsForm {
@@ -204,12 +212,15 @@
 
 .idpTab {
   padding-top: 20px;
+  overflow-x: auto;
 }
 
 .idpHeader {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
   margin-bottom: 16px;
   padding: 12px 16px;
   background: #fafafa;
@@ -232,6 +243,7 @@
 
 .permissionsTab {
   padding-top: 20px;
+  overflow-x: auto;
 }
 
 .permissionsHeader {

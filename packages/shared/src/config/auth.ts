@@ -31,6 +31,11 @@ export function getAuthorizeOptions() {
   }
 }
 
+/** 返回配置的 audience 列表，用于 isAuthenticated 检查。Hermes/Zwei 等单 audience 应用只配一个。 */
+export function getConfiguredAudienceKeys(): string[] {
+  return Object.keys(configuredAudiences)
+}
+
 let authInstance: Auth | null = null
 
 export function getAuth(): Auth {

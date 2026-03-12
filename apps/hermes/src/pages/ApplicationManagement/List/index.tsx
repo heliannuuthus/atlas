@@ -48,7 +48,9 @@ export function List() {
         app_id: values.app_id,
         name: values.name,
         description: values.description,
-        redirect_uris: [],
+        allowed_redirect_uris: [],
+        allowed_origins: [],
+        allowed_logout_uris: [],
         need_key: false,
       })
       message.success('创建成功')

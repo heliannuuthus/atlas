@@ -1,14 +1,16 @@
 import { BrowserRouter } from 'react-router-dom'
-import { AuthGuard, ErrorBoundary } from '@atlas/shared'
+import { AuthGuard, AuthProvider, ErrorBoundary } from '@atlas/shared'
 import { AppRoutes } from './routes'
 
 function App() {
   return (
     <BrowserRouter>
       <ErrorBoundary>
-        <AuthGuard>
-          <AppRoutes />
-        </AuthGuard>
+        <AuthProvider>
+          <AuthGuard>
+            <AppRoutes />
+          </AuthGuard>
+        </AuthProvider>
       </ErrorBoundary>
     </BrowserRouter>
   )

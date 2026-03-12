@@ -34,6 +34,14 @@ export function UserMenu({ brandColor = '#7c3aed', docUrl }: UserMenuProps) {
   const userName = user?.nic
   const userAvatar = user?.pic ?? null
 
+  // Debug: 排查 id_token / 用户信息
+  console.log('[Atlas:UserMenu] render:', {
+    hasUser: !!user,
+    user: user ? { sub: user.sub, nic: user.nic, pic: user.pic } : null,
+    userName,
+    userAvatar: userAvatar ? '(has pic)' : 'null',
+  })
+
   const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
     switch (key) {
       case 'profile':
@@ -78,9 +86,9 @@ export function UserMenu({ brandColor = '#7c3aed', docUrl }: UserMenuProps) {
         <div className={styles.userTrigger} role="button" tabIndex={0}>
           <Avatar
             src={userAvatar ?? undefined}
-            size={40}
+            size={32}
             className={styles.userTriggerAvatar}
-            style={!userAvatar ? { backgroundColor: brandColor, fontSize: 16 } : undefined}
+            style={!userAvatar ? { backgroundColor: brandColor, fontSize: 14 } : undefined}
           >
             {!userAvatar ? getUserInitials(userName) : null}
           </Avatar>

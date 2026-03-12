@@ -10,14 +10,8 @@ interface AuthGuardProps {
 
 export function AuthGuard({ children }: AuthGuardProps) {
   const location = useLocation()
-  const { isAuthenticated, isLoading, initialize, login } = useAtlasAuth()
+  const { isAuthenticated, isLoading, login } = useAtlasAuth()
   const isCallbackRoute = location.pathname === '/auth/callback'
-
-  useEffect(() => {
-    if (!isCallbackRoute) {
-      initialize()
-    }
-  }, [initialize, isCallbackRoute])
 
   useEffect(() => {
     if (!isCallbackRoute && !isLoading && !isAuthenticated) {

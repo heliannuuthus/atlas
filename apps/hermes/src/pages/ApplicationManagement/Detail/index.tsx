@@ -27,6 +27,7 @@ import {
   CloudServerOutlined,
   ArrowLeftOutlined,
   SaveOutlined,
+  CloseOutlined,
   PlusOutlined,
   DeleteOutlined,
   EditOutlined,
@@ -34,6 +35,11 @@ import {
 } from '@ant-design/icons'
 import { applicationApi, domainApi } from '@/services'
 import type { ApplicationServiceRelation, ApplicationIDPConfig } from '@/types'
+import {
+  validateRedirectUrisMultiLine,
+  validateAllowedOriginsMultiLine,
+  validateLogoutUrisMultiLine,
+} from '@/utils/uri-validation'
 import { formatDateTime } from '@atlas/shared'
 import styles from './index.module.scss'
 
@@ -65,6 +71,7 @@ export function Detail() {
   const domainId = useDomainId()
   const navigate = useAppNavigate()
   const [activeTab, setActiveTab] = useState('settings')
+  const [settingsDirty, setSettingsDirty] = useState(false)
   const [settingsForm] = Form.useForm()
   const [idpModalOpen, setIdpModalOpen] = useState(false)
   const [editingIdp, setEditingIdp] = useState<ApplicationIDPConfig | null>(null)
@@ -104,24 +111,34 @@ export function Detail() {
     async (values: {
       name: string
       description?: string
-      redirect_uris?: string
+      allowed_redirect_uris?: string
       allowed_origins?: string
+      allowed_logout_uris?: string
       id_token_expires_in?: number
       refresh_token_expires_in?: number
       refresh_token_absolute_expires_in?: number
     }) => {
-      const redirectUris = values.redirect_uris
-        ? values.redirect_uris.split('\n').filter(Boolean)
+      const allowedRedirectUris = values.allowed_redirect_uris
+        ? values.allowed_redirect_uris.split('\n').map((s) => s.trim()).filter(Boolean)
+        : []
+      const allowedOrigins = values.allowed_origins
+        ? values.allowed_origins.split('\n').map((s) => s.trim()).filter(Boolean)
+        : []
+      const allowedLogoutUris = values.allowed_logout_uris
+        ? values.allowed_logout_uris.split('\n').map((s) => s.trim()).filter(Boolean)
         : []
       await applicationApi.update(domainId!, appId!, {
         name: values.name,
         description: values.description || undefined,
-        redirect_uris: redirectUris,
+        allowed_redirect_uris: allowedRedirectUris,
+        allowed_origins: allowedOrigins,
+        allowed_logout_uris: allowedLogoutUris,
         id_token_expires_in: values.id_token_expires_in,
         refresh_token_expires_in: values.refresh_token_expires_in,
         refresh_token_absolute_expires_in: values.refresh_token_absolute_expires_in,
       })
       refresh()
+      setSettingsDirty(false)
       message.success('已保存')
     },
     { manual: true, onError: () => message.error('保存失败') },
@@ -163,33 +180,36 @@ export function Detail() {
     if (!data) return
     let uris: string[] = []
     try {
-      uris = Array.isArray(data.redirect_uris)
-        ? data.redirect_uris
-        : data.redirect_uris
-          ? JSON.parse(data.redirect_uris)
-          : []
+      const raw = data.allowed_redirect_uris
+      uris = Array.isArray(raw) ? raw : (typeof raw === 'string' ? JSON.parse(raw) : [])
     } catch {
       /* ignore */
     }
     let origins: string[] = []
     try {
-      origins = Array.isArray(data.allowed_origins)
-        ? data.allowed_origins
-        : data.allowed_origins
-          ? JSON.parse(data.allowed_origins)
-          : []
+      const raw = data.allowed_origins
+      origins = Array.isArray(raw) ? raw : (typeof raw === 'string' ? JSON.parse(raw) : [])
+    } catch {
+      /* ignore */
+    }
+    let logoutUris: string[] = []
+    try {
+      const raw = data.allowed_logout_uris
+      logoutUris = Array.isArray(raw) ? raw : (typeof raw === 'string' ? JSON.parse(raw) : [])
     } catch {
       /* ignore */
     }
     settingsForm.setFieldsValue({
       name: data.name,
       description: data.description ?? '',
-      redirect_uris: uris.join('\n'),
+      allowed_redirect_uris: uris.join('\n'),
       allowed_origins: origins.join('\n'),
+      allowed_logout_uris: logoutUris.join('\n'),
       id_token_expires_in: data.id_token_expires_in || undefined,
       refresh_token_expires_in: data.refresh_token_expires_in || undefined,
       refresh_token_absolute_expires_in: data.refresh_token_absolute_expires_in || undefined,
     })
+    setSettingsDirty(false)
   }, [data, settingsForm])
 
   const handleSaveSettings = async () => {
@@ -199,6 +219,42 @@ export function Detail() {
     } catch (e: unknown) {
       if (e && typeof e === 'object' && 'errorFields' in e) return
     }
+  }
+
+  const handleCancelSettings = () => {
+    if (!data) return
+    let uris: string[] = []
+    try {
+      const raw = data.allowed_redirect_uris
+      uris = Array.isArray(raw) ? raw : (typeof raw === 'string' ? JSON.parse(raw) : [])
+    } catch {
+      /* ignore */
+    }
+    let origins: string[] = []
+    try {
+      const raw = data.allowed_origins
+      origins = Array.isArray(raw) ? raw : (typeof raw === 'string' ? JSON.parse(raw) : [])
+    } catch {
+      /* ignore */
+    }
+    let logoutUris: string[] = []
+    try {
+      const raw = data.allowed_logout_uris
+      logoutUris = Array.isArray(raw) ? raw : (typeof raw === 'string' ? JSON.parse(raw) : [])
+    } catch {
+      /* ignore */
+    }
+    settingsForm.setFieldsValue({
+      name: data.name,
+      description: data.description ?? '',
+      allowed_redirect_uris: uris.join('\n'),
+      allowed_origins: origins.join('\n'),
+      allowed_logout_uris: logoutUris.join('\n'),
+      id_token_expires_in: data.id_token_expires_in || undefined,
+      refresh_token_expires_in: data.refresh_token_expires_in || undefined,
+      refresh_token_absolute_expires_in: data.refresh_token_absolute_expires_in || undefined,
+    })
+    setSettingsDirty(false)
   }
 
   const handleIdpModalOk = async () => {
@@ -332,23 +388,17 @@ export function Detail() {
       label: (
         <span className={styles.tabLabel}>
           <SettingOutlined />
-          设置
+          基本信息
         </span>
       ),
       children: (
         <div className={styles.settingsTab}>
-          <div className={styles.settingsActions}>
-            <Button
-              type="primary"
-              icon={<SaveOutlined />}
-              loading={saving}
-              onClick={handleSaveSettings}
-            >
-              保存
-            </Button>
-          </div>
-
-          <Form form={settingsForm} layout="vertical" className={styles.settingsForm}>
+          <Form
+            form={settingsForm}
+            layout="vertical"
+            className={styles.settingsForm}
+            onValuesChange={() => setSettingsDirty(true)}
+          >
             <div className={styles.section}>
               <div className={styles.sectionTitle}>基本信息</div>
               <div className={styles.sectionBody}>
@@ -369,13 +419,47 @@ export function Detail() {
                 登录或授权后允许跳转的 URI，需与请求中的 redirect_uri 完全一致。每行填写一个地址。
               </Text>
               <div className={styles.sectionBody}>
-                <Form.Item name="redirect_uris" label="重定向 URI">
+                <Form.Item
+                  name="allowed_redirect_uris"
+                  label="重定向 URI"
+                  rules={[
+                    {
+                      validator: (_, value) => {
+                        const err = validateRedirectUrisMultiLine(value ?? '')
+                        return err ? Promise.reject(new Error(err)) : Promise.resolve()
+                      },
+                    },
+                  ]}
+                >
                   <TextArea rows={3} placeholder="https://example.com/callback" />
                 </Form.Item>
                 <Form.Item
                   name="allowed_origins"
                   label="允许的来源 (CORS)"
                   tooltip="允许从浏览器端发起跨域请求的来源。每行一个。"
+                  rules={[
+                    {
+                      validator: (_, value) => {
+                        const err = validateAllowedOriginsMultiLine(value ?? '')
+                        return err ? Promise.reject(new Error(err)) : Promise.resolve()
+                      },
+                    },
+                  ]}
+                >
+                  <TextArea rows={2} placeholder="https://example.com" />
+                </Form.Item>
+                <Form.Item
+                  name="allowed_logout_uris"
+                  label="登出后跳转 URI"
+                  tooltip="登出后允许跳转的地址（post_logout_redirect_uri）。每行一个。"
+                  rules={[
+                    {
+                      validator: (_, value) => {
+                        const err = validateLogoutUrisMultiLine(value ?? '')
+                        return err ? Promise.reject(new Error(err)) : Promise.resolve()
+                      },
+                    },
+                  ]}
                 >
                   <TextArea rows={2} placeholder="https://example.com" />
                 </Form.Item>
@@ -571,6 +655,25 @@ export function Detail() {
           onChange={setActiveTab}
           items={tabItems}
           className={styles.tabs}
+          tabBarExtraContent={
+            activeTab === 'settings' ? (
+              <Space size="small">
+                {settingsDirty && (
+                  <Button icon={<CloseOutlined />} onClick={handleCancelSettings}>
+                    取消
+                  </Button>
+                )}
+                <Button
+                  type="primary"
+                  icon={<SaveOutlined />}
+                  loading={saving}
+                  onClick={handleSaveSettings}
+                >
+                  保存
+                </Button>
+              </Space>
+            ) : null
+          }
         />
       </Card>
 
