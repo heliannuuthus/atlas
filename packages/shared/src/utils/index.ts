@@ -1,4 +1,5 @@
 export * from './delay'
 export * from './error'
+export * from './filter'
 export * from './request'
 export * from './format'

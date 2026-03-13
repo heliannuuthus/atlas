@@ -9,6 +9,7 @@ import {
   DeleteOutlined,
   EyeOutlined,
 } from '@ant-design/icons'
+import { eq, prefix } from '@atlas/shared'
 import { useAppNavigate, useDomainId } from '@/contexts/DomainContext'
 import { serviceApi } from '@/services'
 import styles from './index.module.scss'
@@ -33,12 +34,12 @@ export function List() {
   const debouncedKeyword = useDebounce(trimmedKeyword, { wait: 300 })
   const { data, loading, refresh } = useRequest(
     () => {
-      const params = debouncedKeyword
+      const filter = debouncedKeyword
         ? searchBy === 'id'
-          ? { service_id: debouncedKeyword }
-          : { name: debouncedKeyword }
+          ? { service_id: eq(debouncedKeyword) }
+          : { name: prefix(debouncedKeyword) }
         : undefined
-      return serviceApi.getList(domainId!, params)
+      return serviceApi.getList(domainId!, filter)
     },
     { ready: !!domainId, refreshDeps: [domainId, debouncedKeyword, searchBy] }
   )

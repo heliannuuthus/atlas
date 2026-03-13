@@ -1,8 +1,8 @@
 // Hermes 身份与访问管理类型定义（与后端 DTO 一致，无 _id）
 
-export interface CursorPage<T> {
+export interface Items<T> {
   items: T[]
-  next_cursor?: string
+  next?: string
 }
 
 export interface Domain {

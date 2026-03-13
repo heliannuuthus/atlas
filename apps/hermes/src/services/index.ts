@@ -1,6 +1,6 @@
-import { hermesRequest as request } from '@atlas/shared'
+import { hermesRequest as request, type FilterSpec, listParams } from '@atlas/shared'
 import type {
-  CursorPage,
+  Items,
   Domain,
   DomainIDP,
   Service,
@@ -32,8 +32,8 @@ export const domainApi = {
 }
 
 export const serviceApi = {
-  getList: (domainId: string, params?: { service_id?: string; name?: string; cursor?: string; limit?: number }) =>
-    request.get<CursorPage<Service>>(`/domains/${domainId}/services`, { params }),
+  getList: (domainId: string, filter?: FilterSpec, pagination?: { token?: string; size?: number }) =>
+    request.get<Items<Service>>(`/domains/${domainId}/services`, { params: listParams(filter, pagination) }),
   getDetail: (domainId: string, serviceId: string) =>
     request.get<Service>(`/domains/${domainId}/services/${serviceId}`),
   /** 服务侧：该服务已授权给哪些应用及授予的权限（ReBAC） */
@@ -54,8 +54,8 @@ export const serviceApi = {
 }
 
 export const applicationApi = {
-  getList: (domainId: string, params?: { cursor?: string; limit?: number }) =>
-    request.get<CursorPage<Application>>(`/domains/${domainId}/applications`, { params }),
+  getList: (domainId: string, filter?: FilterSpec, pagination?: { token?: string; size?: number }) =>
+    request.get<Items<Application>>(`/domains/${domainId}/applications`, { params: listParams(filter, pagination) }),
   getDetail: (domainId: string, appId: string) =>
     request.get<Application>(`/domains/${domainId}/applications/${appId}`),
   create: (domainId: string, data: Omit<ApplicationCreateRequest, 'domain_id'>) =>
@@ -78,15 +78,15 @@ export const applicationApi = {
 }
 
 export const relationshipApi = {
-  getList: (params?: { service_id?: string; subject_type?: string; subject_id?: string; cursor?: string; limit?: number }) =>
-    request.get<CursorPage<Relationship>>('/relationships', { params }),
+  getList: (filter?: FilterSpec, pagination?: { token?: string; size?: number }) =>
+    request.get<Items<Relationship>>('/relationships', { params: listParams(filter, pagination) }),
   create: (data: RelationshipCreateRequest) => request.post<Relationship>('/relationships', data),
   delete: (data: RelationshipDeleteRequest) => request.delete('/relationships', { data }),
 }
 
 export const groupApi = {
-  getList: (params?: { cursor?: string; limit?: number }) =>
-    request.get<CursorPage<Group>>('/groups', { params }),
+  getList: (filter?: FilterSpec, pagination?: { token?: string; size?: number }) =>
+    request.get<Items<Group>>('/groups', { params: listParams(filter, pagination) }),
   getDetail: (groupId: string) => request.get<Group>(`/groups/${groupId}`),
   create: (data: GroupCreateRequest) => request.post<Group>('/groups', data),
   update: (groupId: string, data: GroupUpdateRequest) => request.patch(`/groups/${groupId}`, data),
