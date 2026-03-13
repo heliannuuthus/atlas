@@ -1,0 +1,808 @@
+.dashboard {
+  max-width: 900px;
+}
+
+// ─── 当前域介绍 ───
+.domainIntro {
+  margin-bottom: 32px;
+}
+
+.domainName {
+  font-size: 24px;
+  font-weight: 600;
+  color: #18181b;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.02em;
+}
+
+.domainDesc {
+  font-size: 14px;
+  color: #52525b;
+  line-height: 1.5;
+  margin: 0 0 8px 0;
+  max-width: 560px;
+}
+
+.domainId {
+  font-size: 13px;
+  color: #a1a1aa;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.domainIntroShimmer {
+  height: 72px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #e4e4e7 25%, #f4f4f5 50%, #e4e4e7 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s ease-in-out infinite;
+}
+
+// ─── 当前域统计条（保留给其他引用） ───
+.currentDomainStrip {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  background: #f4f4f5;
+  border: 1px solid #e4e4e7;
+  border-radius: 10px;
+}
+
+.currentDomainMain {
+  min-width: 0;
+}
+
+.currentDomainName {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #18181b;
+
+  .anticon {
+    color: #059669;
+  }
+}
+
+.currentDomainDesc {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #71717a;
+  line-height: 1.4;
+}
+
+.currentDomainMeta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+}
+
+.currentDomainStat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #52525b;
+
+  .anticon {
+    color: #71717a;
+  }
+}
+
+.currentDomainShimmer {
+  height: 20px;
+  width: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #e4e4e7 25%, #f4f4f5 50%, #e4e4e7 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ─── 统计图表 ───
+.chartsRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chartBox {
+  min-height: 260px;
+  background: #fafafa;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.chartLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: #52525b;
+  margin-bottom: 12px;
+}
+
+.chart {
+  height: 220px;
+  width: 100%;
+}
+
+.chartEmpty {
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a1a1aa;
+  font-size: 13px;
+}
+
+.chartShimmer {
+  height: 280px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #e4e4e7 25%, #f4f4f5 50%, #e4e4e7 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s ease-in-out infinite;
+}
+
+// ─── 域 ───
+.domainGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.domainCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #fafafa;
+  border: 1px solid #e4e4e7;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+  outline: none;
+  width: 100%;
+
+  &:hover {
+    background: #f4f4f5;
+    border-color: #d4d4d8;
+  }
+}
+
+.domainCardIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(5, 150, 105, 0.1);
+  color: #059669;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.domainCardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.domainCardName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #18181b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.domainCardMeta {
+  font-size: 12px;
+  color: #71717a;
+}
+
+.domainCardShimmer {
+  height: 64px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #f4f4f5 25%, #e4e4e7 50%, #f4f4f5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+// ─── 应用与服务 ───
+.appServiceGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.appServiceCol {
+  background: #fafafa;
+  border: 1px solid #e4e4e7;
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.appServiceColHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #18181b;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e4e4e7;
+}
+
+.appServiceColIcon {
+  color: #52525b;
+  font-size: 14px;
+}
+
+.appServiceColCount {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 500;
+  color: #71717a;
+  background: #fff;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.appServiceList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.appServiceGroup {
+  margin-bottom: 12px;
+
+  &:last-of-type {
+    margin-bottom: 0;
+  }
+}
+
+.appServiceGroupName {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #a1a1aa;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 6px;
+}
+
+.appServiceItem {
+  display: block;
+  width: 100%;
+  padding: 6px 10px;
+  margin-bottom: 2px;
+  font-size: 13px;
+  color: #18181b;
+  background: #fff;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.12s ease;
+  outline: none;
+
+  &:hover {
+    border-color: #d4d4d8;
+    background: #fff;
+  }
+}
+
+.appServiceMore {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #059669;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+  outline: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.appServiceHint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #166534;
+
+  svg {
+    flex-shrink: 0;
+    color: #059669;
+  }
+}
+
+.appServiceShimmer,
+.relationByServiceShimmer {
+  height: 120px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #f4f4f5 25%, #e4e4e7 50%, #f4f4f5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+// ─── 服务内关系 ───
+.relationByServiceGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.relationByServiceCard {
+  background: #fafafa;
+  border: 1px solid #e4e4e7;
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.relationByServiceCardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.relationByServiceCardName {
+  font-size: 13px;
+  font-weight: 600;
+  color: #18181b;
+}
+
+.relationByServiceCardCount {
+  font-size: 11px;
+  color: #71717a;
+  font-weight: 500;
+}
+
+.relationByServicePreview {
+  list-style: none;
+  margin: 0 0 10px 0;
+  padding: 0;
+  font-size: 11px;
+  color: #52525b;
+}
+
+.relationByServicePreviewItem {
+  padding: 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid #f4f4f5;
+  }
+}
+
+.relationByServiceArrow {
+  color: #d4d4d8;
+  font-size: 10px;
+}
+
+.relationByServiceEmpty {
+  font-size: 12px;
+  color: #a1a1aa;
+  margin: 0 0 10px 0;
+}
+
+.relationByServiceBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #059669;
+  background: #fff;
+  border: 1px solid #a7f3d0;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  outline: none;
+
+  &:hover {
+    background: #ecfdf5;
+    border-color: #059669;
+  }
+}
+
+.relationByServiceFull {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  font-size: 12px;
+  color: #71717a;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+  outline: none;
+
+  &:hover {
+    color: #18181b;
+    text-decoration: underline;
+  }
+}
+
+// ─── Stats (保留给 StatCard 等) ───
+.statsRow {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.stat {
+  flex: 1;
+  min-width: 140px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: #fff;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+  outline: none;
+
+  &:hover {
+    border-color: #d4d4d8;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+}
+
+.statIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.statBody {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.statCount {
+  font-size: 24px;
+  font-weight: 700;
+  color: #18181b;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+}
+
+.statTitle {
+  font-size: 12px;
+  font-weight: 500;
+  color: #a1a1aa;
+}
+
+.statShimmer {
+  width: 100%;
+  height: 40px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #f4f4f5 25%, #e4e4e7 50%, #f4f4f5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ─── Main Grid ───
+.mainGrid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 16px;
+
+  @media (max-width: 960px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mainLeft {
+  min-width: 0;
+}
+
+.mainRight {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// ─── Card Label ───
+.cardLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #18181b;
+  margin-bottom: 4px;
+}
+
+.cardDescSmall {
+  font-size: 12px;
+  color: #71717a;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+// ─── Quick Actions ───
+.quickActionsCard {
+  background: #fff;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.quickGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.quickBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 8px;
+  border: 1px solid #f0f0f2;
+  border-radius: 10px;
+  background: #fafafa;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  outline: none;
+
+  &:hover {
+    background: #f4f4f5;
+    border-color: #e4e4e7;
+  }
+}
+
+.quickBtnIcon {
+  font-size: 18px;
+  color: #52525b;
+}
+
+.quickBtnLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: #52525b;
+}
+
+// ─── Activity ───
+.activityCard {
+  background: #fff;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+  padding: 16px;
+  flex: 1;
+}
+
+.activityEmpty {
+  text-align: center;
+  padding: 24px 0;
+  font-size: 13px;
+  color: #a1a1aa;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.timelineItem {
+  display: flex;
+  gap: 10px;
+  padding: 8px 0;
+  position: relative;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid #f4f4f5;
+  }
+}
+
+.timelineDot {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #f4f4f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.timelineContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.timelineRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.timelineTag {
+  font-size: 10px;
+  font-weight: 600;
+  color: #a1a1aa;
+  background: #f4f4f5;
+  padding: 1px 5px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
+.timelineName {
+  font-size: 13px;
+  font-weight: 500;
+  color: #18181b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.timelineAction {
+  font-size: 12px;
+  color: #a1a1aa;
+  margin-top: 1px;
+}
+
+.timelineWarning {
+  color: #d97706;
+  font-weight: 500;
+}
+
+// ─── Graph Preview ───
+.graphCard {
+  background: #fff;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+  padding: 16px 20px;
+}
+
+.graphCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.graphExpandBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #71717a;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: #f4f4f5;
+    color: #18181b;
+  }
+}
+
+.graphLoading {
+  text-align: center;
+  padding: 32px 0;
+  color: #a1a1aa;
+  font-size: 13px;
+}
+
+.graphBody {
+  display: flex;
+  flex-direction: column;
+}
+
+.relationList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.relationItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #fafafa;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.relationEntity {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 80px;
+}
+
+.entityType {
+  font-size: 10px;
+  color: #a1a1aa;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.entityId {
+  font-weight: 500;
+  color: #18181b;
+  word-break: break-all;
+}
+
+.relationBadge {
+  padding: 2px 8px;
+  background: #fff;
+  border: 1px solid #e4e4e7;
+  border-radius: 4px;
+  font-size: 11px;
+  color: #52525b;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.relationArrowIcon {
+  font-size: 14px;
+  color: #d4d4d8;
+  flex-shrink: 0;
+}
+
+.moreHint {
+  text-align: center;
+  color: #a1a1aa;
+  font-size: 12px;
+  margin-bottom: 8px;
+}

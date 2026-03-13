@@ -1,0 +1,26 @@
+{
+  "name": "@atlas/ui",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^6.1.0",
+    "@atlas/shared": "workspace:*",
+    "@heliannuuthus/aegis-sdk": "workspace:*",
+    "antd": "^6.0.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "react-router-dom": "^7.12.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.9",
+    "@types/react-dom": "^19.2.3",
+    "sass": "^1.77.8",
+    "typescript": "^5.5.3"
+  }
+}

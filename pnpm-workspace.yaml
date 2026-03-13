@@ -1,4 +1,4 @@
-# pnpm workspace 配置
-# 如果这是 monorepo 项目，可以在这里配置多个包
 packages:
-  - '.'
+  - 'apps/*'
+  - 'packages/*'
+  - '../aegis-sdk'
