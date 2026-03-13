@@ -16,49 +16,63 @@
  * Usage:
  *   buildFilter({ name: prefix('my'), service_id: eq('abc') })
  *   // => "name~=my,service_id=abc"
- *
- *   request.get('/services', { params: { filter: buildFilter({ name: prefix('test') }), size: 20 } })
  */
+
+const RESERVED_CHARS = /[,|]/
 
 type FilterValue = string | undefined | null
 
-interface FilterEntry {
-  column: string
-  op: string
-  value: string
+export type FilterOperator = '=' | '!=' | '>' | '>=' | '<' | '<=' | '~=' | '|'
+
+export interface FilterOp {
+  readonly op: FilterOperator
+  readonly value: string
 }
 
-function entry(op: string, value: FilterValue): FilterEntry | null {
+function op(operator: FilterOperator, value: FilterValue): FilterOp | null {
   if (value === undefined || value === null || value === '') return null
-  return { column: '', op, value }
+  if (RESERVED_CHARS.test(value)) {
+    throw new Error(`Filter value must not contain reserved characters (, |): "${value}"`)
+  }
+  return { op: operator, value }
 }
 
-export function eq(value: FilterValue) { return entry('=', value) }
-export function neq(value: FilterValue) { return entry('!=', value) }
-export function gt(value: FilterValue) { return entry('>', value) }
-export function gte(value: FilterValue) { return entry('>=', value) }
-export function lt(value: FilterValue) { return entry('<', value) }
-export function lte(value: FilterValue) { return entry('<=', value) }
-export function prefix(value: FilterValue) { return entry('~=', value) }
+export function eq(value: FilterValue) { return op('=', value) }
+export function neq(value: FilterValue) { return op('!=', value) }
+export function gt(value: FilterValue) { return op('>', value) }
+export function gte(value: FilterValue) { return op('>=', value) }
+export function lt(value: FilterValue) { return op('<', value) }
+export function lte(value: FilterValue) { return op('<=', value) }
+export function prefix(value: FilterValue) { return op('~=', value) }
 
-export function oneOf(values: string[]): FilterEntry | null {
+export function oneOf(values: string[]): FilterOp | null {
   const filtered = values.filter(Boolean)
   if (filtered.length === 0) return null
-  return { column: '', op: '|', value: filtered.join('|') }
+  for (const v of filtered) {
+    if (RESERVED_CHARS.test(v)) {
+      throw new Error(`Filter IN value must not contain reserved characters (, |): "${v}"`)
+    }
+  }
+  return { op: '|', value: filtered.join('|') }
 }
 
-export type FilterSpec = Record<string, FilterEntry | FilterValue | null>
+export type FilterSpec = Record<string, FilterOp | FilterValue | null>
+
+export interface ListParams {
+  filter?: string
+  token?: string
+  size?: number
+}
 
 /**
  * Build a filter query string from a spec object.
  *
  * Each key is a column name. Values can be:
- *   - A FilterEntry from helper functions: `{ name: prefix('my') }`
+ *   - A FilterOp from helper functions: `{ name: prefix('my') }`
  *   - A plain string (defaults to eq): `{ service_id: 'abc' }`
  *   - undefined/null/'' (skipped)
  *
- * Returns undefined when no conditions are present, so it can be
- * spread directly into params without adding an empty filter key.
+ * Returns undefined when no conditions are present.
  */
 export function buildFilter(spec: FilterSpec): string | undefined {
   const parts: string[] = []
@@ -67,6 +81,9 @@ export function buildFilter(spec: FilterSpec): string | undefined {
     if (raw === undefined || raw === null || raw === '') continue
 
     if (typeof raw === 'string') {
+      if (RESERVED_CHARS.test(raw)) {
+        throw new Error(`Filter value must not contain reserved characters (, |): "${raw}"`)
+      }
       parts.push(`${col}=${raw}`)
       continue
     }
@@ -89,7 +106,7 @@ export function buildFilter(spec: FilterSpec): string | undefined {
 export function listParams(
   filter?: FilterSpec,
   pagination?: { token?: string; size?: number },
-): Record<string, string | number | undefined> {
+): ListParams {
   return {
     filter: filter ? buildFilter(filter) : undefined,
     token: pagination?.token,
