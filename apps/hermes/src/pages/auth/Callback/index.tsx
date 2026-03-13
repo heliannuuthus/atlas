@@ -11,7 +11,7 @@ export function AuthCallback() {
   if (processing) {
     return (
       <div className={styles.container}>
-        <Spin size="large" tip="正在完成登录..." />
+        <Spin size="large" />
       </div>
     )
   }

@@ -28,7 +28,9 @@ export default defineConfig({
       '.heliannuuthus.com',
     ],
     hmr: {
+      protocol: 'wss',
       host: 'hermes.heliannuuthus.com',
+      clientPort: 443,
     },
   },
 })

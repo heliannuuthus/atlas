@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
-    "@heliannuuthus/aegis-sdk": "^1.1.0",
+    "@heliannuuthus/aegis-sdk": "^1.2.0",
     "ahooks": "^3.7.8",
     "antd": "^6.0.0",
     "axios": "^1.7.7"

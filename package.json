@@ -20,6 +20,6 @@
     "turbo": "^2.8.16"
   },
   "dependencies": {
-    "@heliannuuthus/aegis-sdk": "^1.1.0"
+    "@heliannuuthus/aegis-sdk": "^1.2.0"
   }
 }

@@ -41,7 +41,7 @@ export function Edit() {
   return (
     <div className={styles.container}>
       <PageHeader title="编辑组" onBack={() => navigate(`/groups/${groupId}`)} />
-      <Card bordered={false}>
+      <Card variant="borderless">
         <Form form={form} layout="vertical" onFinish={handleSubmit} className={styles.form}>
           <Form.Item name="name" label="名称" rules={[{ required: true, message: '请输入名称' }]}>
             <Input placeholder="请输入名称" />

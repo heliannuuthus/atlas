@@ -71,3 +71,30 @@ export function validateLogoutUrisMultiLine(value: string): string | null {
   }
   return null
 }
+
+export function validateRedirectUrisArray(arr: string[]): string | null {
+  const items = (arr ?? []).map((s) => s?.trim()).filter(Boolean)
+  for (let i = 0; i < items.length; i++) {
+    const err = validateRedirectUri(items[i]!)
+    if (err) return `第 ${i + 1} 项: ${err}`
+  }
+  return null
+}
+
+export function validateAllowedOriginsArray(arr: string[]): string | null {
+  const items = (arr ?? []).map((s) => s?.trim()).filter(Boolean)
+  for (let i = 0; i < items.length; i++) {
+    const err = validateAllowedOrigin(items[i]!)
+    if (err) return `第 ${i + 1} 项: ${err}`
+  }
+  return null
+}
+
+export function validateLogoutUrisArray(arr: string[]): string | null {
+  const items = (arr ?? []).map((s) => s?.trim()).filter(Boolean)
+  for (let i = 0; i < items.length; i++) {
+    const err = validateRedirectUri(items[i]!)
+    if (err) return `第 ${i + 1} 项: ${err}`
+  }
+  return null
+}

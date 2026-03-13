@@ -46,7 +46,7 @@ export function Create() {
   return (
     <div className={styles.container}>
       <PageHeader title="新建应用" onBack={() => navigate('/applications')} />
-      <Card bordered={false}>
+      <Card variant="borderless">
         <Form form={form} layout="vertical" onFinish={handleSubmit} className={styles.form}>
           <Form.Item name="app_id" label="应用标识">
             <Input placeholder="选填，不填则自动生成" />

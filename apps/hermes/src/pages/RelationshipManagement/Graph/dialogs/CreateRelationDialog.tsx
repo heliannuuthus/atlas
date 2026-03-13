@@ -66,7 +66,7 @@ export function CreateRelationDialog({
       onCancel={onCancel}
       okText="创建"
       cancelText="取消"
-      destroyOnClose
+      destroyOnHidden
     >
       <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
         {/* 显示关系信息 */}

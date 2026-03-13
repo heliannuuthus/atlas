@@ -5,7 +5,6 @@ import {
   Spin,
   message,
   Tabs,
-  Table,
   Empty,
   Typography,
   Tag,
@@ -18,9 +17,29 @@ import {
   Select,
   Popconfirm,
   Space,
+  Descriptions,
+  Avatar,
+  Upload,
+  Segmented,
 } from 'antd'
-import type { ColumnsType } from 'antd/es/table'
 import { useParams } from 'react-router-dom'
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { useAppNavigate, useDomainId } from '@/contexts/DomainContext'
 import {
   SettingOutlined,
@@ -32,18 +51,24 @@ import {
   DeleteOutlined,
   EditOutlined,
   ApiOutlined,
+  SlidersOutlined,
+  HolderOutlined,
+  QuestionCircleOutlined,
+  AppstoreAddOutlined,
+  CameraOutlined,
 } from '@ant-design/icons'
 import { applicationApi, domainApi } from '@/services'
-import type { ApplicationServiceRelation, ApplicationIDPConfig } from '@/types'
+import type { ApplicationIDPConfig } from '@/types'
 import {
-  validateRedirectUrisMultiLine,
-  validateAllowedOriginsMultiLine,
-  validateLogoutUrisMultiLine,
+  validateRedirectUrisArray,
+  validateAllowedOriginsArray,
+  validateLogoutUrisArray,
 } from '@/utils/uri-validation'
 import { formatDateTime } from '@atlas/shared'
+import { ServicePermissionsView } from './components/ServicePermissionsView'
 import styles from './index.module.scss'
 
-const { Text, Link } = Typography
+const { Text } = Typography
 const { TextArea } = Input
 
 const IDP_TYPE_LABELS: Record<string, string> = {
@@ -62,17 +87,222 @@ const IDP_TYPE_LABELS: Record<string, string> = {
   global: '全局身份',
 }
 
+const ASSET_ICON_BASE = 'https://asset.heliannuuthus.com/icons'
+
+/** 身份源图标 URL */
+const IDP_ICON_URLS: Record<string, string> = {
+  user: `${ASSET_ICON_BASE}/user.svg`,
+  staff: `${ASSET_ICON_BASE}/staff.svg`,
+  github: `${ASSET_ICON_BASE}/github.svg`,
+  google: `${ASSET_ICON_BASE}/google.svg`,
+  'wechat-mp': `${ASSET_ICON_BASE}/wechat.svg`,
+  'wechat-web': `${ASSET_ICON_BASE}/wechat.svg`,
+  'tt-mp': `${ASSET_ICON_BASE}/tt.svg`,
+  'tt-web': `${ASSET_ICON_BASE}/tt.svg`,
+  'alipay-mp': `${ASSET_ICON_BASE}/alipay.svg`,
+  'alipay-web': `${ASSET_ICON_BASE}/alipay.svg`,
+  wecom: `${ASSET_ICON_BASE}/wecom.svg`,
+  passkey: `${ASSET_ICON_BASE}/passkey.svg`,
+  global: `${ASSET_ICON_BASE}/global.svg`,
+}
+
 function idpLabel(type: string) {
   return IDP_TYPE_LABELS[type] ?? type
+}
+
+/** 认证策略预定义标签与颜色，无 strategy 时显示「通用」 */
+const STRATEGY_CONFIG: Record<string, { label: string; color: string }> = {
+  password: { label: '密码登录', color: 'blue' },
+  webauthn: { label: 'Passkey', color: 'purple' },
+  turnstile: { label: '验证码', color: 'orange' },
+  captcha: { label: '验证码', color: 'orange' },
+}
+
+function getStrategyTags(strategy: string | undefined | null): { label: string; color: string }[] {
+  if (!strategy || !strategy.trim()) return [{ label: '通用', color: 'default' }]
+  const parts = strategy.split(',').map((s) => s.trim()).filter(Boolean)
+  if (parts.length === 0) return [{ label: '通用', color: 'default' }]
+  return parts.map((p) => {
+    const cfg = STRATEGY_CONFIG[p]
+    return cfg ? { label: cfg.label, color: cfg.color } : { label: p, color: 'cyan' }
+  })
+}
+
+interface UriTagsInputProps {
+  value?: string[]
+  onChange?: (value: string[]) => void
+  placeholder?: string
+}
+
+function UriTagsInput({ value = [], onChange, placeholder }: UriTagsInputProps) {
+  const [inputVal, setInputVal] = useState('')
+
+  const addItem = (raw: string) => {
+    const trimmed = raw.trim()
+    if (!trimmed || value.includes(trimmed)) return
+    onChange?.([...value, trimmed])
+    setInputVal('')
+  }
+
+  const removeItem = (idx: number) => {
+    onChange?.(value.filter((_, i) => i !== idx))
+  }
+
+  return (
+    <div className={styles.uriTagsInput}>
+      {value.map((item, idx) => (
+        <Tag key={item} closable onClose={() => removeItem(idx)} className={styles.uriTag}>
+          {item}
+        </Tag>
+      ))}
+      <Input
+        value={inputVal}
+        onChange={(e) => setInputVal(e.target.value)}
+        onBlur={() => addItem(inputVal)}
+        onPressEnter={(e) => {
+          e.preventDefault()
+          addItem(inputVal)
+        }}
+        placeholder={placeholder}
+        className={styles.uriTagsInputField}
+        bordered={false}
+      />
+    </div>
+  )
+}
+
+const DURATION_UNITS = [
+  { value: 's', label: '秒', factor: 1 },
+  { value: 'm', label: '分', factor: 60 },
+  { value: 'h', label: '时', factor: 3600 },
+  { value: 'd', label: '天', factor: 86400 },
+] as const
+
+function secondsToDisplay(seconds: number | undefined): { num: number | undefined; unit: (typeof DURATION_UNITS)[number]['value'] } {
+  if (seconds == null || seconds < 0) return { num: undefined, unit: 's' }
+  if (seconds === 0) return { num: 0, unit: 's' }
+  for (let i = DURATION_UNITS.length - 1; i >= 0; i--) {
+    const u = DURATION_UNITS[i]
+    if (seconds >= u.factor && seconds % u.factor === 0) return { num: seconds / u.factor, unit: u.value }
+  }
+  return { num: seconds, unit: 's' }
+}
+
+interface DurationInputProps {
+  value?: number
+  onChange?: (seconds: number | undefined) => void
+  placeholder?: string
+  min?: number
+}
+
+function DurationInput({ value, onChange, placeholder = '默认', min = 0 }: DurationInputProps) {
+  const display = secondsToDisplay(value)
+  const [selectedUnit, setSelectedUnit] = useState(display.unit)
+
+  useEffect(() => {
+    setSelectedUnit(secondsToDisplay(value).unit)
+  }, [value])
+
+  const factor = DURATION_UNITS.find((u) => u.value === selectedUnit)?.factor ?? 1
+  const displayNum = value != null ? value / factor : undefined
+
+  return (
+    <div className={styles.durationInput}>
+      <InputNumber
+        min={min}
+        value={displayNum}
+        onChange={(v) => onChange?.(v != null ? Math.round(Number(v)) * factor : undefined)}
+        placeholder={placeholder}
+        className={styles.durationNumber}
+      />
+      <Segmented
+        value={selectedUnit}
+        onChange={(v) => {
+          const newUnit = v as (typeof DURATION_UNITS)[number]['value']
+          const newFactor = DURATION_UNITS.find((u) => u.value === newUnit)?.factor ?? 1
+          setSelectedUnit(newUnit)
+          if (displayNum != null) {
+            onChange?.(Math.round(displayNum) * newFactor)
+          }
+        }}
+        options={DURATION_UNITS.map((u) => ({ label: u.label, value: u.value }))}
+        size="small"
+        className={styles.durationSegmented}
+      />
+    </div>
+  )
+}
+
+interface SortableIdpCardProps {
+  idp: ApplicationIDPConfig
+  onEdit: (idp: ApplicationIDPConfig) => void
+  onDelete: (idpType: string) => void
+}
+
+function SortableIdpCard({ idp, onEdit, onDelete }: SortableIdpCardProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: idp.type })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  }
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={styles.idpCard}
+      data-dragging={isDragging}
+    >
+      <div className={styles.idpCardDragHandle} {...attributes} {...listeners} aria-label="拖拽排序">
+        <HolderOutlined />
+      </div>
+      <div className={styles.idpCardMain}>
+        <span className={styles.idpTypeCell}>
+          {IDP_ICON_URLS[idp.type] && (
+            <img src={IDP_ICON_URLS[idp.type]} alt="" className={styles.idpIcon} aria-hidden />
+          )}
+          <span className={styles.idpTypeLabel}>{idpLabel(idp.type)}</span>
+        </span>
+        <span className={styles.idpStrategy}>
+          {getStrategyTags(idp.strategy ?? undefined).map(({ label, color }) => (
+            <Tag key={label} color={color} className={styles.idpStrategyTag}>
+              {label}
+            </Tag>
+          ))}
+        </span>
+      </div>
+      <Space size="small" className={styles.idpCardActions}>
+        <Button type="text" size="small" icon={<EditOutlined />} onClick={() => onEdit(idp)} />
+        <Popconfirm
+          title="确认删除该身份源配置？"
+          onConfirm={() => onDelete(idp.type)}
+          okText="删除"
+          cancelText="取消"
+          okButtonProps={{ danger: true }}
+        >
+          <Button type="text" size="small" danger icon={<DeleteOutlined />} />
+        </Popconfirm>
+      </Space>
+    </div>
+  )
 }
 
 export function Detail() {
   const { appId } = useParams<{ appId: string }>()
   const domainId = useDomainId()
   const navigate = useAppNavigate()
-  const [activeTab, setActiveTab] = useState('settings')
+  const [activeTab, setActiveTab] = useState('basic')
   const [settingsDirty, setSettingsDirty] = useState(false)
   const [settingsForm] = Form.useForm()
+  const [logoPreview, setLogoPreview] = useState<string | null>(null)
   const [idpModalOpen, setIdpModalOpen] = useState(false)
   const [editingIdp, setEditingIdp] = useState<ApplicationIDPConfig | null>(null)
   const [idpForm] = Form.useForm()
@@ -82,9 +312,9 @@ export function Detail() {
     { ready: !!domainId && !!appId, onError: () => message.error('获取应用信息失败') },
   )
 
-  const { data: serviceRelations, loading: svcRelLoading } = useRequest(
+  const { data: serviceRelations, loading: svcRelLoading, refresh: refreshRelations } = useRequest(
     () => applicationApi.getServiceRelations(domainId!, appId!),
-    { ready: !!domainId && !!appId && activeTab === 'permissions' },
+    { ready: !!domainId && !!appId && activeTab === 'relations' },
   )
 
   const {
@@ -92,7 +322,7 @@ export function Detail() {
     loading: idpLoading,
     refresh: refreshIdpConfigs,
   } = useRequest(() => applicationApi.getIDPConfigs(domainId!, appId!), {
-    ready: !!domainId && !!appId && activeTab === 'idp',
+    ready: !!domainId && !!appId && activeTab === 'auth',
   })
 
   const { data: domainIdps } = useRequest(() => domainApi.getIDPs(domainId!), {
@@ -111,22 +341,16 @@ export function Detail() {
     async (values: {
       name: string
       description?: string
-      allowed_redirect_uris?: string
-      allowed_origins?: string
-      allowed_logout_uris?: string
+      allowed_redirect_uris?: string[]
+      allowed_origins?: string[]
+      allowed_logout_uris?: string[]
       id_token_expires_in?: number
       refresh_token_expires_in?: number
       refresh_token_absolute_expires_in?: number
     }) => {
-      const allowedRedirectUris = values.allowed_redirect_uris
-        ? values.allowed_redirect_uris.split('\n').map((s) => s.trim()).filter(Boolean)
-        : []
-      const allowedOrigins = values.allowed_origins
-        ? values.allowed_origins.split('\n').map((s) => s.trim()).filter(Boolean)
-        : []
-      const allowedLogoutUris = values.allowed_logout_uris
-        ? values.allowed_logout_uris.split('\n').map((s) => s.trim()).filter(Boolean)
-        : []
+      const allowedRedirectUris = (values.allowed_redirect_uris ?? []).map((s) => s.trim()).filter(Boolean)
+      const allowedOrigins = (values.allowed_origins ?? []).map((s) => s.trim()).filter(Boolean)
+      const allowedLogoutUris = (values.allowed_logout_uris ?? []).map((s) => s.trim()).filter(Boolean)
       await applicationApi.update(domainId!, appId!, {
         name: values.name,
         description: values.description || undefined,
@@ -176,6 +400,31 @@ export function Detail() {
     { manual: true, onError: () => message.error('删除失败') },
   )
 
+  const { run: runBatchUpdatePriority, loading: batchUpdating } = useRequest(
+    async (ordered: ApplicationIDPConfig[]) => {
+      // 后端 priority DESC：index 0 为最高优先级，赋 (length-1)
+      const updates = ordered.map((idp, index) =>
+        applicationApi.updateIDPConfig(domainId!, appId!, idp.type, {
+          priority: ordered.length - 1 - index,
+        }),
+      )
+      await Promise.all(updates)
+      refreshIdpConfigs()
+      message.success('优先级已更新')
+    },
+    { manual: true, onError: () => message.error('更新优先级失败') },
+  )
+
+  const handleIdpDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+    if (!over || active.id === over.id || !idpConfigs?.length) return
+    const oldIndex = idpConfigs.findIndex((c) => c.type === active.id)
+    const newIndex = idpConfigs.findIndex((c) => c.type === over.id)
+    if (oldIndex === -1 || newIndex === -1) return
+    const reordered = arrayMove(idpConfigs, oldIndex, newIndex)
+    runBatchUpdatePriority(reordered)
+  }
+
   useEffect(() => {
     if (!data) return
     let uris: string[] = []
@@ -202,9 +451,9 @@ export function Detail() {
     settingsForm.setFieldsValue({
       name: data.name,
       description: data.description ?? '',
-      allowed_redirect_uris: uris.join('\n'),
-      allowed_origins: origins.join('\n'),
-      allowed_logout_uris: logoutUris.join('\n'),
+      allowed_redirect_uris: uris,
+      allowed_origins: origins,
+      allowed_logout_uris: logoutUris,
       id_token_expires_in: data.id_token_expires_in || undefined,
       refresh_token_expires_in: data.refresh_token_expires_in || undefined,
       refresh_token_absolute_expires_in: data.refresh_token_absolute_expires_in || undefined,
@@ -247,9 +496,9 @@ export function Detail() {
     settingsForm.setFieldsValue({
       name: data.name,
       description: data.description ?? '',
-      allowed_redirect_uris: uris.join('\n'),
-      allowed_origins: origins.join('\n'),
-      allowed_logout_uris: logoutUris.join('\n'),
+      allowed_redirect_uris: uris,
+      allowed_origins: origins,
+      allowed_logout_uris: logoutUris,
       id_token_expires_in: data.id_token_expires_in || undefined,
       refresh_token_expires_in: data.refresh_token_expires_in || undefined,
       refresh_token_absolute_expires_in: data.refresh_token_absolute_expires_in || undefined,
@@ -288,89 +537,10 @@ export function Detail() {
     setIdpModalOpen(true)
   }
 
-  const idpColumns: ColumnsType<ApplicationIDPConfig> = [
-    {
-      title: '类型',
-      dataIndex: 'type',
-      key: 'type',
-      width: 160,
-      render: (t: string) => (
-        <Tag color="blue" bordered={false}>
-          {idpLabel(t)}
-        </Tag>
-      ),
-    },
-    {
-      title: '优先级',
-      dataIndex: 'priority',
-      key: 'priority',
-      width: 80,
-      sorter: (a, b) => a.priority - b.priority,
-    },
-    {
-      title: '策略',
-      dataIndex: 'strategy',
-      key: 'strategy',
-      width: 120,
-      render: (v: string) => v || <Text type="secondary">—</Text>,
-    },
-    {
-      title: '委托',
-      dataIndex: 'delegate',
-      key: 'delegate',
-      width: 120,
-      render: (v: string) => v || <Text type="secondary">—</Text>,
-    },
-    {
-      title: '必需',
-      dataIndex: 'require',
-      key: 'require',
-      width: 120,
-      render: (v: string) => v || <Text type="secondary">—</Text>,
-    },
-    {
-      title: '操作',
-      key: 'actions',
-      width: 100,
-      render: (_, record) => (
-        <Space size="small">
-          <Button type="text" size="small" icon={<EditOutlined />} onClick={() => openEditIdp(record)} />
-          <Popconfirm
-            title="确认删除该身份源配置？"
-            onConfirm={() => runDeleteIdp(record.type)}
-            okText="删除"
-            cancelText="取消"
-            okButtonProps={{ danger: true }}
-          >
-            <Button type="text" size="small" danger icon={<DeleteOutlined />} />
-          </Popconfirm>
-        </Space>
-      ),
-    },
-  ]
-
-  const serviceRelationColumns: ColumnsType<ApplicationServiceRelation> = [
-    {
-      title: '服务',
-      dataIndex: 'service_id',
-      key: 'service_id',
-      width: 180,
-      render: (value) => (
-        <Link onClick={() => navigate(`/services/${value}`)}>{value}</Link>
-      ),
-    },
-    {
-      title: '授予的权限',
-      dataIndex: 'relations',
-      key: 'relations',
-      render: (relations: string[]) =>
-        (relations || []).map((r) => (
-          <Tag key={r} color="processing" bordered={false}>
-            {r}
-          </Tag>
-        )),
-    },
-  ]
+  const idpSensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  )
 
   if (loading) {
     return (
@@ -384,7 +554,7 @@ export function Detail() {
 
   const tabItems = [
     {
-      key: 'settings',
+      key: 'basic',
       label: (
         <span className={styles.tabLabel}>
           <SettingOutlined />
@@ -400,106 +570,47 @@ export function Detail() {
             onValuesChange={() => setSettingsDirty(true)}
           >
             <div className={styles.section}>
-              <div className={styles.sectionTitle}>基本信息</div>
               <div className={styles.sectionBody}>
-                <Form.Item name="name" label="名称" rules={[{ required: true, message: '请输入应用名称' }]}>
-                  <Input placeholder="应用名称" />
+                <div className={styles.logoField}>
+                  <Upload
+                    accept="image/*"
+                    showUploadList={false}
+                    beforeUpload={(file) => {
+                      const reader = new FileReader()
+                      reader.onload = (e) => {
+                        setLogoPreview(e.target?.result as string)
+                        setSettingsDirty(true)
+                      }
+                      reader.readAsDataURL(file)
+                      return false
+                    }}
+                  >
+                    <div className={styles.logoUpload}>
+                      <Avatar
+                        src={logoPreview ?? data.logo_url}
+                        shape="circle"
+                        size={72}
+                        icon={<AppstoreAddOutlined />}
+                      />
+                      <div className={styles.logoOverlay}>
+                        <CameraOutlined />
+                      </div>
+                    </div>
+                  </Upload>
+                </div>
+                <Form.Item
+                  name="name"
+                  label="名称"
+                  rules={[
+                    { required: true, message: '请输入应用名称' },
+                    { max: 32, message: '名称不超过 32 个字符' },
+                  ]}
+                >
+                  <Input placeholder="应用名称" maxLength={32} showCount />
                 </Form.Item>
                 <Form.Item name="description" label="描述">
-                  <TextArea rows={2} placeholder="可选的应用描述" />
+                  <TextArea rows={3} placeholder="可选的应用描述" />
                 </Form.Item>
-              </div>
-            </div>
-
-            <div className={styles.sectionDivider} />
-
-            <div className={styles.section}>
-              <div className={styles.sectionTitle}>回调地址</div>
-              <Text type="secondary" className={styles.sectionHint}>
-                登录或授权后允许跳转的 URI，需与请求中的 redirect_uri 完全一致。每行填写一个地址。
-              </Text>
-              <div className={styles.sectionBody}>
-                <Form.Item
-                  name="allowed_redirect_uris"
-                  label="重定向 URI"
-                  rules={[
-                    {
-                      validator: (_, value) => {
-                        const err = validateRedirectUrisMultiLine(value ?? '')
-                        return err ? Promise.reject(new Error(err)) : Promise.resolve()
-                      },
-                    },
-                  ]}
-                >
-                  <TextArea rows={3} placeholder="https://example.com/callback" />
-                </Form.Item>
-                <Form.Item
-                  name="allowed_origins"
-                  label="允许的来源 (CORS)"
-                  tooltip="允许从浏览器端发起跨域请求的来源。每行一个。"
-                  rules={[
-                    {
-                      validator: (_, value) => {
-                        const err = validateAllowedOriginsMultiLine(value ?? '')
-                        return err ? Promise.reject(new Error(err)) : Promise.resolve()
-                      },
-                    },
-                  ]}
-                >
-                  <TextArea rows={2} placeholder="https://example.com" />
-                </Form.Item>
-                <Form.Item
-                  name="allowed_logout_uris"
-                  label="登出后跳转 URI"
-                  tooltip="登出后允许跳转的地址（post_logout_redirect_uri）。每行一个。"
-                  rules={[
-                    {
-                      validator: (_, value) => {
-                        const err = validateLogoutUrisMultiLine(value ?? '')
-                        return err ? Promise.reject(new Error(err)) : Promise.resolve()
-                      },
-                    },
-                  ]}
-                >
-                  <TextArea rows={2} placeholder="https://example.com" />
-                </Form.Item>
-              </div>
-            </div>
-
-            <div className={styles.sectionDivider} />
-
-            <div className={styles.section}>
-              <div className={styles.sectionTitle}>Token 配置</div>
-              <Text type="secondary" className={styles.sectionHint}>
-                配置各类 Token 的有效期（单位：秒）。设为 0 或留空则使用系统默认值。
-              </Text>
-              <div className={styles.sectionBody}>
-                <div className={styles.tokenFields}>
-                  <Form.Item name="id_token_expires_in" label="ID Token 有效期">
-                    <InputNumber
-                      min={0}
-                      style={{ width: '100%' }}
-                      placeholder="默认"
-                      addonAfter="秒"
-                    />
-                  </Form.Item>
-                  <Form.Item name="refresh_token_expires_in" label="Refresh Token 有效期">
-                    <InputNumber
-                      min={0}
-                      style={{ width: '100%' }}
-                      placeholder="默认"
-                      addonAfter="秒"
-                    />
-                  </Form.Item>
-                  <Form.Item name="refresh_token_absolute_expires_in" label="Refresh Token 绝对有效期">
-                    <InputNumber
-                      min={0}
-                      style={{ width: '100%' }}
-                      placeholder="默认"
-                      addonAfter="秒"
-                    />
-                  </Form.Item>
-                </div>
               </div>
             </div>
           </Form>
@@ -507,91 +618,213 @@ export function Detail() {
       ),
     },
     {
-      key: 'idp',
+      key: 'config',
       label: (
         <span className={styles.tabLabel}>
-          <ApiOutlined />
-          身份源
-          {idpConfigs != null && idpConfigs.length > 0 && (
-            <Tag bordered={false} className={styles.tabBadge}>
-              {idpConfigs.length}
-            </Tag>
-          )}
+          <SlidersOutlined />
+          配置信息
         </span>
       ),
       children: (
-        <div className={styles.idpTab}>
-          <div className={styles.idpHeader}>
-            <Text type="secondary">
-              配置本应用允许使用的身份提供商（IDP）。优先级数值越小越优先。
-            </Text>
-            <Button type="primary" icon={<PlusOutlined />} onClick={openAddIdp}>
-              添加身份源
-            </Button>
-          </div>
-          <Table
-            columns={idpColumns}
-            dataSource={idpConfigs ?? []}
-            loading={idpLoading}
-            rowKey="type"
-            size="small"
-            pagination={false}
-            locale={{
-              emptyText: (
-                <Empty
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  description="尚未配置身份源"
-                />
-              ),
-            }}
-          />
+        <div className={styles.settingsTab}>
+          <Form
+            form={settingsForm}
+            layout="vertical"
+            className={styles.settingsForm}
+            onValuesChange={() => setSettingsDirty(true)}
+          >
+            <div className={styles.section}>
+              <div className={styles.sectionBody}>
+                <Form.Item
+                  name="allowed_redirect_uris"
+                  label={
+                    <span>
+                      允许的重定向地址
+                      <Tooltip title="登录或授权后允许跳转的 URI，需与请求中的 redirect_uri 完全一致">
+                        <QuestionCircleOutlined className={styles.labelTooltipIcon} />
+                      </Tooltip>
+                    </span>
+                  }
+                  rules={[
+                    {
+                      validator: (_, value) => {
+                        const err = validateRedirectUrisArray(Array.isArray(value) ? value : [])
+                        return err ? Promise.reject(new Error(err)) : Promise.resolve()
+                      },
+                    },
+                  ]}
+                >
+                  <UriTagsInput placeholder="输入地址后失焦或回车添加" />
+                </Form.Item>
+                <Form.Item
+                  name="allowed_origins"
+                  label={
+                    <span>
+                      允许的来源
+                      <Tooltip title="允许从浏览器端发起跨域请求的来源，仅 scheme://host[:port]">
+                        <QuestionCircleOutlined className={styles.labelTooltipIcon} />
+                      </Tooltip>
+                    </span>
+                  }
+                  rules={[
+                    {
+                      validator: (_, value) => {
+                        const err = validateAllowedOriginsArray(Array.isArray(value) ? value : [])
+                        return err ? Promise.reject(new Error(err)) : Promise.resolve()
+                      },
+                    },
+                  ]}
+                >
+                  <UriTagsInput placeholder="输入地址后失焦或回车添加" />
+                </Form.Item>
+                <Form.Item
+                  name="allowed_logout_uris"
+                  label={
+                    <span>
+                      允许登出后跳转的地址
+                      <Tooltip title="用户点击登出后，可跳转回的白名单地址">
+                        <QuestionCircleOutlined className={styles.labelTooltipIcon} />
+                      </Tooltip>
+                    </span>
+                  }
+                  rules={[
+                    {
+                      validator: (_, value) => {
+                        const err = validateLogoutUrisArray(Array.isArray(value) ? value : [])
+                        return err ? Promise.reject(new Error(err)) : Promise.resolve()
+                      },
+                    },
+                  ]}
+                >
+                  <UriTagsInput placeholder="输入地址后失焦或回车添加" />
+                </Form.Item>
+              </div>
+            </div>
+
+            <div className={styles.sectionDivider} />
+
+            <div className={styles.tokenSection}>
+              <div className={styles.tokenRow}>
+                <div className={styles.tokenRowInfo}>
+                  <span className={styles.tokenRowTitle}>
+                    ID Token 有效期
+                    <Tooltip title="0 或留空使用系统默认值">
+                      <QuestionCircleOutlined className={styles.labelTooltipIcon} />
+                    </Tooltip>
+                  </span>
+                  <span className={styles.tokenRowDesc}>用户登录后签发的身份令牌</span>
+                </div>
+                <Form.Item name="id_token_expires_in" noStyle>
+                  <DurationInput placeholder="默认" />
+                </Form.Item>
+              </div>
+              <div className={styles.tokenRow}>
+                <div className={styles.tokenRowInfo}>
+                  <span className={styles.tokenRowTitle}>
+                    Refresh Token 有效期
+                    <Tooltip title="0 或留空使用系统默认值">
+                      <QuestionCircleOutlined className={styles.labelTooltipIcon} />
+                    </Tooltip>
+                  </span>
+                  <span className={styles.tokenRowDesc}>用于无感刷新访问令牌</span>
+                </div>
+                <Form.Item name="refresh_token_expires_in" noStyle>
+                  <DurationInput placeholder="默认" />
+                </Form.Item>
+              </div>
+              <div className={styles.tokenRow}>
+                <div className={styles.tokenRowInfo}>
+                  <span className={styles.tokenRowTitle}>
+                    Refresh Token 绝对有效期
+                    <Tooltip title="0 或留空使用系统默认值">
+                      <QuestionCircleOutlined className={styles.labelTooltipIcon} />
+                    </Tooltip>
+                  </span>
+                  <span className={styles.tokenRowDesc}>刷新令牌的最长存活时间，超时需重新登录</span>
+                </div>
+                <Form.Item name="refresh_token_absolute_expires_in" noStyle>
+                  <DurationInput placeholder="默认" />
+                </Form.Item>
+              </div>
+            </div>
+          </Form>
         </div>
       ),
     },
     {
-      key: 'permissions',
+      key: 'auth',
       label: (
         <span className={styles.tabLabel}>
-          <CloudServerOutlined />
-          权限
-          {serviceRelations != null && serviceRelations.length > 0 && (
-            <Tag bordered={false} className={styles.tabBadge}>
-              {serviceRelations.length}
-            </Tag>
-          )}
+          <ApiOutlined />
+          认证方式
         </span>
       ),
       children: (
-        <div className={styles.permissionsTab}>
-          <div className={styles.permissionsHeader}>
-            <Text type="secondary">
-              各服务授予本应用的权限类型（ReBAC）。在此查看本应用可访问的服务及每种服务下授予的权限。
-            </Text>
-          </div>
-          <Table
-            columns={serviceRelationColumns}
-            dataSource={serviceRelations ?? []}
-            loading={svcRelLoading}
-            rowKey="service_id"
-            size="small"
-            pagination={{ pageSize: 10 }}
-            locale={{
-              emptyText: (
-                <Empty
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  description="暂无服务授予的权限"
-                />
-              ),
-            }}
-          />
+        <div className={styles.idpTab}>
+          <Spin spinning={idpLoading || batchUpdating}>
+            {!idpConfigs?.length ? (
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description="尚未配置身份源"
+                className={styles.idpEmptyState}
+              />
+            ) : (
+              <>
+                <Text type="secondary" className={styles.idpListHint}>
+                  拖拽左侧手柄可调整优先级，排在上方的身份源优先使用
+                </Text>
+                <DndContext
+                sensors={idpSensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleIdpDragEnd}
+              >
+                <SortableContext
+                  items={(idpConfigs ?? []).map((c) => c.type)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <div className={styles.idpList}>
+                    {(idpConfigs ?? []).map((idp) => (
+                      <SortableIdpCard
+                        key={idp.type}
+                        idp={idp}
+                        onEdit={openEditIdp}
+                        onDelete={runDeleteIdp}
+                      />
+                    ))}
+                  </div>
+                </SortableContext>
+              </DndContext>
+              </>
+            )}
+          </Spin>
         </div>
+      ),
+    },
+    {
+      key: 'relations',
+      label: (
+        <span className={styles.tabLabel}>
+          <CloudServerOutlined />
+          关联关系
+        </span>
+      ),
+      children: (
+        <ServicePermissionsView
+          appId={appId!}
+          appName={data.name}
+          appLogoUrl={data.logo_url}
+          data={serviceRelations ?? []}
+          loading={svcRelLoading}
+          onNavigateToService={(id) => navigate(`/services/${id}`)}
+          onRelationsChange={refreshRelations}
+        />
       ),
     },
   ]
 
   return (
     <div className={styles.container}>
-      <Card bordered={false} className={styles.overviewCard}>
+      <Card variant="borderless" className={styles.overviewCard}>
         <div className={styles.overviewHeader}>
           <Tooltip title="返回应用列表" placement="bottomLeft">
             <Button
@@ -607,56 +840,54 @@ export function Detail() {
             </Typography.Title>
           </div>
         </div>
-        <div className={styles.overviewMeta}>
-          <div className={styles.metaBlock}>
-            <div className={styles.metaRow}>
-              <dt>应用标识</dt>
-              <dd>
-                <Text
-                  copyable={{ text: data.app_id, tooltips: ['复制', '已复制'] }}
-                  className={styles.metaValue}
-                >
+        <Descriptions
+          className={styles.overviewMeta}
+          size="small"
+          column={{ xs: 1, sm: 2, md: 2, lg: 4 }}
+          items={[
+            {
+              key: 'app_id',
+              label: '应用标识',
+              children: (
+                <Text copyable={{ text: data.app_id, tooltips: ['复制', '已复制'] }} className={styles.metaValue}>
                   {data.app_id}
                 </Text>
-              </dd>
-            </div>
-            <div className={styles.metaRow}>
-              <dt>域标识</dt>
-              <dd>
+              ),
+            },
+            {
+              key: 'domain_id',
+              label: '域标识',
+              children: (
                 <Text
-                  copyable={
-                    data.domain_id
-                      ? { text: data.domain_id, tooltips: ['复制', '已复制'] }
-                      : false
-                  }
+                  copyable={data.domain_id ? { text: data.domain_id, tooltips: ['复制', '已复制'] } : false}
                   className={styles.metaValue}
                 >
                   {data.domain_id}
                 </Text>
-              </dd>
-            </div>
-          </div>
-          <div className={styles.metaBlock}>
-            <div className={styles.metaRow}>
-              <dt>创建时间</dt>
-              <dd className={styles.metaValue}>{formatDateTime(data.created_at)}</dd>
-            </div>
-            <div className={styles.metaRow}>
-              <dt>更新时间</dt>
-              <dd className={styles.metaValue}>{formatDateTime(data.updated_at)}</dd>
-            </div>
-          </div>
-        </div>
+              ),
+            },
+            {
+              key: 'created_at',
+              label: '创建时间',
+              children: <span className={styles.metaValue}>{formatDateTime(data.created_at)}</span>,
+            },
+            {
+              key: 'updated_at',
+              label: '更新时间',
+              children: <span className={styles.metaValue}>{formatDateTime(data.updated_at)}</span>,
+            },
+          ]}
+        />
       </Card>
 
-      <Card bordered={false} className={styles.mainCard}>
+      <Card variant="borderless" className={styles.mainCard}>
         <Tabs
           activeKey={activeTab}
           onChange={setActiveTab}
           items={tabItems}
           className={styles.tabs}
           tabBarExtraContent={
-            activeTab === 'settings' ? (
+            activeTab === 'basic' || activeTab === 'config' ? (
               <Space size="small">
                 {settingsDirty && (
                   <Button icon={<CloseOutlined />} onClick={handleCancelSettings}>
@@ -672,6 +903,10 @@ export function Detail() {
                   保存
                 </Button>
               </Space>
+            ) : activeTab === 'auth' ? (
+              <Button type="primary" icon={<PlusOutlined />} onClick={openAddIdp}>
+                添加身份源
+              </Button>
             ) : null
           }
         />
@@ -687,7 +922,7 @@ export function Detail() {
           idpForm.resetFields()
         }}
         confirmLoading={creatingIdp || updatingIdp}
-        destroyOnClose
+        destroyOnHidden
       >
         <Form form={idpForm} layout="vertical" className={styles.idpModalForm}>
           <Form.Item

@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Card, Button, Input, message, Upload, Typography, Space, List, Tag } from 'antd'
-import type { UploadProps } from 'antd'
+import type { UploadProps, RcCustomRequestOptions } from 'antd/es/upload/interface'
 import { CopyOutlined, CheckCircleOutlined, CloudUploadOutlined } from '@ant-design/icons'
+import { getAuth, apiEndpoints } from '@atlas/shared'
 import styles from './index.module.scss'
 
 const { Text, Paragraph } = Typography
@@ -32,13 +33,40 @@ export function FileManagement() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
   }
 
+  const customRequest = async (options: RcCustomRequestOptions) => {
+    const { file, onSuccess, onError } = options
+    const token = await getAuth().getAccessToken('chaos')
+    if (!token) {
+      message.error('未登录或 token 已过期，请重新登录')
+      onError?.(new Error('未授权'))
+      return
+    }
+
+    const formData = new FormData()
+    formData.append('file', file as Blob)
+    if (customPath) formData.append('path', customPath)
+
+    const url = `${apiEndpoints.chaos}/files`
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    })
+
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}))
+      const errMsg = (errBody as { error?: string })?.error || res.statusText
+      onError?.(new Error(errMsg))
+      return
+    }
+
+    const result = (await res.json()) as UploadResult
+    onSuccess?.(result)
+  }
+
   const uploadProps: UploadProps = {
     name: 'file',
-    action: '/api/chaos/files',
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`,
-    },
-    data: () => (customPath ? { path: customPath } : {}),
+    customRequest,
     multiple: true,
     showUploadList: true,
     onChange(info) {

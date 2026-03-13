@@ -1,0 +1,213 @@
+// ── 整体容器 ──
+
+.graphWrapper {
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+
+  &.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    border-radius: 0;
+    border: none;
+  }
+}
+
+// ── 顶部工具栏 ──
+
+.graphToolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  border-bottom: 1px solid #f5f5f5;
+  background: #fafafa;
+  flex-shrink: 0;
+}
+
+.toolbarLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toolbarTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: #171717;
+}
+
+.toolbarCount {
+  font-size: 12px;
+  color: #a3a3a3;
+}
+
+.toolbarRight {
+  display: flex;
+  align-items: center;
+}
+
+// ── 画布 ──
+
+.graphCanvas {
+  position: relative;
+  width: 100%;
+
+  :global(.react-flow) {
+    background: #fafafa;
+  }
+
+  :global(.react-flow__controls) {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-radius: 6px;
+    border: 1px solid #e5e5e5;
+  }
+
+  :global(.react-flow__controls-button) {
+    border-bottom: 1px solid #f5f5f5;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+// ── 节点通用 ──
+
+.appNode,
+.serviceNode {
+  min-width: 160px;
+  max-width: 220px;
+  background: #fff;
+  border: 1.5px solid #e5e5e5;
+  border-radius: 8px;
+  font-size: 13px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.graphNodeHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.graphNodeIcon {
+  font-size: 13px;
+}
+
+.graphNodeType {
+  flex: 1;
+  font-size: 10px;
+  color: #a3a3a3;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.graphNodeBody {
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.graphNodeInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.graphNodeLabel {
+  font-weight: 500;
+  font-size: 13px;
+  color: #171717;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.graphNodeId {
+  font-size: 11px;
+  color: #a3a3a3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: ui-monospace, 'SF Mono', 'Monaco', 'Consolas', monospace;
+}
+
+// ── Handle ──
+
+.handle {
+  width: 8px !important;
+  height: 8px !important;
+  border: 2px solid #fff !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  background-color: #a3a3a3 !important;
+}
+
+.appNode .handle {
+  background-color: #059669 !important;
+}
+
+.serviceNode .handle {
+  background-color: #0ea5e9 !important;
+}
+
+// ── 边 ──
+
+.permissionEdgePath {
+  stroke-linecap: round;
+}
+
+.permissionEdgeLabelWrap {
+  position: absolute;
+  background: transparent;
+}
+
+.permissionEdgeLabel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px 8px;
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  max-width: 220px;
+
+  &.pending {
+    background: #f5f5f5;
+    border-style: dashed;
+  }
+}
+
+.permissionTag {
+  margin: 0 !important;
+  font-size: 11px !important;
+  cursor: default;
+
+  :global(.anticon-close) {
+    opacity: 0;
+    transition: opacity 0.2s;
+    font-size: 10px;
+  }
+}
+
+.permissionEdgeLabel:hover .permissionTag :global(.anticon-close) {
+  opacity: 1;
+}

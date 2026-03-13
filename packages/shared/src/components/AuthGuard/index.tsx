@@ -27,7 +27,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
   if (isLoading) {
     return (
       <div className={styles.loading}>
-        <Spin size="large" tip="加载中..." />
+        <Spin size="large" />
       </div>
     )
   }
@@ -35,7 +35,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
   if (!isAuthenticated) {
     return (
       <div className={styles.loading}>
-        <Spin size="large" tip="正在跳转登录..." />
+        <Spin size="large" />
       </div>
     )
   }

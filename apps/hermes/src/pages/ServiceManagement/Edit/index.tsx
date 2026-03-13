@@ -58,7 +58,7 @@ export function Edit() {
   return (
     <div className={styles.container}>
       <PageHeader title="编辑服务" onBack={() => navigate(`/services/${serviceId}`)} />
-      <Card bordered={false}>
+      <Card variant="borderless">
         <Form
           form={form}
           layout="vertical"
