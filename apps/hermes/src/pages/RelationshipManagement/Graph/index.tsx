@@ -108,23 +108,25 @@ function GraphCanvas() {
   )
 
   // 模拟用户列表（实际应该从 API 获取）
+  const relationshipItems = relationships?.items ?? []
+
   const users = useMemo(() => {
-    if (!relationships) return []
+    if (!relationshipItems.length) return []
     const userIds = new Set<string>()
-    relationships.forEach((r) => {
+    relationshipItems.forEach((r) => {
       if (r.subject_type === 'user') userIds.add(r.subject_id)
     })
     return Array.from(userIds)
-  }, [relationships])
+  }, [relationshipItems])
 
   // 从关系数据构建节点和边
   useEffect(() => {
-    if (!relationships) return
+    if (!relationshipItems.length) return
 
     const nodeMap = new Map<string, Node>()
     const newEdges: Edge[] = []
 
-    relationships.forEach((rel, index) => {
+    relationshipItems.forEach((rel, index) => {
       // 创建主体节点
       const subjectNodeId = `${rel.subject_type}:${rel.subject_id}`
       if (!nodeMap.has(subjectNodeId)) {
@@ -170,7 +172,7 @@ function GraphCanvas() {
 
     setNodes(Array.from(nodeMap.values()))
     setEdges(newEdges)
-  }, [relationships, setNodes, setEdges])
+  }, [relationshipItems, setNodes, setEdges])
 
   // 拖放处理
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -408,7 +410,7 @@ function GraphCanvas() {
   return (
     <div className={`${styles.graphPage} ${isFullscreen ? styles.fullscreen : ''}`}>
       <CanvasHeader
-        services={services || []}
+        services={services?.items ?? []}
         selectedServiceId={selectedServiceId}
         onServiceChange={setSelectedServiceId}
         onSave={handleSave}
@@ -417,7 +419,7 @@ function GraphCanvas() {
         isFullscreen={isFullscreen}
         isDirty={isDirty}
         saving={saving}
-        relationCount={relationships?.length || 0}
+        relationCount={relationshipItems.length}
         isLocked={!!urlServiceId}
       />
 
@@ -431,8 +433,8 @@ function GraphCanvas() {
           ) : (
             <AddNodes
               users={users}
-              groups={groups || []}
-              applications={applications || []}
+              groups={groups?.items ?? []}
+              applications={applications?.items ?? []}
               onDragStart={handleDragStart}
             />
           )}
@@ -467,7 +469,7 @@ function GraphCanvas() {
         <Card className={styles.tableCard} title={null} size="small">
           <Table
             columns={columns}
-            dataSource={relationships || []}
+            dataSource={relationshipItems}
             loading={relationshipsLoading}
             rowKey={(r) => `${r.service_id}:${r.subject_id}:${r.relation}:${r.object_id}`}
             size="small"

@@ -36,7 +36,7 @@ export function List() {
     { ready: !!domainId, refreshDeps: [domainId] }
   )
 
-  const list = (data ?? []).filter((app) => {
+  const list = (data?.items ?? []).filter((app) => {
     if (!debouncedKeyword) return true
     if (searchBy === 'id') return app.app_id.toLowerCase().includes(debouncedKeyword.toLowerCase())
     return (app.name ?? '').toLowerCase().includes(debouncedKeyword.toLowerCase())
@@ -110,7 +110,7 @@ export function List() {
               role="button"
               tabIndex={0}
             >
-              <Card className={styles.card} bordered={false}>
+              <Card className={styles.card} variant="borderless">
                 <Flex gap={14} align="flex-start" className={styles.cardHead}>
                   <div className={styles.cardIcon}>
                     <PlusOutlined />
@@ -132,7 +132,7 @@ export function List() {
                 className={styles.cardWrap}
                 onClick={() => navigate(`/applications/${app.app_id}`)}
               >
-                <Card className={styles.card} bordered={false}>
+                <Card className={styles.card} variant="borderless">
                   <Flex gap={14} align="flex-start" className={styles.cardHead}>
                     <div className={styles.cardIcon}>
                       {app.logo_url ? (
@@ -211,7 +211,7 @@ export function List() {
         open={createModalOpen}
         onCancel={() => { setCreateModalOpen(false); form.resetFields() }}
         footer={null}
-        destroyOnClose
+        destroyOnHidden
         width={400}
       >
         <Form

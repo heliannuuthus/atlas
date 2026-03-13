@@ -43,7 +43,7 @@ export function List() {
     { ready: !!domainId, refreshDeps: [domainId, debouncedKeyword, searchBy] }
   )
 
-  const list = data ?? []
+  const list = data?.items ?? []
 
   const { run: runCreate, loading: createLoading } = useRequest(
     async (values: { service_id: string; name: string; description: string }) => {
@@ -109,7 +109,7 @@ export function List() {
               role="button"
               tabIndex={0}
             >
-              <Card className={styles.card} bordered={false}>
+              <Card className={styles.card} variant="borderless">
                 <Flex gap={14} align="flex-start" className={styles.cardHead}>
                   <div className={styles.cardIcon}>
                     <PlusOutlined />
@@ -131,7 +131,7 @@ export function List() {
                 className={styles.cardWrap}
                 onClick={() => navigate(`/services/${service.service_id}`)}
               >
-                <Card className={styles.card} bordered={false}>
+                <Card className={styles.card} variant="borderless">
                   <Flex gap={14} align="flex-start" className={styles.cardHead}>
                     <div className={styles.cardIcon}>
                       {service.logo_url ? (
@@ -210,7 +210,7 @@ export function List() {
         open={createModalOpen}
         onCancel={() => { setCreateModalOpen(false); form.resetFields() }}
         footer={null}
-        destroyOnClose
+        destroyOnHidden
         width={400}
       >
         <Form

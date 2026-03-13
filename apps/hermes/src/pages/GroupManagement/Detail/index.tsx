@@ -61,7 +61,7 @@ export function Detail() {
       dataIndex: 'service_id',
       key: 'service_id',
       width: 120,
-      render: value => <Tag bordered={false}>{value}</Tag>,
+      render: value => <Tag variant="filled">{value}</Tag>,
     },
     {
       title: '关系',
@@ -69,7 +69,7 @@ export function Detail() {
       key: 'relation',
       width: 100,
       render: value => (
-        <Tag color="processing" bordered={false}>
+        <Tag color="processing" variant="filled">
           {value}
         </Tag>
       ),
@@ -80,7 +80,7 @@ export function Detail() {
       width: 200,
       render: (_, record) => (
         <div className={styles.entityCell}>
-          <Tag bordered={false}>{record.object_type}</Tag>
+          <Tag variant="filled">{record.object_type}</Tag>
           <Tooltip title={record.object_id}>
             <Text ellipsis style={{ maxWidth: 120 }}>
               {record.object_id}
@@ -142,7 +142,7 @@ export function Detail() {
           <TeamOutlined />
           成员列表
           {memberList.length > 0 && (
-            <Tag bordered={false} className={styles.tabBadge}>
+            <Tag variant="filled" className={styles.tabBadge}>
               {memberList.length}
             </Tag>
           )}
@@ -186,9 +186,9 @@ export function Detail() {
         <span>
           <ShareAltOutlined />
           授权关系
-          {relationships && relationships.length > 0 && (
-            <Tag bordered={false} className={styles.tabBadge}>
-              {relationships.length}
+          {relationships?.items && relationships.items.length > 0 && (
+            <Tag variant="filled" className={styles.tabBadge}>
+              {relationships.items.length}
             </Tag>
           )}
         </span>
@@ -206,7 +206,7 @@ export function Detail() {
           </div>
           <Table
             columns={relationColumns}
-            dataSource={relationships || []}
+            dataSource={relationships?.items ?? []}
             loading={relLoading}
             rowKey={(r) => `${r.service_id}:${r.subject_id}:${r.relation}:${r.object_id}`}
             size="small"
@@ -232,7 +232,7 @@ export function Detail() {
         }
       />
       <div className={styles.content}>
-        <Card bordered={false} className={styles.mainCard}>
+        <Card variant="borderless" className={styles.mainCard}>
           <Tabs items={tabItems} className={styles.tabs} />
         </Card>
       </div>

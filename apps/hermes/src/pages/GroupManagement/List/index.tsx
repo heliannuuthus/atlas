@@ -14,7 +14,7 @@ export function List() {
 
   const { data, loading } = useRequest(() => groupApi.getList())
 
-  const tableData = data || []
+  const tableData = data?.items ?? []
 
   const columns: ColumnsType<Group> = [
     { title: '组ID', dataIndex: 'group_id', key: 'group_id', width: 180, ellipsis: true },

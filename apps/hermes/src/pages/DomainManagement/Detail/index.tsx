@@ -136,8 +136,8 @@ export function Detail() {
         <span>
           <CloudServerOutlined />
           服务列表
-          {services && services.length > 0 && (
-            <Tag bordered={false} className={styles.tabBadge}>{services.length}</Tag>
+          {services?.items && services.items.length > 0 && (
+            <Tag variant="filled" className={styles.tabBadge}>{services.items.length}</Tag>
           )}
         </span>
       ),
@@ -154,7 +154,7 @@ export function Detail() {
           </div>
           <Table
             columns={serviceColumns}
-            dataSource={services || []}
+            dataSource={services?.items ?? []}
             loading={servicesLoading}
             rowKey="service_id"
             size="small"
@@ -177,8 +177,8 @@ export function Detail() {
         <span>
           <AppstoreAddOutlined />
           应用列表
-          {applications && applications.length > 0 && (
-            <Tag bordered={false} className={styles.tabBadge}>{applications.length}</Tag>
+          {applications?.items && applications.items.length > 0 && (
+            <Tag variant="filled" className={styles.tabBadge}>{applications.items.length}</Tag>
           )}
         </span>
       ),
@@ -195,7 +195,7 @@ export function Detail() {
           </div>
           <Table
             columns={applicationColumns}
-            dataSource={applications || []}
+            dataSource={applications?.items ?? []}
             loading={appsLoading}
             rowKey="app_id"
             size="small"
@@ -218,7 +218,7 @@ export function Detail() {
     <div className={styles.container}>
       <PageHeader title={data.name || '域详情'} onBack={() => navigate('/')} />
       <div className={styles.content}>
-        <Card bordered={false} className={styles.mainCard}>
+        <Card variant="borderless" className={styles.mainCard}>
           <Tabs items={tabItems} className={styles.tabs} />
         </Card>
       </div>

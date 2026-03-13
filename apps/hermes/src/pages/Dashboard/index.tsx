@@ -11,16 +11,21 @@ export function Dashboard() {
     () => domainApi.getDetail(domainId!),
     { ready: !!domainId }
   )
-  const { data: services = [], loading: servicesLoading } = useRequest(
+  const { data: servicesData, loading: servicesLoading } = useRequest(
     () => serviceApi.getList(domainId!),
     { ready: !!domainId }
   )
-  const { data: applications = [], loading: applicationsLoading } = useRequest(
+  const { data: applicationsData, loading: applicationsLoading } = useRequest(
     () => applicationApi.getList(domainId!),
     { ready: !!domainId }
   )
-  const { data: allGroups = [], loading: groupsLoading } = useRequest(() => groupApi.getList())
-  const { data: allRelationships = [], loading: relationshipsLoading } = useRequest(() => relationshipApi.getList())
+  const { data: groupsData, loading: groupsLoading } = useRequest(() => groupApi.getList())
+  const { data: relationshipsData, loading: relationshipsLoading } = useRequest(() => relationshipApi.getList())
+
+  const services = servicesData?.items ?? []
+  const applications = applicationsData?.items ?? []
+  const allGroups = groupsData?.items ?? []
+  const allRelationships = relationshipsData?.items ?? []
 
   const serviceIds = new Set(services.map((s) => s.service_id))
   const groups = allGroups.filter((g) => serviceIds.has(g.service_id))

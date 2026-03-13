@@ -44,7 +44,7 @@ export function List() {
     { refreshDeps: [currentServiceId, subjectType] }
   )
 
-  const tableData = data || []
+  const tableData = data?.items ?? []
 
   const handleDelete = async (rel: Relationship) => {
     try {
@@ -71,7 +71,7 @@ export function List() {
         width: 200,
         render: (_, record) => (
           <div className={styles.entityCell}>
-            <Tag color={subjectTypeColors[record.subject_type]} bordered={false}>
+            <Tag color={subjectTypeColors[record.subject_type]} variant="filled">
               {subjectTypeLabels[record.subject_type] || record.subject_type}
             </Tag>
             <Tooltip title={record.subject_id}>
@@ -85,7 +85,7 @@ export function List() {
         dataIndex: 'relation',
         key: 'relation',
         width: 100,
-        render: (value) => <Tag color="processing" bordered={false}>{value}</Tag>,
+        render: (value) => <Tag color="processing" variant="filled">{value}</Tag>,
       },
       {
         title: '对象',
@@ -93,7 +93,7 @@ export function List() {
         width: 200,
         render: (_, record) => (
           <div className={styles.entityCell}>
-            <Tag bordered={false}>{record.object_type}</Tag>
+            <Tag variant="filled">{record.object_type}</Tag>
             <Tooltip title={record.object_id}>
               <Text ellipsis style={{ maxWidth: 120 }}>{record.object_id}</Text>
             </Tooltip>
@@ -135,7 +135,7 @@ export function List() {
         dataIndex: 'service_id',
         key: 'service_id',
         width: 120,
-        render: (value) => <Tag bordered={false}>{value}</Tag>,
+        render: (value) => <Tag variant="filled">{value}</Tag>,
       })
     }
 

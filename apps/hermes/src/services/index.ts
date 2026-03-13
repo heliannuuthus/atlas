@@ -1,5 +1,6 @@
 import { hermesRequest as request } from '@atlas/shared'
 import type {
+  CursorPage,
   Domain,
   DomainIDP,
   Service,
@@ -31,8 +32,8 @@ export const domainApi = {
 }
 
 export const serviceApi = {
-  getList: (domainId: string, params?: { service_id?: string; name?: string }) =>
-    request.get<Service[]>(`/domains/${domainId}/services`, { params }),
+  getList: (domainId: string, params?: { service_id?: string; name?: string; cursor?: string; limit?: number }) =>
+    request.get<CursorPage<Service>>(`/domains/${domainId}/services`, { params }),
   getDetail: (domainId: string, serviceId: string) =>
     request.get<Service>(`/domains/${domainId}/services/${serviceId}`),
   /** 服务侧：该服务已授权给哪些应用及授予的权限（ReBAC） */
@@ -53,8 +54,8 @@ export const serviceApi = {
 }
 
 export const applicationApi = {
-  getList: (domainId: string) =>
-    request.get<Application[]>(`/domains/${domainId}/applications`),
+  getList: (domainId: string, params?: { cursor?: string; limit?: number }) =>
+    request.get<CursorPage<Application>>(`/domains/${domainId}/applications`, { params }),
   getDetail: (domainId: string, appId: string) =>
     request.get<Application>(`/domains/${domainId}/applications/${appId}`),
   create: (domainId: string, data: Omit<ApplicationCreateRequest, 'domain_id'>) =>
@@ -77,14 +78,15 @@ export const applicationApi = {
 }
 
 export const relationshipApi = {
-  getList: (params?: { service_id?: string; subject_type?: string; subject_id?: string }) =>
-    request.get<Relationship[]>('/relationships', { params }),
+  getList: (params?: { service_id?: string; subject_type?: string; subject_id?: string; cursor?: string; limit?: number }) =>
+    request.get<CursorPage<Relationship>>('/relationships', { params }),
   create: (data: RelationshipCreateRequest) => request.post<Relationship>('/relationships', data),
   delete: (data: RelationshipDeleteRequest) => request.delete('/relationships', { data }),
 }
 
 export const groupApi = {
-  getList: () => request.get<Group[]>('/groups'),
+  getList: (params?: { cursor?: string; limit?: number }) =>
+    request.get<CursorPage<Group>>('/groups', { params }),
   getDetail: (groupId: string) => request.get<Group>(`/groups/${groupId}`),
   create: (data: GroupCreateRequest) => request.post<Group>('/groups', data),
   update: (groupId: string, data: GroupUpdateRequest) => request.patch(`/groups/${groupId}`, data),

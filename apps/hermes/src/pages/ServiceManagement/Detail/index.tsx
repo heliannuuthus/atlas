@@ -79,7 +79,7 @@ export function Detail() {
       key: 'relations',
       render: (relations: string[]) =>
         (relations || []).map((r) => (
-          <Tag key={r} color="processing" bordered={false}>
+          <Tag key={r} color="processing" variant="filled">
             {r}
           </Tag>
         )),
@@ -93,7 +93,7 @@ export function Detail() {
       width: 200,
       render: (_, record) => (
         <div className={styles.entityCell}>
-          <Tag color={subjectTypeColors[record.subject_type]} bordered={false}>
+          <Tag color={subjectTypeColors[record.subject_type]} variant="filled">
             {subjectTypeLabels[record.subject_type] || record.subject_type}
           </Tag>
           <Tooltip title={record.subject_id}>
@@ -110,7 +110,7 @@ export function Detail() {
       key: 'relation',
       width: 100,
       render: value => (
-        <Tag color="processing" bordered={false}>
+        <Tag color="processing" variant="filled">
           {value}
         </Tag>
       ),
@@ -121,7 +121,7 @@ export function Detail() {
       width: 200,
       render: (_, record) => (
         <div className={styles.entityCell}>
-          <Tag bordered={false}>{record.object_type}</Tag>
+          <Tag variant="filled">{record.object_type}</Tag>
           <Tooltip title={record.object_id}>
             <Text ellipsis style={{ maxWidth: 120 }}>
               {record.object_id}
@@ -190,7 +190,7 @@ export function Detail() {
           <AppstoreOutlined />
           已授权应用
           {appRelations && appRelations.length > 0 && (
-            <Tag bordered={false} className={styles.tabBadge}>
+            <Tag variant="filled" className={styles.tabBadge}>
               {appRelations.length}
             </Tag>
           )}
@@ -225,9 +225,9 @@ export function Detail() {
         <span>
           <ShareAltOutlined />
           关联关系
-          {relationships && relationships.length > 0 && (
-            <Tag bordered={false} className={styles.tabBadge}>
-              {relationships.length}
+          {relationships?.items && relationships.items.length > 0 && (
+            <Tag variant="filled" className={styles.tabBadge}>
+              {relationships.items.length}
             </Tag>
           )}
         </span>
@@ -254,7 +254,7 @@ export function Detail() {
           </div>
           <Table
             columns={relationColumns}
-            dataSource={relationships || []}
+            dataSource={relationships?.items ?? []}
             loading={relLoading}
             rowKey={(r) => `${r.service_id}:${r.subject_id}:${r.relation}:${r.object_id}`}
             size="small"
@@ -280,7 +280,7 @@ export function Detail() {
         }
       />
       <div className={styles.content}>
-        <Card bordered={false} className={styles.mainCard}>
+        <Card variant="borderless" className={styles.mainCard}>
           <Tabs items={tabItems} className={styles.tabs} />
         </Card>
       </div>

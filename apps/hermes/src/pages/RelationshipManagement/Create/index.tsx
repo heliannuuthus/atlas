@@ -41,7 +41,7 @@ export function Create() {
         title="新建关系"
         onBack={() => navigate(urlServiceId ? `/services/${urlServiceId}` : '/relationships')}
       />
-      <Card bordered={false}>
+      <Card variant="borderless">
         <Form
           form={form}
           layout="vertical"
@@ -52,7 +52,7 @@ export function Create() {
           {!urlServiceId && (
             <Form.Item name="service_id" label="服务" rules={[{ required: true, message: '请选择服务' }]}>
               <Select placeholder="请选择服务">
-                {services?.map((s) => <Select.Option key={s.service_id} value={s.service_id}>{s.name}</Select.Option>)}
+                {(services?.items ?? []).map((s) => <Select.Option key={s.service_id} value={s.service_id}>{s.name}</Select.Option>)}
               </Select>
             </Form.Item>
           )}
