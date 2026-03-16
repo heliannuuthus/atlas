@@ -15,7 +15,6 @@ export interface TopNavLayoutProps {
   selectedKey?: string
   onLogoClick?: () => void
   onMenuClick?: (path: string) => void
-  left?: ReactNode
   right?: ReactNode
   brandColor?: string
 }
@@ -25,7 +24,6 @@ export function TopNavLayout({
   menus,
   onLogoClick,
   onMenuClick,
-  left,
   right,
   brandColor = '#059669',
 }: TopNavLayoutProps) {
@@ -48,12 +46,13 @@ export function TopNavLayout({
               onClick={onLogoClick}
               role="button"
               tabIndex={0}
-              style={{ '--brand': brandColor } as React.CSSProperties}
             >
               <span className={styles.logoIcon}>{logo.icon}</span>
               <span className={styles.logoText}>{logo.text}</span>
             </div>
-            <nav className={styles.nav}>
+          </div>
+          <nav className={styles.headerCenter}>
+            <div className={styles.nav}>
               {menus.map(item => (
                 <button
                   key={item.key}
@@ -65,9 +64,8 @@ export function TopNavLayout({
                   {item.label}
                 </button>
               ))}
-            </nav>
-            {left && <div className={styles.leftSlot}>{left}</div>}
-          </div>
+            </div>
+          </nav>
           <div className={styles.headerRight}>{right}</div>
         </div>
       </header>

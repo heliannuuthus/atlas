@@ -1,11 +1,8 @@
-import { useNavigate, useLocation, useParams } from 'react-router-dom'
-import { useRequest } from 'ahooks'
+import { useNavigate, useParams } from 'react-router-dom'
 import { CloudServerOutlined, AppstoreAddOutlined, TeamOutlined } from '@ant-design/icons'
-import { Select, Divider, Button } from 'antd'
-import { TopNavLayout, UserMenu, SearchTrigger } from '@atlas/ui'
+import { TopNavLayout, UserMenu } from '@atlas/ui'
 import type { TopNavMenuItem } from '@atlas/ui'
 import { DomainContext } from '@/contexts/DomainContext'
-import { domainApi } from '@/services'
 
 const BRAND_COLOR = '#059669'
 
@@ -25,8 +22,17 @@ function buildMenus(basePath: string): TopNavMenuItem[] {
 const hermesLogo = {
   icon: (
     <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="32" height="32" rx="8" fill="#059669" />
-      <path d="M8 12h16M8 16h16M8 20h10" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+      <defs>
+        <linearGradient id="hg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#10b981" />
+          <stop offset="1" stopColor="#059669" />
+        </linearGradient>
+      </defs>
+      <rect width="32" height="32" rx="10" fill="url(#hg)" />
+      <path
+        d="M10 22V10h3v4.5h6V10h3v12h-3v-5h-6v5z"
+        fill="#fff"
+      />
     </svg>
   ),
   text: 'Hermes',
@@ -34,9 +40,7 @@ const hermesLogo = {
 
 export function HermesLayout() {
   const navigate = useNavigate()
-  const location = useLocation()
   const { domainId } = useParams<{ domainId: string }>()
-  const { data: domains = [] } = useRequest(() => domainApi.getList())
 
   if (!domainId) {
     navigate('/', { replace: true })
@@ -46,16 +50,6 @@ export function HermesLayout() {
   const basePath = `/d/${encodeURIComponent(domainId)}`
   const menus = buildMenus(basePath)
 
-  const handleDomainChange = (newDomainId: string) => {
-    if (newDomainId === domainId) return
-    const prefix = `/d/${encodeURIComponent(domainId)}`
-    const rest =
-      location.pathname === prefix || location.pathname === `${prefix}/`
-        ? ''
-        : location.pathname.slice(prefix.length) || ''
-    navigate(`/d/${encodeURIComponent(newDomainId)}${rest}`)
-  }
-
   return (
     <DomainContext.Provider value={domainId}>
       <TopNavLayout
@@ -64,40 +58,7 @@ export function HermesLayout() {
         brandColor={BRAND_COLOR}
         onLogoClick={() => navigate(basePath)}
         onMenuClick={path => navigate(path)}
-        left={
-          <Select
-            value={domainId}
-            onChange={handleDomainChange}
-            options={domains.map(d => ({ label: d.name || d.domain_id, value: d.domain_id }))}
-            placeholder="选择域"
-            style={{ minWidth: 140 }}
-            size="middle"
-            variant="borderless"
-            popupRender={menu => (
-              <>
-                {menu}
-                <Divider style={{ margin: '8px 0' }} />
-                <div style={{ padding: '0 4px 4px' }}>
-                  <Button
-                    type="text"
-                    size="small"
-                    block
-                    style={{ textAlign: 'left' }}
-                    onClick={() => navigate('/', { replace: true })}
-                  >
-                    前往域列表
-                  </Button>
-                </div>
-              </>
-            )}
-          />
-        }
-        right={
-          <>
-            <SearchTrigger />
-            <UserMenu brandColor={BRAND_COLOR} />
-          </>
-        }
+        right={<UserMenu brandColor={BRAND_COLOR} />}
       />
     </DomainContext.Provider>
   )
