@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useRequest } from 'ahooks'
 import {
-  Card,
   Spin,
   message,
   Tabs,
@@ -17,7 +16,6 @@ import {
   Select,
   Popconfirm,
   Space,
-  Descriptions,
   Avatar,
   Upload,
   Segmented,
@@ -42,20 +40,16 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { useAppNavigate, useDomainId } from '@/contexts/DomainContext'
 import {
-  SettingOutlined,
-  CloudServerOutlined,
-  ArrowLeftOutlined,
   SaveOutlined,
-  CloseOutlined,
   PlusOutlined,
   DeleteOutlined,
   EditOutlined,
-  ApiOutlined,
-  SlidersOutlined,
   HolderOutlined,
   QuestionCircleOutlined,
   AppstoreAddOutlined,
   CameraOutlined,
+  ArrowLeftOutlined,
+  CopyOutlined,
 } from '@ant-design/icons'
 import { applicationApi, domainApi } from '@/services'
 import type { ApplicationIDPConfig } from '@/types'
@@ -89,7 +83,6 @@ const IDP_TYPE_LABELS: Record<string, string> = {
 
 const ASSET_ICON_BASE = 'https://asset.heliannuuthus.com/icons'
 
-/** 身份源图标 URL */
 const IDP_ICON_URLS: Record<string, string> = {
   user: `${ASSET_ICON_BASE}/user.svg`,
   staff: `${ASSET_ICON_BASE}/staff.svg`,
@@ -110,7 +103,6 @@ function idpLabel(type: string) {
   return IDP_TYPE_LABELS[type] ?? type
 }
 
-/** 认证策略预定义标签与颜色，无 strategy 时显示「通用」 */
 const STRATEGY_CONFIG: Record<string, { label: string; color: string }> = {
   password: { label: '密码登录', color: 'blue' },
   webauthn: { label: 'Passkey', color: 'purple' },
@@ -120,16 +112,15 @@ const STRATEGY_CONFIG: Record<string, { label: string; color: string }> = {
 
 function getStrategyTags(strategy: string | undefined | null): { label: string; color: string }[] {
   if (!strategy || !strategy.trim()) return [{ label: '通用', color: 'default' }]
-  const parts = strategy
-    .split(',')
-    .map(s => s.trim())
-    .filter(Boolean)
+  const parts = strategy.split(',').map((s) => s.trim()).filter(Boolean)
   if (parts.length === 0) return [{ label: '通用', color: 'default' }]
-  return parts.map(p => {
+  return parts.map((p) => {
     const cfg = STRATEGY_CONFIG[p]
     return cfg ? { label: cfg.label, color: cfg.color } : { label: p, color: 'cyan' }
   })
 }
+
+// ── URI Tags Input ──
 
 interface UriTagsInputProps {
   value?: string[]
@@ -160,9 +151,9 @@ function UriTagsInput({ value = [], onChange, placeholder }: UriTagsInputProps) 
       ))}
       <Input
         value={inputVal}
-        onChange={e => setInputVal(e.target.value)}
+        onChange={(e) => setInputVal(e.target.value)}
         onBlur={() => addItem(inputVal)}
-        onPressEnter={e => {
+        onPressEnter={(e) => {
           e.preventDefault()
           addItem(inputVal)
         }}
@@ -174,6 +165,8 @@ function UriTagsInput({ value = [], onChange, placeholder }: UriTagsInputProps) 
   )
 }
 
+// ── Duration Input ──
+
 const DURATION_UNITS = [
   { value: 's', label: '秒', factor: 1 },
   { value: 'm', label: '分', factor: 60 },
@@ -181,16 +174,12 @@ const DURATION_UNITS = [
   { value: 'd', label: '天', factor: 86400 },
 ] as const
 
-function secondsToDisplay(seconds: number | undefined): {
-  num: number | undefined
-  unit: (typeof DURATION_UNITS)[number]['value']
-} {
+function secondsToDisplay(seconds: number | undefined): { num: number | undefined; unit: (typeof DURATION_UNITS)[number]['value'] } {
   if (seconds == null || seconds < 0) return { num: undefined, unit: 's' }
   if (seconds === 0) return { num: 0, unit: 's' }
   for (let i = DURATION_UNITS.length - 1; i >= 0; i--) {
     const u = DURATION_UNITS[i]
-    if (seconds >= u.factor && seconds % u.factor === 0)
-      return { num: seconds / u.factor, unit: u.value }
+    if (seconds >= u.factor && seconds % u.factor === 0) return { num: seconds / u.factor, unit: u.value }
   }
   return { num: seconds, unit: 's' }
 }
@@ -210,7 +199,7 @@ function DurationInput({ value, onChange, placeholder = '默认', min = 0 }: Dur
     setSelectedUnit(secondsToDisplay(value).unit)
   }, [value])
 
-  const factor = DURATION_UNITS.find(u => u.value === selectedUnit)?.factor ?? 1
+  const factor = DURATION_UNITS.find((u) => u.value === selectedUnit)?.factor ?? 1
   const displayNum = value != null ? value / factor : undefined
 
   return (
@@ -218,27 +207,29 @@ function DurationInput({ value, onChange, placeholder = '默认', min = 0 }: Dur
       <InputNumber
         min={min}
         value={displayNum}
-        onChange={v => onChange?.(v != null ? Math.round(Number(v)) * factor : undefined)}
+        onChange={(v) => onChange?.(v != null ? Math.round(Number(v)) * factor : undefined)}
         placeholder={placeholder}
         className={styles.durationNumber}
       />
       <Segmented
         value={selectedUnit}
-        onChange={v => {
+        onChange={(v) => {
           const newUnit = v as (typeof DURATION_UNITS)[number]['value']
-          const newFactor = DURATION_UNITS.find(u => u.value === newUnit)?.factor ?? 1
+          const newFactor = DURATION_UNITS.find((u) => u.value === newUnit)?.factor ?? 1
           setSelectedUnit(newUnit)
           if (displayNum != null) {
             onChange?.(Math.round(displayNum) * newFactor)
           }
         }}
-        options={DURATION_UNITS.map(u => ({ label: u.label, value: u.value }))}
+        options={DURATION_UNITS.map((u) => ({ label: u.label, value: u.value }))}
         size="small"
         className={styles.durationSegmented}
       />
     </div>
   )
 }
+
+// ── Sortable IDP Card ──
 
 interface SortableIdpCardProps {
   idp: ApplicationIDPConfig
@@ -247,9 +238,14 @@ interface SortableIdpCardProps {
 }
 
 function SortableIdpCard({ idp, onEdit, onDelete }: SortableIdpCardProps) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: idp.type,
-  })
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: idp.type })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -257,13 +253,13 @@ function SortableIdpCard({ idp, onEdit, onDelete }: SortableIdpCardProps) {
   }
 
   return (
-    <div ref={setNodeRef} style={style} className={styles.idpCard} data-dragging={isDragging}>
-      <div
-        className={styles.idpCardDragHandle}
-        {...attributes}
-        {...listeners}
-        aria-label="拖拽排序"
-      >
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={styles.idpCard}
+      data-dragging={isDragging}
+    >
+      <div className={styles.idpCardDragHandle} {...attributes} {...listeners} aria-label="拖拽排序">
         <HolderOutlined />
       </div>
       <div className={styles.idpCardMain}>
@@ -297,35 +293,64 @@ function SortableIdpCard({ idp, onEdit, onDelete }: SortableIdpCardProps) {
   )
 }
 
+// ── Stat Card ──
+
+function StatCard({ label, value, copyable }: { label: string; value: string; copyable?: boolean }) {
+  return (
+    <div className={styles.statCard}>
+      <span className={styles.statLabel}>{label}</span>
+      <span className={styles.statValue}>
+        {copyable ? (
+          <Text copyable={{ text: value, tooltips: ['复制', '已复制'], icon: <CopyOutlined className={styles.statCopyIcon} /> }}>
+            {value}
+          </Text>
+        ) : (
+          value
+        )}
+      </span>
+    </div>
+  )
+}
+
+// ── Parse URIs helper ──
+
+function parseUriArray(raw: unknown): string[] {
+  try {
+    if (Array.isArray(raw)) return raw
+    if (typeof raw === 'string') return JSON.parse(raw)
+  } catch { /* ignore */ }
+  return []
+}
+
+// ── Main Detail Component ──
+
 export function Detail() {
   const { appId } = useParams<{ appId: string }>()
   const domainId = useDomainId()
   const navigate = useAppNavigate()
   const [activeTab, setActiveTab] = useState('basic')
   const [settingsDirty, setSettingsDirty] = useState(false)
-  const [prevData, setPrevData] = useState(data)
-  if (data !== prevData) {
-    setPrevData(data)
-    setSettingsDirty(false)
-  }
   const [settingsForm] = Form.useForm()
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
   const [idpModalOpen, setIdpModalOpen] = useState(false)
   const [editingIdp, setEditingIdp] = useState<ApplicationIDPConfig | null>(null)
   const [idpForm] = Form.useForm()
 
-  const { data, loading, refresh } = useRequest(() => applicationApi.getDetail(domainId!, appId!), {
-    ready: !!domainId && !!appId,
-    onError: () => message.error('获取应用信息失败'),
-  })
+  const { data, loading, refresh } = useRequest(
+    () => applicationApi.getDetail(domainId!, appId!),
+    { ready: !!domainId && !!appId, onError: () => message.error('获取应用信息失败') },
+  )
 
-  const {
-    data: serviceRelations,
-    loading: svcRelLoading,
-    refresh: refreshRelations,
-  } = useRequest(() => applicationApi.getServiceRelations(domainId!, appId!), {
-    ready: !!domainId && !!appId && activeTab === 'relations',
-  })
+  const [prevData, setPrevData] = useState(data)
+  if (data !== prevData) {
+    setPrevData(data)
+    setSettingsDirty(false)
+  }
+
+  const { data: serviceRelations, loading: svcRelLoading, refresh: refreshRelations } = useRequest(
+    () => applicationApi.getServiceRelations(domainId!, appId!),
+    { ready: !!domainId && !!appId && activeTab === 'relations' },
+  )
 
   const {
     data: idpConfigs,
@@ -341,10 +366,10 @@ export function Detail() {
 
   const availableIdpTypes = useMemo(() => {
     if (!domainIdps) return []
-    const configured = new Set((idpConfigs ?? []).map(c => c.type))
+    const configured = new Set((idpConfigs ?? []).map((c) => c.type))
     return domainIdps
-      .filter(d => !configured.has(d.idp_type) || editingIdp?.type === d.idp_type)
-      .map(d => ({ label: idpLabel(d.idp_type), value: d.idp_type }))
+      .filter((d) => !configured.has(d.idp_type) || editingIdp?.type === d.idp_type)
+      .map((d) => ({ label: idpLabel(d.idp_type), value: d.idp_type }))
   }, [domainIdps, idpConfigs, editingIdp])
 
   const { run: runSaveSettings, loading: saving } = useRequest(
@@ -358,13 +383,9 @@ export function Detail() {
       refresh_token_expires_in?: number
       refresh_token_absolute_expires_in?: number
     }) => {
-      const allowedRedirectUris = (values.allowed_redirect_uris ?? [])
-        .map(s => s.trim())
-        .filter(Boolean)
-      const allowedOrigins = (values.allowed_origins ?? []).map(s => s.trim()).filter(Boolean)
-      const allowedLogoutUris = (values.allowed_logout_uris ?? [])
-        .map(s => s.trim())
-        .filter(Boolean)
+      const allowedRedirectUris = (values.allowed_redirect_uris ?? []).map((s) => s.trim()).filter(Boolean)
+      const allowedOrigins = (values.allowed_origins ?? []).map((s) => s.trim()).filter(Boolean)
+      const allowedLogoutUris = (values.allowed_logout_uris ?? []).map((s) => s.trim()).filter(Boolean)
       await applicationApi.update(domainId!, appId!, {
         name: values.name,
         description: values.description || undefined,
@@ -379,31 +400,22 @@ export function Detail() {
       setSettingsDirty(false)
       message.success('已保存')
     },
-    { manual: true, onError: () => message.error('保存失败') }
+    { manual: true, onError: () => message.error('保存失败') },
   )
 
   const { run: runCreateIdp, loading: creatingIdp } = useRequest(
-    async (values: {
-      type: string
-      priority?: number
-      strategy?: string
-      delegate?: string
-      require?: string
-    }) => {
+    async (values: { type: string; priority?: number; strategy?: string; delegate?: string; require?: string }) => {
       await applicationApi.createIDPConfig(domainId!, appId!, values)
       refreshIdpConfigs()
       setIdpModalOpen(false)
       idpForm.resetFields()
       message.success('已添加')
     },
-    { manual: true, onError: () => message.error('添加失败') }
+    { manual: true, onError: () => message.error('添加失败') },
   )
 
   const { run: runUpdateIdp, loading: updatingIdp } = useRequest(
-    async (
-      idpType: string,
-      values: { priority?: number; strategy?: string; delegate?: string; require?: string }
-    ) => {
+    async (idpType: string, values: { priority?: number; strategy?: string; delegate?: string; require?: string }) => {
       await applicationApi.updateIDPConfig(domainId!, appId!, idpType, values)
       refreshIdpConfigs()
       setIdpModalOpen(false)
@@ -411,7 +423,7 @@ export function Detail() {
       idpForm.resetFields()
       message.success('已更新')
     },
-    { manual: true, onError: () => message.error('更新失败') }
+    { manual: true, onError: () => message.error('更新失败') },
   )
 
   const { run: runDeleteIdp } = useRequest(
@@ -420,29 +432,28 @@ export function Detail() {
       refreshIdpConfigs()
       message.success('已删除')
     },
-    { manual: true, onError: () => message.error('删除失败') }
+    { manual: true, onError: () => message.error('删除失败') },
   )
 
   const { run: runBatchUpdatePriority, loading: batchUpdating } = useRequest(
     async (ordered: ApplicationIDPConfig[]) => {
-      // 后端 priority DESC：index 0 为最高优先级，赋 (length-1)
       const updates = ordered.map((idp, index) =>
         applicationApi.updateIDPConfig(domainId!, appId!, idp.type, {
           priority: ordered.length - 1 - index,
-        })
+        }),
       )
       await Promise.all(updates)
       refreshIdpConfigs()
       message.success('优先级已更新')
     },
-    { manual: true, onError: () => message.error('更新优先级失败') }
+    { manual: true, onError: () => message.error('更新优先级失败') },
   )
 
   const handleIdpDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
     if (!over || active.id === over.id || !idpConfigs?.length) return
-    const oldIndex = idpConfigs.findIndex(c => c.type === active.id)
-    const newIndex = idpConfigs.findIndex(c => c.type === over.id)
+    const oldIndex = idpConfigs.findIndex((c) => c.type === active.id)
+    const newIndex = idpConfigs.findIndex((c) => c.type === over.id)
     if (oldIndex === -1 || newIndex === -1) return
     const reordered = arrayMove(idpConfigs, oldIndex, newIndex)
     runBatchUpdatePriority(reordered)
@@ -450,33 +461,12 @@ export function Detail() {
 
   useEffect(() => {
     if (!data) return
-    let uris: string[] = []
-    try {
-      const raw = data.allowed_redirect_uris
-      uris = Array.isArray(raw) ? raw : typeof raw === 'string' ? JSON.parse(raw) : []
-    } catch {
-      /* ignore */
-    }
-    let origins: string[] = []
-    try {
-      const raw = data.allowed_origins
-      origins = Array.isArray(raw) ? raw : typeof raw === 'string' ? JSON.parse(raw) : []
-    } catch {
-      /* ignore */
-    }
-    let logoutUris: string[] = []
-    try {
-      const raw = data.allowed_logout_uris
-      logoutUris = Array.isArray(raw) ? raw : typeof raw === 'string' ? JSON.parse(raw) : []
-    } catch {
-      /* ignore */
-    }
     settingsForm.setFieldsValue({
       name: data.name,
       description: data.description ?? '',
-      allowed_redirect_uris: uris,
-      allowed_origins: origins,
-      allowed_logout_uris: logoutUris,
+      allowed_redirect_uris: parseUriArray(data.allowed_redirect_uris),
+      allowed_origins: parseUriArray(data.allowed_origins),
+      allowed_logout_uris: parseUriArray(data.allowed_logout_uris),
       id_token_expires_in: data.id_token_expires_in || undefined,
       refresh_token_expires_in: data.refresh_token_expires_in || undefined,
       refresh_token_absolute_expires_in: data.refresh_token_absolute_expires_in || undefined,
@@ -494,33 +484,12 @@ export function Detail() {
 
   const handleCancelSettings = () => {
     if (!data) return
-    let uris: string[] = []
-    try {
-      const raw = data.allowed_redirect_uris
-      uris = Array.isArray(raw) ? raw : typeof raw === 'string' ? JSON.parse(raw) : []
-    } catch {
-      /* ignore */
-    }
-    let origins: string[] = []
-    try {
-      const raw = data.allowed_origins
-      origins = Array.isArray(raw) ? raw : typeof raw === 'string' ? JSON.parse(raw) : []
-    } catch {
-      /* ignore */
-    }
-    let logoutUris: string[] = []
-    try {
-      const raw = data.allowed_logout_uris
-      logoutUris = Array.isArray(raw) ? raw : typeof raw === 'string' ? JSON.parse(raw) : []
-    } catch {
-      /* ignore */
-    }
     settingsForm.setFieldsValue({
       name: data.name,
       description: data.description ?? '',
-      allowed_redirect_uris: uris,
-      allowed_origins: origins,
-      allowed_logout_uris: logoutUris,
+      allowed_redirect_uris: parseUriArray(data.allowed_redirect_uris),
+      allowed_origins: parseUriArray(data.allowed_origins),
+      allowed_logout_uris: parseUriArray(data.allowed_logout_uris),
       id_token_expires_in: data.id_token_expires_in || undefined,
       refresh_token_expires_in: data.refresh_token_expires_in || undefined,
       refresh_token_absolute_expires_in: data.refresh_token_absolute_expires_in || undefined,
@@ -561,7 +530,7 @@ export function Detail() {
 
   const idpSensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   )
 
   if (loading) {
@@ -577,151 +546,133 @@ export function Detail() {
   const tabItems = [
     {
       key: 'basic',
-      label: (
-        <span className={styles.tabLabel}>
-          <SettingOutlined />
-          基本信息
-        </span>
-      ),
+      label: '基本信息',
       children: (
-        <div className={styles.settingsTab}>
+        <div className={styles.tabContent}>
           <Form
             form={settingsForm}
             layout="vertical"
             className={styles.settingsForm}
             onValuesChange={() => setSettingsDirty(true)}
           >
-            <div className={styles.section}>
-              <div className={styles.sectionBody}>
-                <div className={styles.logoField}>
-                  <Upload
-                    accept="image/*"
-                    showUploadList={false}
-                    beforeUpload={file => {
-                      const reader = new FileReader()
-                      reader.onload = e => {
-                        setLogoPreview(e.target?.result as string)
-                        setSettingsDirty(true)
-                      }
-                      reader.readAsDataURL(file)
-                      return false
-                    }}
-                  >
-                    <div className={styles.logoUpload}>
-                      <Avatar
-                        src={logoPreview ?? data.logo_url}
-                        shape="circle"
-                        size={72}
-                        icon={<AppstoreAddOutlined />}
-                      />
-                      <div className={styles.logoOverlay}>
-                        <CameraOutlined />
-                      </div>
-                    </div>
-                  </Upload>
+            <div className={styles.logoField}>
+              <Upload
+                accept="image/*"
+                showUploadList={false}
+                beforeUpload={(file) => {
+                  const reader = new FileReader()
+                  reader.onload = (e) => {
+                    setLogoPreview(e.target?.result as string)
+                    setSettingsDirty(true)
+                  }
+                  reader.readAsDataURL(file)
+                  return false
+                }}
+              >
+                <div className={styles.logoUpload}>
+                  <Avatar
+                    src={logoPreview ?? data.logo_url}
+                    shape="circle"
+                    size={80}
+                    icon={<AppstoreAddOutlined />}
+                  />
+                  <div className={styles.logoOverlay}>
+                    <CameraOutlined />
+                  </div>
                 </div>
-                <Form.Item
-                  name="name"
-                  label="名称"
-                  rules={[
-                    { required: true, message: '请输入应用名称' },
-                    { max: 32, message: '名称不超过 32 个字符' },
-                  ]}
-                >
-                  <Input placeholder="应用名称" maxLength={32} showCount />
-                </Form.Item>
-                <Form.Item name="description" label="描述">
-                  <TextArea rows={3} placeholder="可选的应用描述" />
-                </Form.Item>
-              </div>
+              </Upload>
             </div>
+            <Form.Item
+              name="name"
+              label="名称"
+              rules={[
+                { required: true, message: '请输入应用名称' },
+                { max: 32, message: '名称不超过 32 个字符' },
+              ]}
+            >
+              <Input placeholder="应用名称" maxLength={32} showCount />
+            </Form.Item>
+            <Form.Item name="description" label="描述">
+              <TextArea rows={3} placeholder="可选的应用描述" />
+            </Form.Item>
           </Form>
         </div>
       ),
     },
     {
       key: 'config',
-      label: (
-        <span className={styles.tabLabel}>
-          <SlidersOutlined />
-          配置信息
-        </span>
-      ),
+      label: '配置信息',
       children: (
-        <div className={styles.settingsTab}>
+        <div className={styles.tabContent}>
           <Form
             form={settingsForm}
             layout="vertical"
             className={styles.settingsForm}
             onValuesChange={() => setSettingsDirty(true)}
           >
-            <div className={styles.section}>
-              <div className={styles.sectionBody}>
-                <Form.Item
-                  name="allowed_redirect_uris"
-                  label={
-                    <span>
-                      允许的重定向地址
-                      <Tooltip title="登录或授权后允许跳转的 URI，需与请求中的 redirect_uri 完全一致">
-                        <QuestionCircleOutlined className={styles.labelTooltipIcon} />
-                      </Tooltip>
-                    </span>
-                  }
-                  rules={[
-                    {
-                      validator: (_, value) => {
-                        const err = validateRedirectUrisArray(Array.isArray(value) ? value : [])
-                        return err ? Promise.reject(new Error(err)) : Promise.resolve()
-                      },
-                    },
-                  ]}
-                >
-                  <UriTagsInput placeholder="输入地址后失焦或回车添加" />
-                </Form.Item>
-                <Form.Item
-                  name="allowed_origins"
-                  label={
-                    <span>
-                      允许的来源
-                      <Tooltip title="允许从浏览器端发起跨域请求的来源，仅 scheme://host[:port]">
-                        <QuestionCircleOutlined className={styles.labelTooltipIcon} />
-                      </Tooltip>
-                    </span>
-                  }
-                  rules={[
-                    {
-                      validator: (_, value) => {
-                        const err = validateAllowedOriginsArray(Array.isArray(value) ? value : [])
-                        return err ? Promise.reject(new Error(err)) : Promise.resolve()
-                      },
-                    },
-                  ]}
-                >
-                  <UriTagsInput placeholder="输入地址后失焦或回车添加" />
-                </Form.Item>
-                <Form.Item
-                  name="allowed_logout_uris"
-                  label={
-                    <span>
-                      允许登出后跳转的地址
-                      <Tooltip title="用户点击登出后，可跳转回的白名单地址">
-                        <QuestionCircleOutlined className={styles.labelTooltipIcon} />
-                      </Tooltip>
-                    </span>
-                  }
-                  rules={[
-                    {
-                      validator: (_, value) => {
-                        const err = validateLogoutUrisArray(Array.isArray(value) ? value : [])
-                        return err ? Promise.reject(new Error(err)) : Promise.resolve()
-                      },
-                    },
-                  ]}
-                >
-                  <UriTagsInput placeholder="输入地址后失焦或回车添加" />
-                </Form.Item>
-              </div>
-            </div>
+            <Form.Item
+              name="allowed_redirect_uris"
+              label={
+                <span>
+                  允许的重定向地址
+                  <Tooltip title="登录或授权后允许跳转的 URI，需与请求中的 redirect_uri 完全一致">
+                    <QuestionCircleOutlined className={styles.labelTooltipIcon} />
+                  </Tooltip>
+                </span>
+              }
+              rules={[
+                {
+                  validator: (_, value) => {
+                    const err = validateRedirectUrisArray(Array.isArray(value) ? value : [])
+                    return err ? Promise.reject(new Error(err)) : Promise.resolve()
+                  },
+                },
+              ]}
+            >
+              <UriTagsInput placeholder="输入地址后失焦或回车添加" />
+            </Form.Item>
+            <Form.Item
+              name="allowed_origins"
+              label={
+                <span>
+                  允许的来源
+                  <Tooltip title="允许从浏览器端发起跨域请求的来源，仅 scheme://host[:port]">
+                    <QuestionCircleOutlined className={styles.labelTooltipIcon} />
+                  </Tooltip>
+                </span>
+              }
+              rules={[
+                {
+                  validator: (_, value) => {
+                    const err = validateAllowedOriginsArray(Array.isArray(value) ? value : [])
+                    return err ? Promise.reject(new Error(err)) : Promise.resolve()
+                  },
+                },
+              ]}
+            >
+              <UriTagsInput placeholder="输入地址后失焦或回车添加" />
+            </Form.Item>
+            <Form.Item
+              name="allowed_logout_uris"
+              label={
+                <span>
+                  登出跳转地址
+                  <Tooltip title="用户点击登出后，可跳转回的白名单地址">
+                    <QuestionCircleOutlined className={styles.labelTooltipIcon} />
+                  </Tooltip>
+                </span>
+              }
+              rules={[
+                {
+                  validator: (_, value) => {
+                    const err = validateLogoutUrisArray(Array.isArray(value) ? value : [])
+                    return err ? Promise.reject(new Error(err)) : Promise.resolve()
+                  },
+                },
+              ]}
+            >
+              <UriTagsInput placeholder="输入地址后失焦或回车添加" />
+            </Form.Item>
 
             <div className={styles.sectionDivider} />
 
@@ -762,9 +713,7 @@ export function Detail() {
                       <QuestionCircleOutlined className={styles.labelTooltipIcon} />
                     </Tooltip>
                   </span>
-                  <span className={styles.tokenRowDesc}>
-                    刷新令牌的最长存活时间，超时需重新登录
-                  </span>
+                  <span className={styles.tokenRowDesc}>刷新令牌的最长存活时间，超时需重新登录</span>
                 </div>
                 <Form.Item name="refresh_token_absolute_expires_in" noStyle>
                   <DurationInput placeholder="默认" />
@@ -777,20 +726,15 @@ export function Detail() {
     },
     {
       key: 'auth',
-      label: (
-        <span className={styles.tabLabel}>
-          <ApiOutlined />
-          认证方式
-        </span>
-      ),
+      label: '认证方式',
       children: (
-        <div className={styles.idpTab}>
+        <div className={styles.tabContent}>
           <Spin spinning={idpLoading || batchUpdating}>
             {!idpConfigs?.length ? (
               <Empty
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
                 description="尚未配置身份源"
-                className={styles.idpEmptyState}
+                className={styles.emptyState}
               />
             ) : (
               <>
@@ -803,11 +747,11 @@ export function Detail() {
                   onDragEnd={handleIdpDragEnd}
                 >
                   <SortableContext
-                    items={(idpConfigs ?? []).map(c => c.type)}
+                    items={(idpConfigs ?? []).map((c) => c.type)}
                     strategy={verticalListSortingStrategy}
                   >
                     <div className={styles.idpList}>
-                      {(idpConfigs ?? []).map(idp => (
+                      {(idpConfigs ?? []).map((idp) => (
                         <SortableIdpCard
                           key={idp.type}
                           idp={idp}
@@ -826,12 +770,7 @@ export function Detail() {
     },
     {
       key: 'relations',
-      label: (
-        <span className={styles.tabLabel}>
-          <CloudServerOutlined />
-          关联关系
-        </span>
-      ),
+      label: '关联关系',
       children: (
         <ServicePermissionsView
           appId={appId!}
@@ -839,7 +778,7 @@ export function Detail() {
           appLogoUrl={data.logo_url}
           data={serviceRelations ?? []}
           loading={svcRelLoading}
-          onNavigateToService={id => navigate(`/services/${id}`)}
+          onNavigateToService={(id) => navigate(`/services/${id}`)}
           onRelationsChange={refreshRelations}
         />
       ),
@@ -848,99 +787,73 @@ export function Detail() {
 
   return (
     <div className={styles.container}>
-      <Card variant="borderless" className={styles.overviewCard}>
-        <div className={styles.overviewHeader}>
-          <Tooltip title="返回应用列表" placement="bottomLeft">
-            <Button
-              type="text"
-              icon={<ArrowLeftOutlined className={styles.backIcon} />}
-              onClick={() => navigate('/applications')}
-              className={styles.backBtn}
+      {/* ── Page Header ── */}
+      <div className={styles.pageHeader}>
+        <div className={styles.pageHeaderLeft}>
+          <Button
+            type="text"
+            icon={<ArrowLeftOutlined />}
+            onClick={() => navigate('/applications')}
+            className={styles.backBtn}
+          >
+            应用
+          </Button>
+          <div className={styles.pageTitle}>
+            <Avatar
+              src={data.logo_url}
+              size={44}
+              icon={<AppstoreAddOutlined />}
+              className={styles.pageTitleAvatar}
             />
-          </Tooltip>
-          <div className={styles.overviewTitleRow}>
-            <Typography.Title level={4} className={styles.overviewName}>
-              {data.name || data.app_id}
-            </Typography.Title>
+            <div className={styles.pageTitleText}>
+              <h1>{data.name || data.app_id}</h1>
+              {data.description && <p>{data.description}</p>}
+            </div>
           </div>
         </div>
-        <Descriptions
-          className={styles.overviewMeta}
-          size="small"
-          column={{ xs: 1, sm: 2, md: 2, lg: 4 }}
-          items={[
-            {
-              key: 'app_id',
-              label: '应用标识',
-              children: (
-                <Text
-                  copyable={{ text: data.app_id, tooltips: ['复制', '已复制'] }}
-                  className={styles.metaValue}
-                >
-                  {data.app_id}
-                </Text>
-              ),
-            },
-            {
-              key: 'domain_id',
-              label: '域标识',
-              children: (
-                <Text
-                  copyable={
-                    data.domain_id ? { text: data.domain_id, tooltips: ['复制', '已复制'] } : false
-                  }
-                  className={styles.metaValue}
-                >
-                  {data.domain_id}
-                </Text>
-              ),
-            },
-            {
-              key: 'created_at',
-              label: '创建时间',
-              children: <span className={styles.metaValue}>{formatDateTime(data.created_at)}</span>,
-            },
-            {
-              key: 'updated_at',
-              label: '更新时间',
-              children: <span className={styles.metaValue}>{formatDateTime(data.updated_at)}</span>,
-            },
-          ]}
-        />
-      </Card>
+        <div className={styles.pageHeaderRight}>
+          {(activeTab === 'basic' || activeTab === 'config') && (
+            <Space size="small">
+              {settingsDirty && (
+                <Button onClick={handleCancelSettings}>取消</Button>
+              )}
+              <Button
+                type="primary"
+                icon={<SaveOutlined />}
+                loading={saving}
+                onClick={handleSaveSettings}
+              >
+                保存
+              </Button>
+            </Space>
+          )}
+          {activeTab === 'auth' && (
+            <Button type="primary" icon={<PlusOutlined />} onClick={openAddIdp}>
+              添加身份源
+            </Button>
+          )}
+        </div>
+      </div>
 
-      <Card variant="borderless" className={styles.mainCard}>
+      {/* ── Stats Row ── */}
+      <div className={styles.statsRow}>
+        <StatCard label="应用标识" value={data.app_id} copyable />
+        <StatCard label="域标识" value={data.domain_id} copyable />
+        <StatCard label="创建时间" value={formatDateTime(data.created_at)} />
+        <StatCard label="更新时间" value={formatDateTime(data.updated_at)} />
+      </div>
+
+      {/* ── Tabs ── */}
+      <div className={styles.mainContent}>
         <Tabs
           activeKey={activeTab}
           onChange={setActiveTab}
           items={tabItems}
           className={styles.tabs}
-          tabBarExtraContent={
-            activeTab === 'basic' || activeTab === 'config' ? (
-              <Space size="small">
-                {settingsDirty && (
-                  <Button icon={<CloseOutlined />} onClick={handleCancelSettings}>
-                    取消
-                  </Button>
-                )}
-                <Button
-                  type="primary"
-                  icon={<SaveOutlined />}
-                  loading={saving}
-                  onClick={handleSaveSettings}
-                >
-                  保存
-                </Button>
-              </Space>
-            ) : activeTab === 'auth' ? (
-              <Button type="primary" icon={<PlusOutlined />} onClick={openAddIdp}>
-                添加身份源
-              </Button>
-            ) : null
-          }
         />
-      </Card>
+      </div>
 
+      {/* ── IDP Modal ── */}
       <Modal
         title={editingIdp ? '编辑身份源' : '添加身份源'}
         open={idpModalOpen}
