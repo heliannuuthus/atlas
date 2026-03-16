@@ -1,37 +1,17 @@
 .container {
-  padding: 0;
   width: 100%;
 }
 
-// ─── Hero 说明区 ───
-.hero {
-  padding: 28px 32px;
+.pageHeader {
   margin-bottom: 28px;
-  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 50%, #f0fdf4 100%);
-  border: 1px solid rgba(5, 150, 105, 0.12);
-  border-radius: 14px;
-  border-left: 4px solid #059669;
 }
 
-.heroTitle {
-  font-size: 22px;
+.pageTitle {
+  font-size: 28px;
   font-weight: 700;
-  color: #065f46;
-  margin: 0 0 10px 0;
-  letter-spacing: -0.3px;
-}
-
-.heroDesc {
-  font-size: 14px;
-  line-height: 1.65;
-  color: #047857;
+  color: #1d1d1f;
   margin: 0;
-  max-width: 640px;
-
-  strong {
-    font-weight: 600;
-    color: #065f46;
-  }
+  letter-spacing: -0.03em;
 }
 
 // ─── Toolbar ───

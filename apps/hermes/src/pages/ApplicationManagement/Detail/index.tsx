@@ -48,8 +48,11 @@ import {
   QuestionCircleOutlined,
   AppstoreAddOutlined,
   CameraOutlined,
-  ArrowLeftOutlined,
   CopyOutlined,
+  KeyOutlined,
+  GlobalOutlined,
+  ClockCircleOutlined,
+  SyncOutlined,
 } from '@ant-design/icons'
 import { applicationApi, domainApi } from '@/services'
 import type { ApplicationIDPConfig } from '@/types'
@@ -300,15 +303,20 @@ function SortableIdpCard({ idp, onEdit, onDelete }: SortableIdpCardProps) {
 function StatCard({
   label,
   value,
+  icon,
   copyable,
 }: {
   label: string
   value: string
+  icon?: React.ReactNode
   copyable?: boolean
 }) {
   return (
     <div className={styles.statCard}>
-      <span className={styles.statLabel}>{label}</span>
+      <div className={styles.statHeader}>
+        <span className={styles.statLabel}>{label}</span>
+        {icon && <span className={styles.statIcon}>{icon}</span>}
+      </div>
       <span className={styles.statValue}>
         {copyable ? (
           <Text
@@ -826,18 +834,10 @@ export function Detail() {
       {/* ── Page Header ── */}
       <div className={styles.pageHeader}>
         <div className={styles.pageHeaderLeft}>
-          <Button
-            type="text"
-            icon={<ArrowLeftOutlined />}
-            onClick={() => navigate('/applications')}
-            className={styles.backBtn}
-          >
-            应用
-          </Button>
           <div className={styles.pageTitle}>
             <Avatar
               src={data.logo_url}
-              size={44}
+              size={52}
               icon={<AppstoreAddOutlined />}
               className={styles.pageTitleAvatar}
             />
@@ -871,10 +871,10 @@ export function Detail() {
 
       {/* ── Stats Row ── */}
       <div className={styles.statsRow}>
-        <StatCard label="应用标识" value={data.app_id} copyable />
-        <StatCard label="域标识" value={data.domain_id} copyable />
-        <StatCard label="创建时间" value={formatDateTime(data.created_at)} />
-        <StatCard label="更新时间" value={formatDateTime(data.updated_at)} />
+        <StatCard label="应用标识" value={data.app_id} icon={<KeyOutlined />} copyable />
+        <StatCard label="域标识" value={data.domain_id} icon={<GlobalOutlined />} copyable />
+        <StatCard label="创建时间" value={formatDateTime(data.created_at)} icon={<ClockCircleOutlined />} />
+        <StatCard label="更新时间" value={formatDateTime(data.updated_at)} icon={<SyncOutlined />} />
       </div>
 
       {/* ── Tabs ── */}
