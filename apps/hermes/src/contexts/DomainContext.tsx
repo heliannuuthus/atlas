@@ -24,7 +24,8 @@ export function useAppNavigate() {
       navigate(to)
       return
     }
-    const path = to.startsWith('/d/') || to === '/' ? to : `${basePath}${to.startsWith('/') ? '' : '/'}${to}`
+    const path =
+      to.startsWith('/d/') || to === '/' ? to : `${basePath}${to.startsWith('/') ? '' : '/'}${to}`
     navigate(path, options)
   }
 }

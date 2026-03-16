@@ -20,13 +20,22 @@ export function Create() {
   const { run: handleSubmit, loading } = useRequest(
     async (values: Record<string, unknown>) => {
       const allowedRedirectUris = values.allowed_redirect_uris
-        ? (values.allowed_redirect_uris as string).split('\n').map((s: string) => s.trim()).filter(Boolean)
+        ? (values.allowed_redirect_uris as string)
+            .split('\n')
+            .map((s: string) => s.trim())
+            .filter(Boolean)
         : []
       const allowedOrigins = values.allowed_origins
-        ? (values.allowed_origins as string).split('\n').map((s: string) => s.trim()).filter(Boolean)
+        ? (values.allowed_origins as string)
+            .split('\n')
+            .map((s: string) => s.trim())
+            .filter(Boolean)
         : []
       const allowedLogoutUris = values.allowed_logout_uris
-        ? (values.allowed_logout_uris as string).split('\n').map((s: string) => s.trim()).filter(Boolean)
+        ? (values.allowed_logout_uris as string)
+            .split('\n')
+            .map((s: string) => s.trim())
+            .filter(Boolean)
         : []
       await applicationApi.create(domainId!, {
         app_id: (values.app_id as string)?.trim() ?? '',
@@ -54,7 +63,11 @@ export function Create() {
           <Form.Item name="name" label="名称" rules={[{ required: true, message: '请输入名称' }]}>
             <Input placeholder="请输入名称" />
           </Form.Item>
-          <Form.Item name="description" label="描述" rules={[{ required: true, message: '请输入描述' }]}>
+          <Form.Item
+            name="description"
+            label="描述"
+            rules={[{ required: true, message: '请输入描述' }]}
+          >
             <TextArea rows={3} placeholder="请输入描述" />
           </Form.Item>
           <Form.Item

@@ -36,12 +36,7 @@ export function Create() {
     <div className={styles.container}>
       <PageHeader title="新建服务" onBack={() => navigate('/services')} />
       <Card variant="borderless">
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSubmit}
-          className={styles.form}
-        >
+        <Form form={form} layout="vertical" onFinish={handleSubmit} className={styles.form}>
           <Form.Item
             name="service_id"
             label="服务ID"
@@ -50,11 +45,7 @@ export function Create() {
             <Input placeholder="请输入服务ID" />
           </Form.Item>
 
-          <Form.Item
-            name="name"
-            label="名称"
-            rules={[{ required: true, message: '请输入名称' }]}
-          >
+          <Form.Item name="name" label="名称" rules={[{ required: true, message: '请输入名称' }]}>
             <Input placeholder="请输入名称" />
           </Form.Item>
 
@@ -83,11 +74,7 @@ export function Create() {
           </Form.Item>
 
           <Form.Item>
-            <FormActions
-              loading={loading}
-              submitText="创建"
-              cancelPath="/services"
-            />
+            <FormActions loading={loading} submitText="创建" cancelPath="/services" />
           </Form.Item>
         </Form>
       </Card>

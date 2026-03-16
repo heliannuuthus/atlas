@@ -1,16 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useRequest } from 'ahooks'
-import {
-  Card,
-  Form,
-  Input,
-  Button,
-  Space,
-  Switch,
-  message,
-  Spin,
-} from 'antd'
+import { Card, Form, Input, Button, Space, Switch, message, Spin } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { chaosTemplateApi, type TemplateUpdateRequest } from '@/services'
 import styles from './index.module.scss'
@@ -23,10 +14,9 @@ export function Edit() {
   const [form] = Form.useForm()
   const [saving, setSaving] = useState(false)
 
-  const { data, loading } = useRequest(
-    () => chaosTemplateApi.getDetail(templateId!),
-    { ready: !!templateId }
-  )
+  const { data, loading } = useRequest(() => chaosTemplateApi.getDetail(templateId!), {
+    ready: !!templateId,
+  })
 
   useEffect(() => {
     if (data) {
@@ -69,12 +59,7 @@ export function Edit() {
           </Space>
         </div>
 
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSubmit}
-          className={styles.form}
-        >
+        <Form form={form} layout="vertical" onFinish={handleSubmit} className={styles.form}>
           <Form.Item
             name="name"
             label="模板名称"
@@ -105,19 +90,11 @@ export function Edit() {
             <TextArea rows={12} />
           </Form.Item>
 
-          <Form.Item
-            name="variables"
-            label="变量说明"
-            extra="JSON 格式，用于前端预览时的示例数据"
-          >
+          <Form.Item name="variables" label="变量说明" extra="JSON 格式，用于前端预览时的示例数据">
             <TextArea rows={4} />
           </Form.Item>
 
-          <Form.Item
-            name="is_enabled"
-            label="启用状态"
-            valuePropName="checked"
-          >
+          <Form.Item name="is_enabled" label="启用状态" valuePropName="checked">
             <Switch />
           </Form.Item>
 
@@ -126,9 +103,7 @@ export function Edit() {
               <Button type="primary" htmlType="submit" loading={saving}>
                 保存
               </Button>
-              <Button onClick={() => navigate(`/templates/${templateId}`)}>
-                取消
-              </Button>
+              <Button onClick={() => navigate(`/templates/${templateId}`)}>取消</Button>
             </Space>
           </Form.Item>
         </Form>

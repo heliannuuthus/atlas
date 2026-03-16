@@ -68,10 +68,14 @@
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   background: #fff;
   height: 100%;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0), 0 8px 10px -6px rgba(0, 0, 0, 0);
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0),
+    0 8px 10px -6px rgba(0, 0, 0, 0);
 
   &:hover {
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    box-shadow:
+      0 10px 25px -5px rgba(0, 0, 0, 0.1),
+      0 8px 10px -6px rgba(0, 0, 0, 0.1);
   }
 }
 
@@ -254,8 +258,12 @@
 }
 
 @keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 .emptyWrap {

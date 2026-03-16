@@ -120,9 +120,12 @@ const STRATEGY_CONFIG: Record<string, { label: string; color: string }> = {
 
 function getStrategyTags(strategy: string | undefined | null): { label: string; color: string }[] {
   if (!strategy || !strategy.trim()) return [{ label: '通用', color: 'default' }]
-  const parts = strategy.split(',').map((s) => s.trim()).filter(Boolean)
+  const parts = strategy
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean)
   if (parts.length === 0) return [{ label: '通用', color: 'default' }]
-  return parts.map((p) => {
+  return parts.map(p => {
     const cfg = STRATEGY_CONFIG[p]
     return cfg ? { label: cfg.label, color: cfg.color } : { label: p, color: 'cyan' }
   })
@@ -157,9 +160,9 @@ function UriTagsInput({ value = [], onChange, placeholder }: UriTagsInputProps) 
       ))}
       <Input
         value={inputVal}
-        onChange={(e) => setInputVal(e.target.value)}
+        onChange={e => setInputVal(e.target.value)}
         onBlur={() => addItem(inputVal)}
-        onPressEnter={(e) => {
+        onPressEnter={e => {
           e.preventDefault()
           addItem(inputVal)
         }}
@@ -178,12 +181,16 @@ const DURATION_UNITS = [
   { value: 'd', label: '天', factor: 86400 },
 ] as const
 
-function secondsToDisplay(seconds: number | undefined): { num: number | undefined; unit: (typeof DURATION_UNITS)[number]['value'] } {
+function secondsToDisplay(seconds: number | undefined): {
+  num: number | undefined
+  unit: (typeof DURATION_UNITS)[number]['value']
+} {
   if (seconds == null || seconds < 0) return { num: undefined, unit: 's' }
   if (seconds === 0) return { num: 0, unit: 's' }
   for (let i = DURATION_UNITS.length - 1; i >= 0; i--) {
     const u = DURATION_UNITS[i]
-    if (seconds >= u.factor && seconds % u.factor === 0) return { num: seconds / u.factor, unit: u.value }
+    if (seconds >= u.factor && seconds % u.factor === 0)
+      return { num: seconds / u.factor, unit: u.value }
   }
   return { num: seconds, unit: 's' }
 }
@@ -203,7 +210,7 @@ function DurationInput({ value, onChange, placeholder = '默认', min = 0 }: Dur
     setSelectedUnit(secondsToDisplay(value).unit)
   }, [value])
 
-  const factor = DURATION_UNITS.find((u) => u.value === selectedUnit)?.factor ?? 1
+  const factor = DURATION_UNITS.find(u => u.value === selectedUnit)?.factor ?? 1
   const displayNum = value != null ? value / factor : undefined
 
   return (
@@ -211,21 +218,21 @@ function DurationInput({ value, onChange, placeholder = '默认', min = 0 }: Dur
       <InputNumber
         min={min}
         value={displayNum}
-        onChange={(v) => onChange?.(v != null ? Math.round(Number(v)) * factor : undefined)}
+        onChange={v => onChange?.(v != null ? Math.round(Number(v)) * factor : undefined)}
         placeholder={placeholder}
         className={styles.durationNumber}
       />
       <Segmented
         value={selectedUnit}
-        onChange={(v) => {
+        onChange={v => {
           const newUnit = v as (typeof DURATION_UNITS)[number]['value']
-          const newFactor = DURATION_UNITS.find((u) => u.value === newUnit)?.factor ?? 1
+          const newFactor = DURATION_UNITS.find(u => u.value === newUnit)?.factor ?? 1
           setSelectedUnit(newUnit)
           if (displayNum != null) {
             onChange?.(Math.round(displayNum) * newFactor)
           }
         }}
-        options={DURATION_UNITS.map((u) => ({ label: u.label, value: u.value }))}
+        options={DURATION_UNITS.map(u => ({ label: u.label, value: u.value }))}
         size="small"
         className={styles.durationSegmented}
       />
@@ -240,14 +247,9 @@ interface SortableIdpCardProps {
 }
 
 function SortableIdpCard({ idp, onEdit, onDelete }: SortableIdpCardProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: idp.type })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: idp.type,
+  })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -255,13 +257,13 @@ function SortableIdpCard({ idp, onEdit, onDelete }: SortableIdpCardProps) {
   }
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={styles.idpCard}
-      data-dragging={isDragging}
-    >
-      <div className={styles.idpCardDragHandle} {...attributes} {...listeners} aria-label="拖拽排序">
+    <div ref={setNodeRef} style={style} className={styles.idpCard} data-dragging={isDragging}>
+      <div
+        className={styles.idpCardDragHandle}
+        {...attributes}
+        {...listeners}
+        aria-label="拖拽排序"
+      >
         <HolderOutlined />
       </div>
       <div className={styles.idpCardMain}>
@@ -312,15 +314,18 @@ export function Detail() {
   const [editingIdp, setEditingIdp] = useState<ApplicationIDPConfig | null>(null)
   const [idpForm] = Form.useForm()
 
-  const { data, loading, refresh } = useRequest(
-    () => applicationApi.getDetail(domainId!, appId!),
-    { ready: !!domainId && !!appId, onError: () => message.error('获取应用信息失败') },
-  )
+  const { data, loading, refresh } = useRequest(() => applicationApi.getDetail(domainId!, appId!), {
+    ready: !!domainId && !!appId,
+    onError: () => message.error('获取应用信息失败'),
+  })
 
-  const { data: serviceRelations, loading: svcRelLoading, refresh: refreshRelations } = useRequest(
-    () => applicationApi.getServiceRelations(domainId!, appId!),
-    { ready: !!domainId && !!appId && activeTab === 'relations' },
-  )
+  const {
+    data: serviceRelations,
+    loading: svcRelLoading,
+    refresh: refreshRelations,
+  } = useRequest(() => applicationApi.getServiceRelations(domainId!, appId!), {
+    ready: !!domainId && !!appId && activeTab === 'relations',
+  })
 
   const {
     data: idpConfigs,
@@ -336,10 +341,10 @@ export function Detail() {
 
   const availableIdpTypes = useMemo(() => {
     if (!domainIdps) return []
-    const configured = new Set((idpConfigs ?? []).map((c) => c.type))
+    const configured = new Set((idpConfigs ?? []).map(c => c.type))
     return domainIdps
-      .filter((d) => !configured.has(d.idp_type) || editingIdp?.type === d.idp_type)
-      .map((d) => ({ label: idpLabel(d.idp_type), value: d.idp_type }))
+      .filter(d => !configured.has(d.idp_type) || editingIdp?.type === d.idp_type)
+      .map(d => ({ label: idpLabel(d.idp_type), value: d.idp_type }))
   }, [domainIdps, idpConfigs, editingIdp])
 
   const { run: runSaveSettings, loading: saving } = useRequest(
@@ -353,9 +358,13 @@ export function Detail() {
       refresh_token_expires_in?: number
       refresh_token_absolute_expires_in?: number
     }) => {
-      const allowedRedirectUris = (values.allowed_redirect_uris ?? []).map((s) => s.trim()).filter(Boolean)
-      const allowedOrigins = (values.allowed_origins ?? []).map((s) => s.trim()).filter(Boolean)
-      const allowedLogoutUris = (values.allowed_logout_uris ?? []).map((s) => s.trim()).filter(Boolean)
+      const allowedRedirectUris = (values.allowed_redirect_uris ?? [])
+        .map(s => s.trim())
+        .filter(Boolean)
+      const allowedOrigins = (values.allowed_origins ?? []).map(s => s.trim()).filter(Boolean)
+      const allowedLogoutUris = (values.allowed_logout_uris ?? [])
+        .map(s => s.trim())
+        .filter(Boolean)
       await applicationApi.update(domainId!, appId!, {
         name: values.name,
         description: values.description || undefined,
@@ -370,22 +379,31 @@ export function Detail() {
       setSettingsDirty(false)
       message.success('已保存')
     },
-    { manual: true, onError: () => message.error('保存失败') },
+    { manual: true, onError: () => message.error('保存失败') }
   )
 
   const { run: runCreateIdp, loading: creatingIdp } = useRequest(
-    async (values: { type: string; priority?: number; strategy?: string; delegate?: string; require?: string }) => {
+    async (values: {
+      type: string
+      priority?: number
+      strategy?: string
+      delegate?: string
+      require?: string
+    }) => {
       await applicationApi.createIDPConfig(domainId!, appId!, values)
       refreshIdpConfigs()
       setIdpModalOpen(false)
       idpForm.resetFields()
       message.success('已添加')
     },
-    { manual: true, onError: () => message.error('添加失败') },
+    { manual: true, onError: () => message.error('添加失败') }
   )
 
   const { run: runUpdateIdp, loading: updatingIdp } = useRequest(
-    async (idpType: string, values: { priority?: number; strategy?: string; delegate?: string; require?: string }) => {
+    async (
+      idpType: string,
+      values: { priority?: number; strategy?: string; delegate?: string; require?: string }
+    ) => {
       await applicationApi.updateIDPConfig(domainId!, appId!, idpType, values)
       refreshIdpConfigs()
       setIdpModalOpen(false)
@@ -393,7 +411,7 @@ export function Detail() {
       idpForm.resetFields()
       message.success('已更新')
     },
-    { manual: true, onError: () => message.error('更新失败') },
+    { manual: true, onError: () => message.error('更新失败') }
   )
 
   const { run: runDeleteIdp } = useRequest(
@@ -402,7 +420,7 @@ export function Detail() {
       refreshIdpConfigs()
       message.success('已删除')
     },
-    { manual: true, onError: () => message.error('删除失败') },
+    { manual: true, onError: () => message.error('删除失败') }
   )
 
   const { run: runBatchUpdatePriority, loading: batchUpdating } = useRequest(
@@ -411,20 +429,20 @@ export function Detail() {
       const updates = ordered.map((idp, index) =>
         applicationApi.updateIDPConfig(domainId!, appId!, idp.type, {
           priority: ordered.length - 1 - index,
-        }),
+        })
       )
       await Promise.all(updates)
       refreshIdpConfigs()
       message.success('优先级已更新')
     },
-    { manual: true, onError: () => message.error('更新优先级失败') },
+    { manual: true, onError: () => message.error('更新优先级失败') }
   )
 
   const handleIdpDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
     if (!over || active.id === over.id || !idpConfigs?.length) return
-    const oldIndex = idpConfigs.findIndex((c) => c.type === active.id)
-    const newIndex = idpConfigs.findIndex((c) => c.type === over.id)
+    const oldIndex = idpConfigs.findIndex(c => c.type === active.id)
+    const newIndex = idpConfigs.findIndex(c => c.type === over.id)
     if (oldIndex === -1 || newIndex === -1) return
     const reordered = arrayMove(idpConfigs, oldIndex, newIndex)
     runBatchUpdatePriority(reordered)
@@ -435,21 +453,21 @@ export function Detail() {
     let uris: string[] = []
     try {
       const raw = data.allowed_redirect_uris
-      uris = Array.isArray(raw) ? raw : (typeof raw === 'string' ? JSON.parse(raw) : [])
+      uris = Array.isArray(raw) ? raw : typeof raw === 'string' ? JSON.parse(raw) : []
     } catch {
       /* ignore */
     }
     let origins: string[] = []
     try {
       const raw = data.allowed_origins
-      origins = Array.isArray(raw) ? raw : (typeof raw === 'string' ? JSON.parse(raw) : [])
+      origins = Array.isArray(raw) ? raw : typeof raw === 'string' ? JSON.parse(raw) : []
     } catch {
       /* ignore */
     }
     let logoutUris: string[] = []
     try {
       const raw = data.allowed_logout_uris
-      logoutUris = Array.isArray(raw) ? raw : (typeof raw === 'string' ? JSON.parse(raw) : [])
+      logoutUris = Array.isArray(raw) ? raw : typeof raw === 'string' ? JSON.parse(raw) : []
     } catch {
       /* ignore */
     }
@@ -479,21 +497,21 @@ export function Detail() {
     let uris: string[] = []
     try {
       const raw = data.allowed_redirect_uris
-      uris = Array.isArray(raw) ? raw : (typeof raw === 'string' ? JSON.parse(raw) : [])
+      uris = Array.isArray(raw) ? raw : typeof raw === 'string' ? JSON.parse(raw) : []
     } catch {
       /* ignore */
     }
     let origins: string[] = []
     try {
       const raw = data.allowed_origins
-      origins = Array.isArray(raw) ? raw : (typeof raw === 'string' ? JSON.parse(raw) : [])
+      origins = Array.isArray(raw) ? raw : typeof raw === 'string' ? JSON.parse(raw) : []
     } catch {
       /* ignore */
     }
     let logoutUris: string[] = []
     try {
       const raw = data.allowed_logout_uris
-      logoutUris = Array.isArray(raw) ? raw : (typeof raw === 'string' ? JSON.parse(raw) : [])
+      logoutUris = Array.isArray(raw) ? raw : typeof raw === 'string' ? JSON.parse(raw) : []
     } catch {
       /* ignore */
     }
@@ -543,7 +561,7 @@ export function Detail() {
 
   const idpSensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   )
 
   if (loading) {
@@ -579,9 +597,9 @@ export function Detail() {
                   <Upload
                     accept="image/*"
                     showUploadList={false}
-                    beforeUpload={(file) => {
+                    beforeUpload={file => {
                       const reader = new FileReader()
-                      reader.onload = (e) => {
+                      reader.onload = e => {
                         setLogoPreview(e.target?.result as string)
                         setSettingsDirty(true)
                       }
@@ -744,7 +762,9 @@ export function Detail() {
                       <QuestionCircleOutlined className={styles.labelTooltipIcon} />
                     </Tooltip>
                   </span>
-                  <span className={styles.tokenRowDesc}>刷新令牌的最长存活时间，超时需重新登录</span>
+                  <span className={styles.tokenRowDesc}>
+                    刷新令牌的最长存活时间，超时需重新登录
+                  </span>
                 </div>
                 <Form.Item name="refresh_token_absolute_expires_in" noStyle>
                   <DurationInput placeholder="默认" />
@@ -778,26 +798,26 @@ export function Detail() {
                   拖拽左侧手柄可调整优先级，排在上方的身份源优先使用
                 </Text>
                 <DndContext
-                sensors={idpSensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleIdpDragEnd}
-              >
-                <SortableContext
-                  items={(idpConfigs ?? []).map((c) => c.type)}
-                  strategy={verticalListSortingStrategy}
+                  sensors={idpSensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleIdpDragEnd}
                 >
-                  <div className={styles.idpList}>
-                    {(idpConfigs ?? []).map((idp) => (
-                      <SortableIdpCard
-                        key={idp.type}
-                        idp={idp}
-                        onEdit={openEditIdp}
-                        onDelete={runDeleteIdp}
-                      />
-                    ))}
-                  </div>
-                </SortableContext>
-              </DndContext>
+                  <SortableContext
+                    items={(idpConfigs ?? []).map(c => c.type)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <div className={styles.idpList}>
+                      {(idpConfigs ?? []).map(idp => (
+                        <SortableIdpCard
+                          key={idp.type}
+                          idp={idp}
+                          onEdit={openEditIdp}
+                          onDelete={runDeleteIdp}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
               </>
             )}
           </Spin>
@@ -819,7 +839,7 @@ export function Detail() {
           appLogoUrl={data.logo_url}
           data={serviceRelations ?? []}
           loading={svcRelLoading}
-          onNavigateToService={(id) => navigate(`/services/${id}`)}
+          onNavigateToService={id => navigate(`/services/${id}`)}
           onRelationsChange={refreshRelations}
         />
       ),
@@ -853,7 +873,10 @@ export function Detail() {
               key: 'app_id',
               label: '应用标识',
               children: (
-                <Text copyable={{ text: data.app_id, tooltips: ['复制', '已复制'] }} className={styles.metaValue}>
+                <Text
+                  copyable={{ text: data.app_id, tooltips: ['复制', '已复制'] }}
+                  className={styles.metaValue}
+                >
                   {data.app_id}
                 </Text>
               ),
@@ -863,7 +886,9 @@ export function Detail() {
               label: '域标识',
               children: (
                 <Text
-                  copyable={data.domain_id ? { text: data.domain_id, tooltips: ['复制', '已复制'] } : false}
+                  copyable={
+                    data.domain_id ? { text: data.domain_id, tooltips: ['复制', '已复制'] } : false
+                  }
                   className={styles.metaValue}
                 >
                   {data.domain_id}

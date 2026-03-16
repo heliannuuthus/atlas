@@ -33,7 +33,7 @@ export function FileManagement() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
   }
 
-  const customRequest: NonNullable<UploadProps['customRequest']> = async (options) => {
+  const customRequest: NonNullable<UploadProps['customRequest']> = async options => {
     const { file, onSuccess, onError } = options
     const token = await getAuth().getAccessToken('chaos')
     if (!token) {
@@ -127,11 +127,7 @@ export function FileManagement() {
                   ]}
                 >
                   <List.Item.Meta
-                    avatar={
-                      <CheckCircleOutlined
-                        style={{ fontSize: 20, color: '#4d7c0f' }}
-                      />
-                    }
+                    avatar={<CheckCircleOutlined style={{ fontSize: 20, color: '#4d7c0f' }} />}
                     title={
                       <Space>
                         <Text>{item.file_name}</Text>

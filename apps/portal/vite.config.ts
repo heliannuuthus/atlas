@@ -21,11 +21,7 @@ export default defineConfig({
     port: 15000,
     host: '0.0.0.0',
     open: true,
-    allowedHosts: [
-      'atlas.heliannuuthus.com',
-      'localhost',
-      '.heliannuuthus.com',
-    ],
+    allowedHosts: ['atlas.heliannuuthus.com', 'localhost', '.heliannuuthus.com'],
     hmr: {
       host: 'atlas.heliannuuthus.com',
     },

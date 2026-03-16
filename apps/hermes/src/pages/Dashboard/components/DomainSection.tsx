@@ -16,10 +16,10 @@ export function DomainSection({ domains, services, applications, loading }: Doma
   const navigate = useNavigate()
   const basePath = useBasePath()
 
-  const domainStats = domains.map((d) => ({
+  const domainStats = domains.map(d => ({
     ...d,
-    serviceCount: services.filter((s) => s.domain_id === d.domain_id).length,
-    appCount: applications.filter((a) => a.domain_id === d.domain_id).length,
+    serviceCount: services.filter(s => s.domain_id === d.domain_id).length,
+    appCount: applications.filter(a => a.domain_id === d.domain_id).length,
   }))
 
   if (loading) {
@@ -27,7 +27,7 @@ export function DomainSection({ domains, services, applications, loading }: Doma
       <section className={styles.section}>
         <h3 className={styles.sectionTitle}>域</h3>
         <div className={styles.domainGrid}>
-          {[1, 2, 3].map((i) => (
+          {[1, 2, 3].map(i => (
             <div key={i} className={styles.domainCardShimmer} />
           ))}
         </div>
@@ -42,7 +42,7 @@ export function DomainSection({ domains, services, applications, loading }: Doma
         当前工作域的基本信息。每个域下的应用与服务数量会在此展示，点击卡片可进入域详情查看该域下的服务列表与应用列表。
       </p>
       <div className={styles.domainGrid}>
-        {domainStats.map((d) => (
+        {domainStats.map(d => (
           <Button
             key={d.domain_id}
             type="text"

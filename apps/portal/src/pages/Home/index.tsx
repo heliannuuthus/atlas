@@ -67,7 +67,12 @@ const services = [
       <svg viewBox="0 0 32 32" fill="none">
         <rect width="32" height="32" rx="8" fill="#ea580c" />
         <circle cx="16" cy="13" r="5" stroke="#fff" strokeWidth="2" fill="none" />
-        <path d="M9 24c0-3.87 3.13-7 7-7s7 3.13 7 7" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+        <path
+          d="M9 24c0-3.87 3.13-7 7-7s7 3.13 7 7"
+          stroke="#fff"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
       </svg>
     ),
     modules: [
@@ -92,19 +97,24 @@ export function Home() {
               <rect x="27" y="27" width="17" height="17" rx="5" fill="#18181b" opacity="0.15" />
             </svg>
           </div>
-          <Title level={2} className={styles.heroTitle}>Atlas</Title>
+          <Title level={2} className={styles.heroTitle}>
+            Atlas
+          </Title>
           <Paragraph className={styles.heroDesc}>统一管控平台</Paragraph>
         </div>
       </section>
 
       <section className={styles.grid}>
-        {services.map((svc) => (
+        {services.map(svc => (
           <div key={svc.key} className={styles.card}>
             <div className={styles.cardHeader}>
               <a
                 href={svc.origin}
                 className={styles.cardLogoLink}
-                onClick={(e) => { e.preventDefault(); window.location.href = svc.origin }}
+                onClick={e => {
+                  e.preventDefault()
+                  window.location.href = svc.origin
+                }}
               >
                 <div className={styles.cardLogo}>{svc.icon}</div>
                 <div className={styles.cardInfo}>
@@ -116,14 +126,19 @@ export function Home() {
             </div>
 
             <div className={styles.modules}>
-              {svc.modules.map((mod) => (
+              {svc.modules.map(mod => (
                 <a
                   key={mod.path}
                   href={`${svc.origin}${mod.path}`}
                   className={styles.module}
-                  onClick={(e) => { e.preventDefault(); window.location.href = `${svc.origin}${mod.path}` }}
+                  onClick={e => {
+                    e.preventDefault()
+                    window.location.href = `${svc.origin}${mod.path}`
+                  }}
                 >
-                  <span className={styles.moduleIcon} style={{ color: svc.color }}>{mod.icon}</span>
+                  <span className={styles.moduleIcon} style={{ color: svc.color }}>
+                    {mod.icon}
+                  </span>
                   <span className={styles.moduleTitle}>{mod.title}</span>
                 </a>
               ))}

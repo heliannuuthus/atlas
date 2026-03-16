@@ -18,7 +18,7 @@ export function Edit() {
     () => serviceApi.getDetail(domainId!, serviceId!),
     {
       ready: !!domainId && !!serviceId,
-      onSuccess: (_data) => {
+      onSuccess: _data => {
         form.setFieldsValue({
           name: _data.name,
           description: _data.description,
@@ -59,17 +59,8 @@ export function Edit() {
     <div className={styles.container}>
       <PageHeader title="编辑服务" onBack={() => navigate(`/services/${serviceId}`)} />
       <Card variant="borderless">
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSubmit}
-          className={styles.form}
-        >
-          <Form.Item
-            name="name"
-            label="名称"
-            rules={[{ required: true, message: '请输入名称' }]}
-          >
+        <Form form={form} layout="vertical" onFinish={handleSubmit} className={styles.form}>
+          <Form.Item name="name" label="名称" rules={[{ required: true, message: '请输入名称' }]}>
             <Input placeholder="请输入名称" />
           </Form.Item>
 
@@ -77,17 +68,11 @@ export function Edit() {
             <TextArea rows={4} placeholder="请输入描述" />
           </Form.Item>
 
-          <Form.Item
-            name="access_token_expires_in"
-            label="Access Token 过期时间（秒）"
-          >
+          <Form.Item name="access_token_expires_in" label="Access Token 过期时间（秒）">
             <InputNumber min={1} style={{ width: '100%' }} />
           </Form.Item>
 
-          <Form.Item
-            name="refresh_token_expires_in"
-            label="Refresh Token 过期时间（秒）"
-          >
+          <Form.Item name="refresh_token_expires_in" label="Refresh Token 过期时间（秒）">
             <InputNumber min={1} style={{ width: '100%' }} />
           </Form.Item>
 

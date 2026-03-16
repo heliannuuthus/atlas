@@ -22,11 +22,7 @@ export default defineConfig({
     port: 16000,
     host: '0.0.0.0',
     open: false,
-    allowedHosts: [
-      'hermes.heliannuuthus.com',
-      'localhost',
-      '.heliannuuthus.com',
-    ],
+    allowedHosts: ['hermes.heliannuuthus.com', 'localhost', '.heliannuuthus.com'],
     hmr: {
       protocol: 'wss',
       host: 'hermes.heliannuuthus.com',

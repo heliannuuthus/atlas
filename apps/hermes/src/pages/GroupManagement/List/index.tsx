@@ -24,7 +24,7 @@ export function List() {
       dataIndex: 'description',
       key: 'description',
       ellipsis: true,
-      render: (text) => text || <Text type="secondary">-</Text>,
+      render: text => text || <Text type="secondary">-</Text>,
     },
     {
       title: '操作',
@@ -33,8 +33,22 @@ export function List() {
       fixed: 'right',
       render: (_, record) => (
         <Space size={0}>
-          <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => navigate(`/groups/${record.group_id}`)}>查看</Button>
-          <Button type="link" size="small" icon={<EditOutlined />} onClick={() => navigate(`/groups/${record.group_id}/edit`)}>编辑</Button>
+          <Button
+            type="link"
+            size="small"
+            icon={<EyeOutlined />}
+            onClick={() => navigate(`/groups/${record.group_id}`)}
+          >
+            查看
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            icon={<EditOutlined />}
+            onClick={() => navigate(`/groups/${record.group_id}/edit`)}
+          >
+            编辑
+          </Button>
         </Space>
       ),
     },
@@ -63,9 +77,18 @@ export function List() {
               组用于将多个用户或身份聚合，在关系中可将组作为主体或对象，便于批量授权与维护。
             </Typography.Text>
           </div>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/groups/create')}>创建组</Button>
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/groups/create')}>
+            创建组
+          </Button>
         </div>
-        <Table columns={columns} dataSource={tableData} loading={loading} rowKey="group_id" scroll={{ x: 600 }} locale={{ emptyText: emptyState }} />
+        <Table
+          columns={columns}
+          dataSource={tableData}
+          loading={loading}
+          rowKey="group_id"
+          scroll={{ x: 600 }}
+          locale={{ emptyText: emptyState }}
+        />
       </Card>
     </div>
   )

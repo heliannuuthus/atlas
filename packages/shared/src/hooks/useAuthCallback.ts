@@ -37,7 +37,7 @@ export function useAuthCallback(options?: { defaultPath?: string }) {
 
     console.log('[Atlas:Auth] useAuthCallback: exchanging code for tokens...')
     handleCallback(code, state ?? undefined)
-      .then((result) => {
+      .then(result => {
         console.log('[Atlas:Auth] useAuthCallback: success, result=', result)
         navigate(result.returnTo || defaultPath, { replace: true })
       })

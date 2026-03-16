@@ -32,7 +32,7 @@ export function OverviewCharts({
       { value: appCount, name: '应用' },
       { value: relationshipCount, name: '关系' },
       { value: groupCount, name: '组' },
-    ].filter((d) => d.value > 0)
+    ].filter(d => d.value > 0)
     if (data.length === 0) return
 
     const chart = echarts.init(resourceChartRef.current)
@@ -64,8 +64,8 @@ export function OverviewCharts({
   useEffect(() => {
     if (loading || !relationChartRef.current || services.length === 0) return
 
-    const names = services.map((s) => s.name || s.service_id)
-    const counts = services.map((s) => relationshipCountByServiceId[s.service_id] ?? 0)
+    const names = services.map(s => s.name || s.service_id)
+    const counts = services.map(s => relationshipCountByServiceId[s.service_id] ?? 0)
 
     const chart = echarts.init(relationChartRef.current)
     const option: echarts.EChartsOption = {
@@ -108,22 +108,22 @@ export function OverviewCharts({
 
   return (
     <div className={styles.chartsRow}>
-        <div className={styles.chartBox}>
-          <div className={styles.chartLabel}>资源概览</div>
-          {hasResourceData ? (
-            <div ref={resourceChartRef} className={styles.chart} />
-          ) : (
-            <div className={styles.chartEmpty}>暂无数据</div>
-          )}
-        </div>
-        <div className={styles.chartBox}>
-          <div className={styles.chartLabel}>各服务关系数</div>
-          {services.length > 0 ? (
-            <div ref={relationChartRef} className={styles.chart} />
-          ) : (
-            <div className={styles.chartEmpty}>暂无服务</div>
-          )}
-        </div>
+      <div className={styles.chartBox}>
+        <div className={styles.chartLabel}>资源概览</div>
+        {hasResourceData ? (
+          <div ref={resourceChartRef} className={styles.chart} />
+        ) : (
+          <div className={styles.chartEmpty}>暂无数据</div>
+        )}
       </div>
+      <div className={styles.chartBox}>
+        <div className={styles.chartLabel}>各服务关系数</div>
+        {services.length > 0 ? (
+          <div ref={relationChartRef} className={styles.chart} />
+        ) : (
+          <div className={styles.chartEmpty}>暂无服务</div>
+        )}
+      </div>
+    </div>
   )
 }

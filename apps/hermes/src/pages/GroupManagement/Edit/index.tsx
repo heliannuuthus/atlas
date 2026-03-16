@@ -15,7 +15,7 @@ export function Edit() {
 
   const { data: _data, loading: detailLoading } = useRequest(() => groupApi.getDetail(groupId!), {
     ready: !!groupId,
-    onSuccess: (_data) => {
+    onSuccess: _data => {
       form.setFieldsValue({
         name: _data.name,
         description: _data.description,

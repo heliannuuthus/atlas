@@ -1,15 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import {
-  Card,
-  Form,
-  Input,
-  Button,
-  Space,
-  message,
-  Row,
-  Col,
-} from 'antd'
+import { Card, Form, Input, Button, Space, message, Row, Col } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { chaosTemplateApi, type TemplateCreateRequest } from '@/services'
 import styles from './index.module.scss'
@@ -39,20 +30,12 @@ export function Create() {
       <Card>
         <div className={styles.header}>
           <Space>
-            <Button
-              icon={<ArrowLeftOutlined />}
-              onClick={() => navigate('/templates')}
-            />
+            <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/templates')} />
             <span className={styles.title}>创建邮件模板</span>
           </Space>
         </div>
 
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSubmit}
-          className={styles.form}
-        >
+        <Form form={form} layout="vertical" onFinish={handleSubmit} className={styles.form}>
           <Row gutter={24}>
             <Col span={12}>
               <Form.Item
@@ -110,15 +93,8 @@ export function Create() {
             />
           </Form.Item>
 
-          <Form.Item
-            name="variables"
-            label="变量说明"
-            extra="JSON 格式，用于前端预览时的示例数据"
-          >
-            <TextArea
-              rows={4}
-              placeholder='{"Code": "123456", "ExpiresInMinutes": 5}'
-            />
+          <Form.Item name="variables" label="变量说明" extra="JSON 格式，用于前端预览时的示例数据">
+            <TextArea rows={4} placeholder='{"Code": "123456", "ExpiresInMinutes": 5}' />
           </Form.Item>
 
           <Form.Item>
@@ -126,9 +102,7 @@ export function Create() {
               <Button type="primary" htmlType="submit" loading={loading}>
                 创建
               </Button>
-              <Button onClick={() => navigate('/templates')}>
-                取消
-              </Button>
+              <Button onClick={() => navigate('/templates')}>取消</Button>
             </Space>
           </Form.Item>
         </Form>

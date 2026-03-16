@@ -33,11 +33,7 @@ export function AuthCallback() {
           >
             返回首页
           </Button>,
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={() => window.location.reload()}
-            key="retry"
-          >
+          <Button icon={<ReloadOutlined />} onClick={() => window.location.reload()} key="retry">
             重试
           </Button>,
         ]}

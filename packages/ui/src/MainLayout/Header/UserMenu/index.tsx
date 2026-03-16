@@ -98,7 +98,7 @@ export function UserMenu({ brandColor = '#7c3aed', docUrl }: UserMenuProps) {
               <Typography.Text
                 className={styles.userTriggerOpenid}
                 copyable={{ text: user.sub, tooltips: ['复制 OpenID', '已复制'] }}
-                onClick={(e) => e.stopPropagation()}
+                onClick={e => e.stopPropagation()}
               >
                 {truncateOpenId(user.sub)}
               </Typography.Text>

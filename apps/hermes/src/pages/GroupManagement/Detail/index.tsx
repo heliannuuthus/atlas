@@ -197,10 +197,7 @@ export function Detail() {
         <div className={styles.relationshipsTab}>
           <div className={styles.tabHeader}>
             <Text type="secondary">该组作为主体的授权关系</Text>
-            <Button
-              icon={<NodeIndexOutlined />}
-              onClick={() => navigate('/relationships/graph')}
-            >
+            <Button icon={<NodeIndexOutlined />} onClick={() => navigate('/relationships/graph')}>
               在图谱中查看
             </Button>
           </div>
@@ -208,7 +205,7 @@ export function Detail() {
             columns={relationColumns}
             dataSource={relationships?.items ?? []}
             loading={relLoading}
-            rowKey={(r) => `${r.service_id}:${r.subject_id}:${r.relation}:${r.object_id}`}
+            rowKey={r => `${r.service_id}:${r.subject_id}:${r.relation}:${r.object_id}`}
             size="small"
             pagination={{ pageSize: 10 }}
             locale={{

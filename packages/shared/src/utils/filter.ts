@@ -37,13 +37,27 @@ function op(operator: FilterOperator, value: FilterValue): FilterOp | null {
   return { op: operator, value }
 }
 
-export function eq(value: FilterValue) { return op('=', value) }
-export function neq(value: FilterValue) { return op('!=', value) }
-export function gt(value: FilterValue) { return op('>', value) }
-export function gte(value: FilterValue) { return op('>=', value) }
-export function lt(value: FilterValue) { return op('<', value) }
-export function lte(value: FilterValue) { return op('<=', value) }
-export function prefix(value: FilterValue) { return op('~=', value) }
+export function eq(value: FilterValue) {
+  return op('=', value)
+}
+export function neq(value: FilterValue) {
+  return op('!=', value)
+}
+export function gt(value: FilterValue) {
+  return op('>', value)
+}
+export function gte(value: FilterValue) {
+  return op('>=', value)
+}
+export function lt(value: FilterValue) {
+  return op('<', value)
+}
+export function lte(value: FilterValue) {
+  return op('<=', value)
+}
+export function prefix(value: FilterValue) {
+  return op('~=', value)
+}
 
 export function oneOf(values: string[]): FilterOp | null {
   const filtered = values.filter(Boolean)
@@ -105,7 +119,7 @@ export function buildFilter(spec: FilterSpec): string | undefined {
  */
 export function listParams(
   filter?: FilterSpec,
-  pagination?: { token?: string; size?: number },
+  pagination?: { token?: string; size?: number }
 ): ListParams {
   return {
     filter: filter ? buildFilter(filter) : undefined,

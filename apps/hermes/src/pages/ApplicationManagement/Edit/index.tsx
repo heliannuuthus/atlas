@@ -23,25 +23,25 @@ export function Edit() {
     () => applicationApi.getDetail(domainId!, appId!),
     {
       ready: !!domainId && !!appId,
-      onSuccess: (data) => {
+      onSuccess: data => {
         let redirectUris: string[] = []
         let allowedOrigins: string[] = []
         try {
           const raw = data.allowed_redirect_uris
-          redirectUris = Array.isArray(raw) ? raw : (typeof raw === 'string' ? JSON.parse(raw) : [])
+          redirectUris = Array.isArray(raw) ? raw : typeof raw === 'string' ? JSON.parse(raw) : []
         } catch {
           redirectUris = []
         }
         try {
           const raw = data.allowed_origins
-          allowedOrigins = Array.isArray(raw) ? raw : (typeof raw === 'string' ? JSON.parse(raw) : [])
+          allowedOrigins = Array.isArray(raw) ? raw : typeof raw === 'string' ? JSON.parse(raw) : []
         } catch {
           allowedOrigins = []
         }
         let logoutUris: string[] = []
         try {
           const raw = data.allowed_logout_uris
-          logoutUris = Array.isArray(raw) ? raw : (typeof raw === 'string' ? JSON.parse(raw) : [])
+          logoutUris = Array.isArray(raw) ? raw : typeof raw === 'string' ? JSON.parse(raw) : []
         } catch {
           logoutUris = []
         }
@@ -59,13 +59,22 @@ export function Edit() {
   const { run: handleSubmit, loading } = useRequest(
     async (values: Record<string, unknown>) => {
       const allowedRedirectUris = values.allowed_redirect_uris
-        ? (values.allowed_redirect_uris as string).split('\n').map((s: string) => s.trim()).filter(Boolean)
+        ? (values.allowed_redirect_uris as string)
+            .split('\n')
+            .map((s: string) => s.trim())
+            .filter(Boolean)
         : []
       const allowedOrigins = values.allowed_origins
-        ? (values.allowed_origins as string).split('\n').map((s: string) => s.trim()).filter(Boolean)
+        ? (values.allowed_origins as string)
+            .split('\n')
+            .map((s: string) => s.trim())
+            .filter(Boolean)
         : []
       const allowedLogoutUris = values.allowed_logout_uris
-        ? (values.allowed_logout_uris as string).split('\n').map((s: string) => s.trim()).filter(Boolean)
+        ? (values.allowed_logout_uris as string)
+            .split('\n')
+            .map((s: string) => s.trim())
+            .filter(Boolean)
         : []
       await applicationApi.update(domainId!, appId!, {
         name: values.name as string,
@@ -132,7 +141,11 @@ export function Edit() {
             <TextArea rows={2} placeholder="https://example.com" />
           </Form.Item>
           <Form.Item>
-            <FormActions loading={loading} submitText="保存" cancelPath={`/applications/${appId}`} />
+            <FormActions
+              loading={loading}
+              submitText="保存"
+              cancelPath={`/applications/${appId}`}
+            />
           </Form.Item>
         </Form>
       </Card>

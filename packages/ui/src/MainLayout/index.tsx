@@ -26,38 +26,41 @@ export function MainLayout({ renderSidebar, header, guideBall }: MainLayoutProps
 
   const siderWidth = collapsed ? 68 : 248
 
-  const triggerStyle = useMemo<React.CSSProperties>(() => ({
-    position: 'absolute',
-    right: -14,
-    top: '50%',
-    transform: 'translateY(-50%)',
-    zIndex: 101,
-    width: 20,
-    height: 40,
-    padding: 0,
-    border: '1px solid #e4e4e7',
-    borderLeft: 'none',
-    borderRadius: '0 6px 6px 0',
-    background: '#fff',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: '#a1a1aa',
-    cursor: 'pointer',
-    opacity: 0,
-    transition: 'opacity 0.2s ease',
-    fontSize: 11,
-  }), [])
+  const triggerStyle = useMemo<React.CSSProperties>(
+    () => ({
+      position: 'absolute',
+      right: -14,
+      top: '50%',
+      transform: 'translateY(-50%)',
+      zIndex: 101,
+      width: 20,
+      height: 40,
+      padding: 0,
+      border: '1px solid #e4e4e7',
+      borderLeft: 'none',
+      borderRadius: '0 6px 6px 0',
+      background: '#fff',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: '#a1a1aa',
+      cursor: 'pointer',
+      opacity: 0,
+      transition: 'opacity 0.2s ease',
+      fontSize: 11,
+    }),
+    []
+  )
 
   return (
     <Layout className={styles.layout}>
       <div
         className={styles.siderWrapper}
-        onMouseEnter={(e) => {
+        onMouseEnter={e => {
           const btn = e.currentTarget.querySelector('[data-collapse-btn]') as HTMLElement
           if (btn) btn.style.opacity = '1'
         }}
-        onMouseLeave={(e) => {
+        onMouseLeave={e => {
           const btn = e.currentTarget.querySelector('[data-collapse-btn]') as HTMLElement
           if (btn) btn.style.opacity = '0'
         }}

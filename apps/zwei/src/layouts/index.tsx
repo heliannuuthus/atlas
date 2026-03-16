@@ -18,17 +18,28 @@ const BRAND_COLOR = '#ea580c'
 const zweiMenus: SidebarMenuItem[] = [
   { key: 'dashboard', label: '概览', icon: <AppstoreOutlined />, path: '/' },
   {
-    key: 'recipes', label: '菜谱管理', icon: <BookOutlined />, path: '/recipes',
+    key: 'recipes',
+    label: '菜谱管理',
+    icon: <BookOutlined />,
+    path: '/recipes',
     section: '内容管理',
     children: [
       { key: 'recipes-list', label: '菜谱列表', icon: <BookOutlined />, path: '/recipes' },
-      { key: 'recipes-categories', label: '分类管理', icon: <TagsOutlined />, path: '/recipes/categories' },
+      {
+        key: 'recipes-categories',
+        label: '分类管理',
+        icon: <TagsOutlined />,
+        path: '/recipes/categories',
+      },
     ],
   },
   { key: 'favorites', label: '收藏管理', icon: <HeartOutlined />, path: '/favorites' },
   { key: 'history', label: '浏览历史', icon: <HistoryOutlined />, path: '/history' },
   {
-    key: 'tags', label: '标签管理', icon: <TagsOutlined />, path: '/tags',
+    key: 'tags',
+    label: '标签管理',
+    icon: <TagsOutlined />,
+    path: '/tags',
     section: '配置',
     children: [
       { key: 'tags-cuisine', label: '菜系标签', icon: <TagsOutlined />, path: '/tags/cuisine' },
@@ -39,7 +50,10 @@ const zweiMenus: SidebarMenuItem[] = [
   },
   { key: 'recommend', label: '推荐系统', icon: <FireOutlined />, path: '/recommend' },
   {
-    key: 'home', label: '首页内容', icon: <HomeOutlined />, path: '/home',
+    key: 'home',
+    label: '首页内容',
+    icon: <HomeOutlined />,
+    path: '/home',
     children: [
       { key: 'home-banners', label: '轮播图', icon: <StarOutlined />, path: '/home/banners' },
       { key: 'home-recommend', label: '推荐菜谱', icon: <StarOutlined />, path: '/home/recommend' },
@@ -54,7 +68,12 @@ const zweiLogo = {
     <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect width="32" height="32" rx="8" fill="#ea580c" />
       <circle cx="16" cy="13" r="5" stroke="#fff" strokeWidth="2" fill="none" />
-      <path d="M9 24c0-3.87 3.13-7 7-7s7 3.13 7 7" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+      <path
+        d="M9 24c0-3.87 3.13-7 7-7s7 3.13 7 7"
+        stroke="#fff"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
     </svg>
   ),
   text: 'Zwei',
@@ -87,7 +106,7 @@ export function ZweiLayout() {
 
   return (
     <MainLayout
-      renderSidebar={(collapsed) => (
+      renderSidebar={collapsed => (
         <Sidebar
           collapsed={collapsed}
           menus={zweiMenus}
@@ -95,7 +114,7 @@ export function ZweiLayout() {
           brandColor={BRAND_COLOR}
           onLogoClick={() => navigate('/')}
           selectedKeys={[location.pathname]}
-          onMenuClick={(key) => navigate(key)}
+          onMenuClick={key => navigate(key)}
         />
       )}
       header={

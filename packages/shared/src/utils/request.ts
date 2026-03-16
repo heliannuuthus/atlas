@@ -29,7 +29,14 @@ async function injectToken(config: InternalAxiosRequestConfig, audience?: string
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function responseSuccessHandler(response: AxiosResponse<ApiResponse>): any {
   const { data } = response
-  if (data && typeof data === 'object' && !Array.isArray(data) && data.code !== undefined && data.code !== 0 && data.code !== 200) {
+  if (
+    data &&
+    typeof data === 'object' &&
+    !Array.isArray(data) &&
+    data.code !== undefined &&
+    data.code !== 0 &&
+    data.code !== 200
+  ) {
     const errorMsg = data.message || '请求失败'
     message.error(errorMsg)
     return Promise.reject(new Error(errorMsg))
@@ -57,9 +64,11 @@ function responseErrorHandler(error: AxiosError<ApiResponse>) {
       case 401: {
         errorMsg = '未授权，请重新登录'
         const audience = resolveAudienceFromError(error)
-        getAuth().refreshToken(undefined, audience).catch(() => {
-          getAuth().logout()
-        })
+        getAuth()
+          .refreshToken(undefined, audience)
+          .catch(() => {
+            getAuth().logout()
+          })
         break
       }
       case 403:
@@ -90,9 +99,21 @@ function responseErrorHandler(error: AxiosError<ApiResponse>) {
 
 export interface ServiceRequest {
   get<T = unknown>(url: string, config?: import('axios').AxiosRequestConfig): Promise<T>
-  post<T = unknown>(url: string, data?: unknown, config?: import('axios').AxiosRequestConfig): Promise<T>
-  put<T = unknown>(url: string, data?: unknown, config?: import('axios').AxiosRequestConfig): Promise<T>
-  patch<T = unknown>(url: string, data?: unknown, config?: import('axios').AxiosRequestConfig): Promise<T>
+  post<T = unknown>(
+    url: string,
+    data?: unknown,
+    config?: import('axios').AxiosRequestConfig
+  ): Promise<T>
+  put<T = unknown>(
+    url: string,
+    data?: unknown,
+    config?: import('axios').AxiosRequestConfig
+  ): Promise<T>
+  patch<T = unknown>(
+    url: string,
+    data?: unknown,
+    config?: import('axios').AxiosRequestConfig
+  ): Promise<T>
   delete<T = unknown>(url: string, config?: import('axios').AxiosRequestConfig): Promise<T>
 }
 
@@ -106,8 +127,8 @@ export function createServiceRequest(service: ServiceName): ServiceRequest {
   })
 
   instance.interceptors.request.use(
-    (config) => injectToken(config, audience),
-    (error) => Promise.reject(error)
+    config => injectToken(config, audience),
+    error => Promise.reject(error)
   )
 
   instance.interceptors.response.use(responseSuccessHandler, responseErrorHandler)
@@ -140,7 +161,7 @@ request.interceptors.request.use(
     }
     return injectToken(config)
   },
-  (error) => Promise.reject(error)
+  error => Promise.reject(error)
 )
 
 request.interceptors.response.use(responseSuccessHandler, responseErrorHandler)

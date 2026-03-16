@@ -42,7 +42,13 @@ export function Breadcrumb({ config }: AppBreadcrumbProps) {
 
     if (pathSegments.length === 0) {
       return [
-        { title: <span className={`${styles.breadcrumbItem} ${styles.moduleRoot}`}>{config.appName}</span> },
+        {
+          title: (
+            <span className={`${styles.breadcrumbItem} ${styles.moduleRoot}`}>
+              {config.appName}
+            </span>
+          ),
+        },
         { title: <span className={`${styles.breadcrumbItem} ${styles.active}`}>{homeTitle}</span> },
       ]
     }
@@ -50,9 +56,7 @@ export function Breadcrumb({ config }: AppBreadcrumbProps) {
     const items: BreadcrumbProps['items'] = [
       {
         title: (
-          <span className={`${styles.breadcrumbItem} ${styles.moduleRoot}`}>
-            {config.appName}
-          </span>
+          <span className={`${styles.breadcrumbItem} ${styles.moduleRoot}`}>{config.appName}</span>
         ),
       },
     ]
@@ -65,9 +69,7 @@ export function Breadcrumb({ config }: AppBreadcrumbProps) {
 
       items.push({
         title: (
-          <span className={`${styles.breadcrumbItem} ${isLast ? styles.active : ''}`}>
-            {title}
-          </span>
+          <span className={`${styles.breadcrumbItem} ${isLast ? styles.active : ''}`}>{title}</span>
         ),
         onClick: isLast ? undefined : () => navigate(currentPath),
       })

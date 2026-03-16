@@ -1,10 +1,6 @@
 import { useNavigate, useLocation, useParams } from 'react-router-dom'
 import { useRequest } from 'ahooks'
-import {
-  CloudServerOutlined,
-  AppstoreAddOutlined,
-  TeamOutlined,
-} from '@ant-design/icons'
+import { CloudServerOutlined, AppstoreAddOutlined, TeamOutlined } from '@ant-design/icons'
 import { Select, Divider, Button } from 'antd'
 import { MainLayout, Sidebar, Header, UserMenu, SearchTrigger } from '@atlas/ui'
 import type { SidebarMenuItem } from '@atlas/ui'
@@ -15,9 +11,20 @@ const BRAND_COLOR = '#059669'
 
 function buildMenus(basePath: string): SidebarMenuItem[] {
   return [
-    { key: 'applications', label: '应用', icon: <AppstoreAddOutlined />, path: `${basePath}/applications` },
+    {
+      key: 'applications',
+      label: '应用',
+      icon: <AppstoreAddOutlined />,
+      path: `${basePath}/applications`,
+    },
     { key: 'services', label: '服务', icon: <CloudServerOutlined />, path: `${basePath}/services` },
-    { key: 'groups', label: '组', icon: <TeamOutlined />, path: `${basePath}/groups`, section: '平台管理' },
+    {
+      key: 'groups',
+      label: '组',
+      icon: <TeamOutlined />,
+      path: `${basePath}/groups`,
+      section: '平台管理',
+    },
   ]
 }
 
@@ -48,16 +55,17 @@ export function HermesLayout() {
   const handleDomainChange = (newDomainId: string) => {
     if (newDomainId === domainId) return
     const prefix = `/d/${encodeURIComponent(domainId)}`
-    const rest = location.pathname === prefix || location.pathname === `${prefix}/`
-      ? ''
-      : location.pathname.slice(prefix.length) || ''
+    const rest =
+      location.pathname === prefix || location.pathname === `${prefix}/`
+        ? ''
+        : location.pathname.slice(prefix.length) || ''
     navigate(`/d/${encodeURIComponent(newDomainId)}${rest}`)
   }
 
   return (
     <DomainContext.Provider value={domainId}>
       <MainLayout
-        renderSidebar={(collapsed) => (
+        renderSidebar={collapsed => (
           <Sidebar
             collapsed={collapsed}
             menus={menus}
@@ -65,7 +73,7 @@ export function HermesLayout() {
             brandColor={BRAND_COLOR}
             onLogoClick={() => navigate(basePath)}
             selectedKeys={[location.pathname]}
-            onMenuClick={(key) => navigate(key)}
+            onMenuClick={key => navigate(key)}
           />
         )}
         header={
@@ -74,11 +82,11 @@ export function HermesLayout() {
               <Select
                 value={domainId}
                 onChange={handleDomainChange}
-                options={domains.map((d) => ({ label: d.name || d.domain_id, value: d.domain_id }))}
+                options={domains.map(d => ({ label: d.name || d.domain_id, value: d.domain_id }))}
                 placeholder="选择域"
                 style={{ minWidth: 160 }}
                 size="middle"
-                popupRender={(menu) => (
+                popupRender={menu => (
                   <>
                     {menu}
                     <Divider style={{ margin: '8px 0' }} />

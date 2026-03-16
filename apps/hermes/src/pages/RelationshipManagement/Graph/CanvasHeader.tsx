@@ -41,7 +41,8 @@ export function CanvasHeader({
         <span className={styles.headerTitle}>关系图谱</span>
         {selectedServiceId && (
           <span className={styles.relationCount}>
-            服务: <strong>{selectedServiceId}</strong> | 已建立 <strong>{relationCount}</strong> 条关系
+            服务: <strong>{selectedServiceId}</strong> | 已建立 <strong>{relationCount}</strong>{' '}
+            条关系
           </span>
         )}
       </div>

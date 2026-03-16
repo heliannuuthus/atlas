@@ -20,23 +20,26 @@ export function Dashboard() {
     { ready: !!domainId }
   )
   const { data: groupsData, loading: groupsLoading } = useRequest(() => groupApi.getList())
-  const { data: relationshipsData, loading: relationshipsLoading } = useRequest(() => relationshipApi.getList())
+  const { data: relationshipsData, loading: relationshipsLoading } = useRequest(() =>
+    relationshipApi.getList()
+  )
 
   const services = servicesData?.items ?? []
   const applications = applicationsData?.items ?? []
   const allGroups = groupsData?.items ?? []
   const allRelationships = relationshipsData?.items ?? []
 
-  const serviceIds = new Set(services.map((s) => s.service_id))
-  const groups = allGroups.filter((g) => serviceIds.has(g.service_id))
-  const relationships = allRelationships.filter((r) => serviceIds.has(r.service_id))
+  const serviceIds = new Set(services.map(s => s.service_id))
+  const groups = allGroups.filter(g => serviceIds.has(g.service_id))
+  const relationships = allRelationships.filter(r => serviceIds.has(r.service_id))
 
   const relationshipCountByServiceId = services.reduce<Record<string, number>>((acc, s) => {
-    acc[s.service_id] = relationships.filter((r) => r.service_id === s.service_id).length
+    acc[s.service_id] = relationships.filter(r => r.service_id === s.service_id).length
     return acc
   }, {})
 
-  const chartsLoading = servicesLoading || applicationsLoading || groupsLoading || relationshipsLoading
+  const chartsLoading =
+    servicesLoading || applicationsLoading || groupsLoading || relationshipsLoading
 
   return (
     <div className={styles.dashboard}>

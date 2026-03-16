@@ -21,11 +21,7 @@ export default defineConfig({
     port: 19000,
     host: '0.0.0.0',
     open: false,
-    allowedHosts: [
-      'chaos.heliannuuthus.com',
-      'localhost',
-      '.heliannuuthus.com',
-    ],
+    allowedHosts: ['chaos.heliannuuthus.com', 'localhost', '.heliannuuthus.com'],
     hmr: {
       host: 'chaos.heliannuuthus.com',
     },

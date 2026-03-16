@@ -49,7 +49,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       if (ok) {
         const u = await auth.getUser()
-        console.log('[Atlas:Auth] initialize: isAuthenticated=true, getUser=', u ? { sub: u.sub, nic: u.nic, pic: u.pic } : null)
+        console.log(
+          '[Atlas:Auth] initialize: isAuthenticated=true, getUser=',
+          u ? { sub: u.sub, nic: u.nic, pic: u.pic } : null
+        )
         setIsAuthenticated(true)
         setUser(u)
       } else {
@@ -92,9 +95,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setIsLoading(true)
         setError(null)
         const result = await auth.handleCallback(code, state)
-        console.log('[Atlas:Auth] handleCallback: token result=', { hasIdToken: !!result.id_token, returnTo: result.returnTo })
+        console.log('[Atlas:Auth] handleCallback: token result=', {
+          hasIdToken: !!result.id_token,
+          returnTo: result.returnTo,
+        })
         const u = await auth.getUser()
-        console.log('[Atlas:Auth] handleCallback: getUser=', u ? { sub: u.sub, nic: u.nic, pic: u.pic } : null)
+        console.log(
+          '[Atlas:Auth] handleCallback: getUser=',
+          u ? { sub: u.sub, nic: u.nic, pic: u.pic } : null
+        )
         setIsAuthenticated(true)
         setUser(u)
         setIsLoading(false)
@@ -145,10 +154,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [initialize, isCallbackRoute])
 
   useEffect(() => {
-    const onLogin = () => auth.getUser().then((u) => {
-      console.log('[Atlas:Auth] onLogin: getUser=', u ? { sub: u.sub, nic: u.nic, pic: u.pic } : null)
-      setUser(u)
-    })
+    const onLogin = () =>
+      auth.getUser().then(u => {
+        console.log(
+          '[Atlas:Auth] onLogin: getUser=',
+          u ? { sub: u.sub, nic: u.nic, pic: u.pic } : null
+        )
+        setUser(u)
+      })
     const offLogin = auth.on('login', onLogin)
     const offLogout = auth.on('logout', () => {
       setIsAuthenticated(false)

@@ -16,10 +16,22 @@ import {
 import type { ColumnsType } from 'antd/es/table'
 import { useParams } from 'react-router-dom'
 import { useAppNavigate, useDomainId } from '@/contexts/DomainContext'
-import { InfoCircleOutlined, ShareAltOutlined, NodeIndexOutlined, AppstoreOutlined, PlusOutlined } from '@ant-design/icons'
+import {
+  InfoCircleOutlined,
+  ShareAltOutlined,
+  NodeIndexOutlined,
+  AppstoreOutlined,
+  PlusOutlined,
+} from '@ant-design/icons'
 import { serviceApi, relationshipApi } from '@/services'
 import type { Relationship, ServiceApplicationRelation } from '@/types'
-import { PageHeader, formatDuration, formatDateTime, formatRelativeTime, isExpiringSoon } from '@atlas/shared'
+import {
+  PageHeader,
+  formatDuration,
+  formatDateTime,
+  formatRelativeTime,
+  isExpiringSoon,
+} from '@atlas/shared'
 import styles from './index.module.scss'
 
 const { Text, Link } = Typography
@@ -43,10 +55,10 @@ export function Detail() {
   const domainId = useDomainId()
   const navigate = useAppNavigate()
 
-  const { data, loading } = useRequest(
-    () => serviceApi.getDetail(domainId!, serviceId!),
-    { ready: !!domainId && !!serviceId, onError: () => message.error('获取服务信息失败') }
-  )
+  const { data, loading } = useRequest(() => serviceApi.getDetail(domainId!, serviceId!), {
+    ready: !!domainId && !!serviceId,
+    onError: () => message.error('获取服务信息失败'),
+  })
 
   const { data: appRelations, loading: appRelLoading } = useRequest(
     () => serviceApi.getApplicationRelations(domainId!, serviceId!),
@@ -67,7 +79,7 @@ export function Detail() {
       dataIndex: 'app_id',
       key: 'app_id',
       width: 180,
-      render: (value) => (
+      render: value => (
         <Link onClick={() => navigate(`/applications/${value}`)} ellipsis>
           {value}
         </Link>
@@ -78,7 +90,7 @@ export function Detail() {
       dataIndex: 'relations',
       key: 'relations',
       render: (relations: string[]) =>
-        (relations || []).map((r) => (
+        (relations || []).map(r => (
           <Tag key={r} color="processing" variant="filled">
             {r}
           </Tag>
@@ -256,7 +268,7 @@ export function Detail() {
             columns={relationColumns}
             dataSource={relationships?.items ?? []}
             loading={relLoading}
-            rowKey={(r) => `${r.service_id}:${r.subject_id}:${r.relation}:${r.object_id}`}
+            rowKey={r => `${r.service_id}:${r.subject_id}:${r.relation}:${r.object_id}`}
             size="small"
             pagination={{ pageSize: 10 }}
             locale={{

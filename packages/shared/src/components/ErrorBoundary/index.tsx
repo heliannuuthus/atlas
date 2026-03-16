@@ -1,6 +1,11 @@
 import React, { Component, type ReactNode } from 'react'
 import { Button } from 'antd'
-import { ReloadOutlined, HomeOutlined, ArrowLeftOutlined, CloseCircleOutlined } from '@ant-design/icons'
+import {
+  ReloadOutlined,
+  HomeOutlined,
+  ArrowLeftOutlined,
+  CloseCircleOutlined,
+} from '@ant-design/icons'
 import { useLocation, useNavigate } from 'react-router-dom'
 import styles from './index.module.scss'
 
@@ -51,9 +56,7 @@ function ErrorDisplay({
           </div>
           <div className={styles.infoItem}>
             <span className={styles.infoLabel}>错误信息</span>
-            <span className={`${styles.infoValue} ${styles.errorMessage}`}>
-              {errorMessage}
-            </span>
+            <span className={`${styles.infoValue} ${styles.errorMessage}`}>{errorMessage}</span>
           </div>
         </div>
 
@@ -103,10 +106,7 @@ function ErrorDisplay({
           >
             刷新页面
           </Button>
-          <Button
-            onClick={onReset}
-            className={`${styles.actionButton} ${styles.secondaryButton}`}
-          >
+          <Button onClick={onReset} className={`${styles.actionButton} ${styles.secondaryButton}`}>
             重试
           </Button>
         </div>
@@ -115,10 +115,7 @@ function ErrorDisplay({
   )
 }
 
-export class ErrorBoundary extends Component<
-  ErrorBoundaryProps,
-  ErrorBoundaryState
-> {
+export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props)
     this.state = { hasError: false, error: null }

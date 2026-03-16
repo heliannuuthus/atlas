@@ -19,12 +19,10 @@ export function RelationsByServiceSection({
   const basePath = useBasePath()
 
   const byService = services
-    .map((s) => ({
+    .map(s => ({
       service: s,
-      count: relationships.filter((r) => r.service_id === s.service_id).length,
-      preview: relationships
-        .filter((r) => r.service_id === s.service_id)
-        .slice(0, 2),
+      count: relationships.filter(r => r.service_id === s.service_id).length,
+      preview: relationships.filter(r => r.service_id === s.service_id).slice(0, 2),
     }))
     .sort((a, b) => b.count - a.count)
 
@@ -42,7 +40,8 @@ export function RelationsByServiceSection({
       <section className={styles.section}>
         <h3 className={styles.sectionTitle}>服务内关系</h3>
         <p className={styles.sectionDesc}>
-          关系按「服务」维度配置，用于表达谁（用户/组/应用）对该服务下的资源拥有何种权限。当前域下尚无服务，请先创建一个服务，再在「关系 → 图谱」中为该服务配置主体与对象的关系。
+          关系按「服务」维度配置，用于表达谁（用户/组/应用）对该服务下的资源拥有何种权限。当前域下尚无服务，请先创建一个服务，再在「关系
+          → 图谱」中为该服务配置主体与对象的关系。
         </p>
         <Button
           type="primary"
@@ -59,7 +58,8 @@ export function RelationsByServiceSection({
     <section className={styles.section}>
       <h3 className={styles.sectionTitle}>服务内关系</h3>
       <p className={styles.sectionDesc}>
-        每条关系隶属于一个服务，格式为「主体 — 关系类型 — 对象」，表示该主体对该服务下的资源具备何种权限。应用关联服务后，会沿用该服务的关系模型做鉴权。下方按服务汇总关系数量与预览，可进入列表或图谱继续编辑。
+        每条关系隶属于一个服务，格式为「主体 — 关系类型 —
+        对象」，表示该主体对该服务下的资源具备何种权限。应用关联服务后，会沿用该服务的关系模型做鉴权。下方按服务汇总关系数量与预览，可进入列表或图谱继续编辑。
       </p>
       <div className={styles.relationByServiceGrid}>
         {byService.map(({ service, count, preview }) => (
@@ -74,11 +74,15 @@ export function RelationsByServiceSection({
               <ul className={styles.relationByServicePreview}>
                 {preview.map((r, i) => (
                   <li key={i} className={styles.relationByServicePreviewItem}>
-                    <span>{r.subject_type}:{r.subject_id}</span>
+                    <span>
+                      {r.subject_type}:{r.subject_id}
+                    </span>
                     <span className={styles.relationByServiceArrow}>→</span>
                     <span>{r.relation}</span>
                     <span className={styles.relationByServiceArrow}>→</span>
-                    <span>{r.object_type}:{r.object_id}</span>
+                    <span>
+                      {r.object_type}:{r.object_id}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -89,7 +93,9 @@ export function RelationsByServiceSection({
               type="default"
               className={styles.relationByServiceBtn}
               icon={<NodeIndexOutlined />}
-              onClick={() => navigate(`${basePath}/relationships`, { state: { service_id: service.service_id } })}
+              onClick={() =>
+                navigate(`${basePath}/relationships`, { state: { service_id: service.service_id } })
+              }
             >
               {count > 0 ? '查看关系' : '配置关系'}
             </Button>

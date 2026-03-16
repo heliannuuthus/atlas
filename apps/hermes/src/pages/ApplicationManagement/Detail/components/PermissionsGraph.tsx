@@ -81,9 +81,7 @@ function AppNodeComponent({ data }: NodeProps<AppNodeData>) {
           <Tooltip title={data.name || data.appId}>
             <span className={styles.graphNodeLabel}>{data.name || data.appId}</span>
           </Tooltip>
-          {data.name && (
-            <span className={styles.graphNodeId}>{data.appId}</span>
-          )}
+          {data.name && <span className={styles.graphNodeId}>{data.appId}</span>}
         </div>
       </div>
     </div>
@@ -116,9 +114,7 @@ function ServiceNodeComponent({ data }: NodeProps<ServiceNodeData>) {
           <Tooltip title={data.name || data.serviceId}>
             <span className={styles.graphNodeLabel}>{data.name || data.serviceId}</span>
           </Tooltip>
-          {data.name && (
-            <span className={styles.graphNodeId}>{data.serviceId}</span>
-          )}
+          {data.name && <span className={styles.graphNodeId}>{data.serviceId}</span>}
         </div>
       </div>
     </div>
@@ -178,13 +174,13 @@ function PermissionEdgeComponent({
           }}
         >
           <div className={`${styles.permissionEdgeLabel} ${isPending ? styles.pending : ''}`}>
-            {(data?.relations ?? []).map((r) => (
+            {(data?.relations ?? []).map(r => (
               <Tag
                 key={r}
                 color={hashColor(r)}
                 className={styles.permissionTag}
                 closable
-                onClose={(e) => {
+                onClose={e => {
                   e.preventDefault()
                   data?.onDeleteRelation?.(data.serviceId, r)
                 }}
@@ -285,7 +281,7 @@ function AddPermissionDialog({
     }
   }
 
-  const serviceOptions = services.map((s) => ({
+  const serviceOptions = services.map(s => ({
     value: s.service_id,
     label: `${s.name || s.service_id}`,
   }))
@@ -331,7 +327,7 @@ function AddPermissionDialog({
             <Select
               placeholder="选择权限类型"
               options={RELATION_OPTIONS}
-              dropdownRender={(menu) => (
+              dropdownRender={menu => (
                 <>
                   {menu}
                   <div
@@ -383,26 +379,27 @@ function PermissionsGraphInner({
 
   // 跟踪待添加 / 待删除的变更
   const [pendingAdds, setPendingAdds] = useState<{ serviceId: string; relation: string }[]>([])
-  const [pendingDeletes, setPendingDeletes] = useState<{ serviceId: string; relation: string }[]>([])
+  const [pendingDeletes, setPendingDeletes] = useState<{ serviceId: string; relation: string }[]>(
+    []
+  )
 
   const isDirty = pendingAdds.length > 0 || pendingDeletes.length > 0
 
-  const { data: allServices } = useRequest(
-    () => serviceApi.getList(domainId!),
-    { ready: !!domainId },
-  )
+  const { data: allServices } = useRequest(() => serviceApi.getList(domainId!), {
+    ready: !!domainId,
+  })
 
   // 将 services 转成 Map 用于查名称
   const serviceMap = useMemo(() => {
     const m = new Map<string, Service>()
-    ;(allServices?.items ?? []).forEach((s) => m.set(s.service_id, s))
+    ;(allServices?.items ?? []).forEach(s => m.set(s.service_id, s))
     return m
   }, [allServices])
 
   // 合并原始数据 + 待操作
   const mergedData = useMemo(() => {
     const map = new Map<string, Set<string>>()
-    data.forEach((r) => map.set(r.service_id, new Set(r.relations ?? [])))
+    data.forEach(r => map.set(r.service_id, new Set(r.relations ?? [])))
 
     pendingAdds.forEach(({ serviceId, relation }) => {
       if (!map.has(serviceId)) map.set(serviceId, new Set())
@@ -417,11 +414,11 @@ function PermissionsGraphInner({
     const result: (ApplicationServiceRelation & { pending?: boolean })[] = []
     map.forEach((rels, sid) => {
       if (rels.size === 0) return
-      const isOriginal = data.some((d) => d.service_id === sid)
+      const isOriginal = data.some(d => d.service_id === sid)
       result.push({
         service_id: sid,
         relations: Array.from(rels),
-        pending: !isOriginal || pendingAdds.some((a) => a.serviceId === sid),
+        pending: !isOriginal || pendingAdds.some(a => a.serviceId === sid),
       })
     })
     return result
@@ -433,14 +430,14 @@ function PermissionsGraphInner({
   const handleDeleteRelation = useCallback(
     (serviceId: string, relation: string) => {
       const isInPending = pendingAdds.some(
-        (a) => a.serviceId === serviceId && a.relation === relation
+        a => a.serviceId === serviceId && a.relation === relation
       )
       if (isInPending) {
-        setPendingAdds((prev) =>
-          prev.filter((a) => !(a.serviceId === serviceId && a.relation === relation))
+        setPendingAdds(prev =>
+          prev.filter(a => !(a.serviceId === serviceId && a.relation === relation))
         )
       } else {
-        setPendingDeletes((prev) => [...prev, { serviceId, relation }])
+        setPendingDeletes(prev => [...prev, { serviceId, relation }])
       }
     },
     [pendingAdds]
@@ -509,13 +506,13 @@ function PermissionsGraphInner({
   const handleAddPermission = useCallback(
     (serviceId: string, relation: string) => {
       const exists = mergedData.some(
-        (d) => d.service_id === serviceId && d.relations.includes(relation)
+        d => d.service_id === serviceId && d.relations.includes(relation)
       )
       if (exists) {
         message.warning('该权限已存在')
         return
       }
-      setPendingAdds((prev) => [...prev, { serviceId, relation }])
+      setPendingAdds(prev => [...prev, { serviceId, relation }])
       setDialogOpen(false)
     },
     [mergedData]
@@ -527,12 +524,12 @@ function PermissionsGraphInner({
     try {
       // 对每个有变更的服务，拿合并后的 relations 调用 setServiceAppRelations
       const changedServiceIds = new Set([
-        ...pendingAdds.map((a) => a.serviceId),
-        ...pendingDeletes.map((d) => d.serviceId),
+        ...pendingAdds.map(a => a.serviceId),
+        ...pendingDeletes.map(d => d.serviceId),
       ])
 
       for (const sid of changedServiceIds) {
-        const merged = mergedData.find((d) => d.service_id === sid)
+        const merged = mergedData.find(d => d.service_id === sid)
         const relations = merged?.relations ?? []
         await serviceApi.setServiceAppRelations(domainId, sid, appId, relations)
       }
@@ -553,30 +550,23 @@ function PermissionsGraphInner({
     setPendingDeletes([])
   }, [])
 
-  const existingServiceIds = useMemo(
-    () => mergedData.map((d) => d.service_id),
-    [mergedData]
-  )
+  const existingServiceIds = useMemo(() => mergedData.map(d => d.service_id), [mergedData])
 
   const graphHeight = Math.max(320, mergedData.length * NODE_GAP_Y + 80)
 
   const content = (
-    <div className={`${styles.graphWrapper} ${isFullscreen ? styles.fullscreen : ''} ${className ?? ''}`}>
+    <div
+      className={`${styles.graphWrapper} ${isFullscreen ? styles.fullscreen : ''} ${className ?? ''}`}
+    >
       {/* 顶栏 */}
       <div className={styles.graphToolbar}>
         <div className={styles.toolbarLeft}>
           <span className={styles.toolbarTitle}>权限关系图</span>
-          <span className={styles.toolbarCount}>
-            {mergedData.length} 个服务
-          </span>
+          <span className={styles.toolbarCount}>{mergedData.length} 个服务</span>
         </div>
         <div className={styles.toolbarRight}>
           <Space size="small">
-            <Button
-              size="small"
-              icon={<PlusOutlined />}
-              onClick={() => setDialogOpen(true)}
-            >
+            <Button size="small" icon={<PlusOutlined />} onClick={() => setDialogOpen(true)}>
               添加权限
             </Button>
             {isDirty && (
@@ -600,7 +590,7 @@ function PermissionsGraphInner({
               <Button
                 size="small"
                 icon={isFullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
-                onClick={() => setIsFullscreen((v) => !v)}
+                onClick={() => setIsFullscreen(v => !v)}
               />
             </Tooltip>
           </Space>
@@ -608,7 +598,10 @@ function PermissionsGraphInner({
       </div>
 
       {/* 画布 */}
-      <div className={styles.graphCanvas} style={isFullscreen ? undefined : { height: graphHeight }}>
+      <div
+        className={styles.graphCanvas}
+        style={isFullscreen ? undefined : { height: graphHeight }}
+      >
         <ReactFlow
           nodes={nodes}
           edges={edges}

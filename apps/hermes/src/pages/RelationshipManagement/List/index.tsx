@@ -1,8 +1,25 @@
 import { useState, useMemo, useCallback } from 'react'
 import { useRequest } from 'ahooks'
-import { Card, Table, Button, Space, Select, message, Popconfirm, Tag, Empty, Typography, Tooltip } from 'antd'
+import {
+  Card,
+  Table,
+  Button,
+  Space,
+  Select,
+  message,
+  Popconfirm,
+  Tag,
+  Empty,
+  Typography,
+  Tooltip,
+} from 'antd'
 import type { ColumnsType } from 'antd/es/table'
-import { PlusOutlined, DeleteOutlined, ShareAltOutlined, NodeIndexOutlined } from '@ant-design/icons'
+import {
+  PlusOutlined,
+  DeleteOutlined,
+  ShareAltOutlined,
+  NodeIndexOutlined,
+} from '@ant-design/icons'
 import { useParams } from 'react-router-dom'
 import { useAppNavigate } from '@/contexts/DomainContext'
 import { relationshipApi } from '@/services'
@@ -40,22 +57,25 @@ export function List() {
 
   const tableData = data?.items ?? []
 
-  const handleDelete = useCallback(async (rel: Relationship) => {
-    try {
-      await relationshipApi.delete({
-        service_id: rel.service_id,
-        subject_type: rel.subject_type,
-        subject_id: rel.subject_id,
-        relation: rel.relation,
-        object_type: rel.object_type,
-        object_id: rel.object_id,
-      })
-      message.success('删除成功')
-      refresh()
-    } catch {
-      message.error('删除失败')
-    }
-  }, [refresh])
+  const handleDelete = useCallback(
+    async (rel: Relationship) => {
+      try {
+        await relationshipApi.delete({
+          service_id: rel.service_id,
+          subject_type: rel.subject_type,
+          subject_id: rel.subject_id,
+          relation: rel.relation,
+          object_type: rel.object_type,
+          object_id: rel.object_id,
+        })
+        message.success('删除成功')
+        refresh()
+      } catch {
+        message.error('删除失败')
+      }
+    },
+    [refresh]
+  )
 
   const columns: ColumnsType<Relationship> = useMemo(() => {
     const cols: ColumnsType<Relationship> = [
@@ -69,7 +89,9 @@ export function List() {
               {subjectTypeLabels[record.subject_type] || record.subject_type}
             </Tag>
             <Tooltip title={record.subject_id}>
-              <Text ellipsis style={{ maxWidth: 120 }}>{record.subject_id}</Text>
+              <Text ellipsis style={{ maxWidth: 120 }}>
+                {record.subject_id}
+              </Text>
             </Tooltip>
           </div>
         ),
@@ -79,7 +101,11 @@ export function List() {
         dataIndex: 'relation',
         key: 'relation',
         width: 100,
-        render: (value) => <Tag color="processing" variant="filled">{value}</Tag>,
+        render: value => (
+          <Tag color="processing" variant="filled">
+            {value}
+          </Tag>
+        ),
       },
       {
         title: '对象',
@@ -89,7 +115,9 @@ export function List() {
           <div className={styles.entityCell}>
             <Tag variant="filled">{record.object_type}</Tag>
             <Tooltip title={record.object_id}>
-              <Text ellipsis style={{ maxWidth: 120 }}>{record.object_id}</Text>
+              <Text ellipsis style={{ maxWidth: 120 }}>
+                {record.object_id}
+              </Text>
             </Tooltip>
           </div>
         ),
@@ -99,14 +127,10 @@ export function List() {
         dataIndex: 'expires_at',
         key: 'expires_at',
         width: 140,
-        render: (text) => {
+        render: text => {
           if (!text) return <Text type="secondary">永久</Text>
           const expiring = isExpiringSoon(text)
-          return (
-            <Text type={expiring ? 'warning' : undefined}>
-              {formatRelativeTime(text)}
-            </Text>
-          )
+          return <Text type={expiring ? 'warning' : undefined}>{formatRelativeTime(text)}</Text>
         },
       },
       {
@@ -116,7 +140,9 @@ export function List() {
         fixed: 'right',
         render: (_, record) => (
           <Popconfirm title="确定要删除吗？" onConfirm={() => handleDelete(record)}>
-            <Button type="link" size="small" danger icon={<DeleteOutlined />}>删除</Button>
+            <Button type="link" size="small" danger icon={<DeleteOutlined />}>
+              删除
+            </Button>
           </Popconfirm>
         ),
       },
@@ -129,7 +155,7 @@ export function List() {
         dataIndex: 'service_id',
         key: 'service_id',
         width: 120,
-        render: (value) => <Tag variant="filled">{value}</Tag>,
+        render: value => <Tag variant="filled">{value}</Tag>,
       })
     }
 
@@ -146,13 +172,17 @@ export function List() {
       <Space>
         <Button
           type="primary"
-          onClick={() => navigate(urlServiceId ? `/services/${urlServiceId}/relationships/create` : 'create')}
+          onClick={() =>
+            navigate(urlServiceId ? `/services/${urlServiceId}/relationships/create` : 'create')
+          }
         >
           创建关系
         </Button>
         <Button
           icon={<NodeIndexOutlined />}
-          onClick={() => navigate(urlServiceId ? `/services/${urlServiceId}/relationships/graph` : 'graph')}
+          onClick={() =>
+            navigate(urlServiceId ? `/services/${urlServiceId}/relationships/graph` : 'graph')
+          }
         >
           使用关系图谱
         </Button>
@@ -165,7 +195,14 @@ export function List() {
       <Card>
         <div className={styles.header}>
           <div className={styles.headerLeft}>
-            <div className={styles.title}>关系管理 {urlServiceId && <Text type="secondary" style={{ fontSize: 14, marginLeft: 8 }}>({urlServiceId})</Text>}</div>
+            <div className={styles.title}>
+              关系管理{' '}
+              {urlServiceId && (
+                <Text type="secondary" style={{ fontSize: 14, marginLeft: 8 }}>
+                  ({urlServiceId})
+                </Text>
+              )}
+            </div>
             <Typography.Text type="secondary" className={styles.headerDesc}>
               该服务下的主体-关系-对象授权关系，格式为「主体 — 关系类型 — 对象」。
             </Typography.Text>
@@ -173,14 +210,26 @@ export function List() {
           <Space>
             <Button
               icon={<NodeIndexOutlined />}
-              onClick={() => navigate(urlServiceId ? `/services/${urlServiceId}/relationships/graph` : '/relationships/graph')}
+              onClick={() =>
+                navigate(
+                  urlServiceId
+                    ? `/services/${urlServiceId}/relationships/graph`
+                    : '/relationships/graph'
+                )
+              }
             >
               关系图谱
             </Button>
             <Button
               type="primary"
               icon={<PlusOutlined />}
-              onClick={() => navigate(urlServiceId ? `/services/${urlServiceId}/relationships/create` : '/relationships/create')}
+              onClick={() =>
+                navigate(
+                  urlServiceId
+                    ? `/services/${urlServiceId}/relationships/create`
+                    : '/relationships/create'
+                )
+              }
             >
               配置关系
             </Button>
@@ -188,14 +237,29 @@ export function List() {
         </div>
         <div className={styles.filters}>
           <Space size="middle">
-            <Select placeholder="选择主体类型" style={{ width: 150 }} value={subjectType} onChange={setSubjectType} allowClear>
+            <Select
+              placeholder="选择主体类型"
+              style={{ width: 150 }}
+              value={subjectType}
+              onChange={setSubjectType}
+              allowClear
+            >
               <Select.Option value="user">用户</Select.Option>
               <Select.Option value="group">组</Select.Option>
               <Select.Option value="application">应用</Select.Option>
             </Select>
           </Space>
         </div>
-        <Table columns={columns} dataSource={tableData} loading={loading} rowKey={(r) => `${r.service_id}:${r.subject_type}:${r.subject_id}:${r.relation}:${r.object_type}:${r.object_id}`} scroll={{ x: 900 }} locale={{ emptyText: emptyState }} />
+        <Table
+          columns={columns}
+          dataSource={tableData}
+          loading={loading}
+          rowKey={r =>
+            `${r.service_id}:${r.subject_type}:${r.subject_id}:${r.relation}:${r.object_type}:${r.object_id}`
+          }
+          scroll={{ x: 900 }}
+          locale={{ emptyText: emptyState }}
+        />
       </Card>
     </div>
   )

@@ -46,7 +46,10 @@ export function validateAllowedOrigin(origin: string): string | null {
 }
 
 export function validateRedirectUrisMultiLine(value: string): string | null {
-  const lines = value.split('\n').map((s) => s.trim()).filter(Boolean)
+  const lines = value
+    .split('\n')
+    .map(s => s.trim())
+    .filter(Boolean)
   for (let i = 0; i < lines.length; i++) {
     const err = validateRedirectUri(lines[i])
     if (err) return `第 ${i + 1} 行: ${err}`
@@ -55,7 +58,10 @@ export function validateRedirectUrisMultiLine(value: string): string | null {
 }
 
 export function validateAllowedOriginsMultiLine(value: string): string | null {
-  const lines = value.split('\n').map((s) => s.trim()).filter(Boolean)
+  const lines = value
+    .split('\n')
+    .map(s => s.trim())
+    .filter(Boolean)
   for (let i = 0; i < lines.length; i++) {
     const err = validateAllowedOrigin(lines[i])
     if (err) return `第 ${i + 1} 行: ${err}`
@@ -64,7 +70,10 @@ export function validateAllowedOriginsMultiLine(value: string): string | null {
 }
 
 export function validateLogoutUrisMultiLine(value: string): string | null {
-  const lines = value.split('\n').map((s) => s.trim()).filter(Boolean)
+  const lines = value
+    .split('\n')
+    .map(s => s.trim())
+    .filter(Boolean)
   for (let i = 0; i < lines.length; i++) {
     const err = validateRedirectUri(lines[i])
     if (err) return `第 ${i + 1} 行: ${err}`
@@ -73,7 +82,7 @@ export function validateLogoutUrisMultiLine(value: string): string | null {
 }
 
 export function validateRedirectUrisArray(arr: string[]): string | null {
-  const items = (arr ?? []).map((s) => s?.trim()).filter(Boolean)
+  const items = (arr ?? []).map(s => s?.trim()).filter(Boolean)
   for (let i = 0; i < items.length; i++) {
     const err = validateRedirectUri(items[i]!)
     if (err) return `第 ${i + 1} 项: ${err}`
@@ -82,7 +91,7 @@ export function validateRedirectUrisArray(arr: string[]): string | null {
 }
 
 export function validateAllowedOriginsArray(arr: string[]): string | null {
-  const items = (arr ?? []).map((s) => s?.trim()).filter(Boolean)
+  const items = (arr ?? []).map(s => s?.trim()).filter(Boolean)
   for (let i = 0; i < items.length; i++) {
     const err = validateAllowedOrigin(items[i]!)
     if (err) return `第 ${i + 1} 项: ${err}`
@@ -91,7 +100,7 @@ export function validateAllowedOriginsArray(arr: string[]): string | null {
 }
 
 export function validateLogoutUrisArray(arr: string[]): string | null {
-  const items = (arr ?? []).map((s) => s?.trim()).filter(Boolean)
+  const items = (arr ?? []).map(s => s?.trim()).filter(Boolean)
   for (let i = 0; i < items.length; i++) {
     const err = validateRedirectUri(items[i]!)
     if (err) return `第 ${i + 1} 项: ${err}`

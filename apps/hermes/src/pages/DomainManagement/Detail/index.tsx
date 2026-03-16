@@ -1,5 +1,16 @@
 import { useRequest } from 'ahooks'
-import { Card, Descriptions, Spin, message, Tabs, Table, Empty, Typography, Tag, Button } from 'antd'
+import {
+  Card,
+  Descriptions,
+  Spin,
+  message,
+  Tabs,
+  Table,
+  Empty,
+  Typography,
+  Tag,
+  Button,
+} from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { useParams } from 'react-router-dom'
 import { useAppNavigate } from '@/contexts/DomainContext'
@@ -15,15 +26,12 @@ export function Detail() {
   const { domainId } = useParams<{ domainId: string }>()
   const navigate = useAppNavigate()
 
-  const { data, loading } = useRequest(
-    () => domainApi.getDetail(domainId!),
-    {
-      ready: !!domainId,
-      onError: () => {
-        message.error('获取域信息失败')
-      },
-    }
-  )
+  const { data, loading } = useRequest(() => domainApi.getDetail(domainId!), {
+    ready: !!domainId,
+    onError: () => {
+      message.error('获取域信息失败')
+    },
+  })
 
   const { data: services, loading: servicesLoading } = useRequest(
     () => serviceApi.getList(domainId!),
@@ -41,11 +49,7 @@ export function Detail() {
       dataIndex: 'service_id',
       key: 'service_id',
       width: 150,
-      render: (value) => (
-        <Link onClick={() => navigate(`/services/${value}`)}>
-          {value}
-        </Link>
-      ),
+      render: value => <Link onClick={() => navigate(`/services/${value}`)}>{value}</Link>,
     },
     {
       title: '名称',
@@ -78,11 +82,7 @@ export function Detail() {
       dataIndex: 'app_id',
       key: 'app_id',
       width: 180,
-      render: (value) => (
-        <Link onClick={() => navigate(`/applications/${value}`)}>
-          {value}
-        </Link>
-      ),
+      render: value => <Link onClick={() => navigate(`/applications/${value}`)}>{value}</Link>,
     },
     {
       title: '名称',
@@ -95,7 +95,7 @@ export function Detail() {
       dataIndex: 'created_at',
       key: 'created_at',
       width: 160,
-      render: (text) => formatDateTime(text),
+      render: text => formatDateTime(text),
     },
   ]
 
@@ -137,7 +137,9 @@ export function Detail() {
           <CloudServerOutlined />
           服务列表
           {services?.items && services.items.length > 0 && (
-            <Tag variant="filled" className={styles.tabBadge}>{services.items.length}</Tag>
+            <Tag variant="filled" className={styles.tabBadge}>
+              {services.items.length}
+            </Tag>
           )}
         </span>
       ),
@@ -160,12 +162,7 @@ export function Detail() {
             size="small"
             pagination={{ pageSize: 10 }}
             locale={{
-              emptyText: (
-                <Empty
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  description="暂无服务"
-                />
-              ),
+              emptyText: <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无服务" />,
             }}
           />
         </div>
@@ -178,7 +175,9 @@ export function Detail() {
           <AppstoreAddOutlined />
           应用列表
           {applications?.items && applications.items.length > 0 && (
-            <Tag variant="filled" className={styles.tabBadge}>{applications.items.length}</Tag>
+            <Tag variant="filled" className={styles.tabBadge}>
+              {applications.items.length}
+            </Tag>
           )}
         </span>
       ),
@@ -201,12 +200,7 @@ export function Detail() {
             size="small"
             pagination={{ pageSize: 10 }}
             locale={{
-              emptyText: (
-                <Empty
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  description="暂无应用"
-                />
-              ),
+              emptyText: <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无应用" />,
             }}
           />
         </div>

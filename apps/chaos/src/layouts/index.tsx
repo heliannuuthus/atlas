@@ -12,7 +12,13 @@ const BRAND_COLOR = '#d97706'
 
 const chaosMenus: SidebarMenuItem[] = [
   { key: 'dashboard', label: '概览', icon: <DashboardOutlined />, path: '/dashboard' },
-  { key: 'templates', label: '邮件模板', icon: <FileTextOutlined />, path: '/templates', section: '内容管理' },
+  {
+    key: 'templates',
+    label: '邮件模板',
+    icon: <FileTextOutlined />,
+    path: '/templates',
+    section: '内容管理',
+  },
   { key: 'files', label: '文件管理', icon: <CloudUploadOutlined />, path: '/files' },
   { key: 'settings', label: '设置', icon: <SettingOutlined />, path: '/settings', bottom: true },
 ]
@@ -43,7 +49,7 @@ export function ChaosLayout() {
 
   return (
     <MainLayout
-      renderSidebar={(collapsed) => (
+      renderSidebar={collapsed => (
         <Sidebar
           collapsed={collapsed}
           menus={chaosMenus}
@@ -51,7 +57,7 @@ export function ChaosLayout() {
           brandColor={BRAND_COLOR}
           onLogoClick={() => navigate('/dashboard')}
           selectedKeys={[location.pathname]}
-          onMenuClick={(key) => navigate(key)}
+          onMenuClick={key => navigate(key)}
         />
       )}
       header={

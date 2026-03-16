@@ -59,19 +59,15 @@ export const chaosTemplateApi = {
     request.get<EmailTemplate[]>('/templates', {
       params: serviceId ? { service_id: serviceId } : undefined,
     }),
-  getDetail: (templateId: string) =>
-    request.get<EmailTemplate>(`/templates/${templateId}`),
-  create: (data: TemplateCreateRequest) =>
-    request.post<EmailTemplate>('/templates', data),
+  getDetail: (templateId: string) => request.get<EmailTemplate>(`/templates/${templateId}`),
+  create: (data: TemplateCreateRequest) => request.post<EmailTemplate>('/templates', data),
   update: (templateId: string, data: TemplateUpdateRequest) =>
     request.patch(`/templates/${templateId}`, data),
-  delete: (templateId: string) =>
-    request.delete(`/templates/${templateId}`),
+  delete: (templateId: string) => request.delete(`/templates/${templateId}`),
   render: (templateId: string, data: Record<string, unknown>) =>
     request.post<RenderResponse>(`/templates/${templateId}/render`, { data }),
 }
 
 export const chaosMailApi = {
-  send: (data: SendMailRequest) =>
-    request.post('/mail', data),
+  send: (data: SendMailRequest) => request.post('/mail', data),
 }

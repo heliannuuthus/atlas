@@ -41,19 +41,19 @@ export function RecentActivity({
 }: RecentActivityProps) {
   const activities: ActivityItem[] = []
 
-  services.slice(0, 3).forEach((s) => {
+  services.slice(0, 3).forEach(s => {
     activities.push({ type: 'service', name: s.name, action: '已更新', time: s.updated_at })
   })
-  applications.slice(0, 3).forEach((a) => {
+  applications.slice(0, 3).forEach(a => {
     activities.push({ type: 'application', name: a.name, action: '已更新', time: a.updated_at })
   })
-  groups.slice(0, 2).forEach((g) => {
+  groups.slice(0, 2).forEach(g => {
     activities.push({ type: 'group', name: g.name, action: '已更新', time: g.updated_at })
   })
   relationships
-    .filter((r) => r.expires_at && isExpiringSoon(r.expires_at))
+    .filter(r => r.expires_at && isExpiringSoon(r.expires_at))
     .slice(0, 3)
-    .forEach((r) => {
+    .forEach(r => {
       activities.push({
         type: 'relationship',
         name: `${r.subject_id} → ${r.object_id}`,
@@ -69,7 +69,9 @@ export function RecentActivity({
     return (
       <div className={styles.activityCard}>
         <div className={styles.cardLabel}>最近动态</div>
-        <div className={styles.cardDescSmall}>基于更新时间与即将过期的关系汇总，便于快速关注变更与即将到期的权限。</div>
+        <div className={styles.cardDescSmall}>
+          基于更新时间与即将过期的关系汇总，便于快速关注变更与即将到期的权限。
+        </div>
         <div className={styles.activityEmpty}>加载中...</div>
       </div>
     )
@@ -78,7 +80,9 @@ export function RecentActivity({
   return (
     <div className={styles.activityCard}>
       <div className={styles.cardLabel}>最近动态</div>
-      <div className={styles.cardDescSmall}>基于更新时间与即将过期的关系汇总，便于快速关注变更与即将到期的权限。</div>
+      <div className={styles.cardDescSmall}>
+        基于更新时间与即将过期的关系汇总，便于快速关注变更与即将到期的权限。
+      </div>
       {activities.length === 0 ? (
         <div className={styles.activityEmpty}>暂无动态</div>
       ) : (

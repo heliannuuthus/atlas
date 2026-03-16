@@ -21,7 +21,8 @@ const themeConfig: ThemeConfig = {
     colorError: '#dc2626',
     colorInfo: '#ea580c',
     borderRadius: 8,
-    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+    fontFamily:
+      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
     colorBgContainer: '#ffffff',
     colorBgLayout: '#f5f5f5',
     colorBorder: '#e5e5e5',
@@ -58,5 +59,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <ConfigProvider locale={zhCN} theme={themeConfig}>
       <App />
     </ConfigProvider>
-  </React.StrictMode>,
+  </React.StrictMode>
 )

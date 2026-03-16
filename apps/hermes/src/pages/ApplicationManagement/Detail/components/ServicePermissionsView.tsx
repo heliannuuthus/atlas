@@ -23,11 +23,10 @@ export interface ServicePermissionsViewProps {
   onRelationsChange?: () => void
 }
 
-const LazyPermissionsGraph = lazy(
-  () =>
-    import('./PermissionsGraph').then((m) => ({
-      default: m.PermissionsGraph,
-    }))
+const LazyPermissionsGraph = lazy(() =>
+  import('./PermissionsGraph').then(m => ({
+    default: m.PermissionsGraph,
+  }))
 )
 
 export const ServicePermissionsView = memo(function ServicePermissionsView({
@@ -50,9 +49,7 @@ export const ServicePermissionsView = memo(function ServicePermissionsView({
         width: 180,
         render: (value: string) =>
           onNavigateToService ? (
-            <Typography.Link onClick={() => onNavigateToService(value)}>
-              {value}
-            </Typography.Link>
+            <Typography.Link onClick={() => onNavigateToService(value)}>{value}</Typography.Link>
           ) : (
             value
           ),
@@ -62,7 +59,7 @@ export const ServicePermissionsView = memo(function ServicePermissionsView({
         dataIndex: 'relations',
         key: 'relations',
         render: (relations: string[]) =>
-          (relations || []).map((r) => (
+          (relations || []).map(r => (
             <Tag key={r} color={hashColor(r)} variant="filled">
               {r}
             </Tag>
@@ -78,7 +75,7 @@ export const ServicePermissionsView = memo(function ServicePermissionsView({
         <Segmented
           size="small"
           value={view}
-          onChange={(v) => setView(v as 'table' | 'graph')}
+          onChange={v => setView(v as 'table' | 'graph')}
           options={[
             { value: 'table', icon: <TableOutlined /> },
             { value: 'graph', icon: <ApartmentOutlined /> },
@@ -96,10 +93,7 @@ export const ServicePermissionsView = memo(function ServicePermissionsView({
           pagination={{ pageSize: 10 }}
           locale={{
             emptyText: (
-              <Empty
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                description="暂无服务授予的权限"
-              />
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无服务授予的权限" />
             ),
           }}
         />

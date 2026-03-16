@@ -1,7 +1,22 @@
 import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useRequest, useDebounce } from 'ahooks'
-import { Button, Input, Form, Select, Space, Typography, Modal, Tooltip, Avatar, Row, Col, Card, Flex, message } from 'antd'
+import {
+  Button,
+  Input,
+  Form,
+  Select,
+  Space,
+  Typography,
+  Modal,
+  Tooltip,
+  Avatar,
+  Row,
+  Col,
+  Card,
+  Flex,
+  message,
+} from 'antd'
 import {
   PlusOutlined,
   EditOutlined,
@@ -31,12 +46,12 @@ export function List() {
 
   const trimmedKeyword = keyword.trim()
   const debouncedKeyword = useDebounce(trimmedKeyword, { wait: 300 })
-  const { data, loading, refresh } = useRequest(
-    () => applicationApi.getList(domainId!),
-    { ready: !!domainId, refreshDeps: [domainId] }
-  )
+  const { data, loading, refresh } = useRequest(() => applicationApi.getList(domainId!), {
+    ready: !!domainId,
+    refreshDeps: [domainId],
+  })
 
-  const list = (data?.items ?? []).filter((app) => {
+  const list = (data?.items ?? []).filter(app => {
     if (!debouncedKeyword) return true
     if (searchBy === 'id') return app.app_id.toLowerCase().includes(debouncedKeyword.toLowerCase())
     return (app.name ?? '').toLowerCase().includes(debouncedKeyword.toLowerCase())
@@ -66,8 +81,10 @@ export function List() {
       <section className={styles.hero}>
         <h1 className={styles.heroTitle}>应用</h1>
         <p className={styles.heroDesc}>
-          应用代表接入方（Web 前端、移动端或第三方系统）。在此创建应用并配置<strong>重定向 URI</strong>后，可为应用授权访问指定服务的关系与 Token 能力；
-          授权关系在服务详情或<strong>关系图谱</strong>中配置，应用侧即可按 ReBAC 策略进行鉴权与资源访问。
+          应用代表接入方（Web 前端、移动端或第三方系统）。在此创建应用并配置
+          <strong>重定向 URI</strong>后，可为应用授权访问指定服务的关系与 Token 能力；
+          授权关系在服务详情或<strong>关系图谱</strong>中配置，应用侧即可按 ReBAC
+          策略进行鉴权与资源访问。
         </p>
       </section>
 
@@ -75,7 +92,7 @@ export function List() {
         <Space.Compact className={styles.searchCompact}>
           <Select
             value={searchBy}
-            onChange={(v) => setSearchBy(v as 'id' | 'name')}
+            onChange={v => setSearchBy(v as 'id' | 'name')}
             options={[
               { label: '名称', value: 'name' },
               { label: '标识', value: 'id' },
@@ -86,7 +103,7 @@ export function List() {
             placeholder={searchBy === 'id' ? '输入应用标识' : '输入应用名称'}
             allowClear
             value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
+            onChange={e => setKeyword(e.target.value)}
             style={{ width: 220 }}
           />
         </Space.Compact>
@@ -94,7 +111,7 @@ export function List() {
 
       {loading ? (
         <Row gutter={[24, 24]}>
-          {[1, 2, 3, 4, 5, 6].map((i) => (
+          {[1, 2, 3, 4, 5, 6].map(i => (
             <Col key={i} xs={24} sm={12} md={8} lg={8} xl={6}>
               <Card loading className={styles.cardSkeleton} />
             </Col>
@@ -106,7 +123,7 @@ export function List() {
             <div
               className={`${styles.cardWrap} ${styles.createCard}`}
               onClick={() => setCreateModalOpen(true)}
-              onKeyDown={(e) => e.key === 'Enter' && setCreateModalOpen(true)}
+              onKeyDown={e => e.key === 'Enter' && setCreateModalOpen(true)}
               role="button"
               tabIndex={0}
             >
@@ -126,7 +143,7 @@ export function List() {
               </Card>
             </div>
           </Col>
-          {list.map((app) => (
+          {list.map(app => (
             <Col key={app.app_id} xs={24} sm={12} md={8} lg={8} xl={6}>
               <div
                 className={styles.cardWrap}
@@ -161,7 +178,7 @@ export function List() {
                 </Card>
 
                 <div className={styles.rightTrigger} />
-                <div className={styles.overlayRight} onClick={(e) => e.stopPropagation()}>
+                <div className={styles.overlayRight} onClick={e => e.stopPropagation()}>
                   <Tooltip title="查看详情" placement="left">
                     <Button
                       type="text"
@@ -209,7 +226,10 @@ export function List() {
       <Modal
         title="新建应用"
         open={createModalOpen}
-        onCancel={() => { setCreateModalOpen(false); form.resetFields() }}
+        onCancel={() => {
+          setCreateModalOpen(false)
+          form.resetFields()
+        }}
         footer={null}
         destroyOnHidden
         width={400}
@@ -217,7 +237,7 @@ export function List() {
         <Form
           form={form}
           layout="vertical"
-          onFinish={(v) =>
+          onFinish={v =>
             runCreate({
               ...v,
               app_id: (v as { app_id?: string }).app_id?.trim() ?? '',
@@ -227,11 +247,7 @@ export function List() {
           <Form.Item name="app_id" label="应用标识">
             <Input placeholder="选填，不填则自动生成" />
           </Form.Item>
-          <Form.Item
-            name="name"
-            label="名称"
-            rules={[{ required: true, message: '请输入名称' }]}
-          >
+          <Form.Item name="name" label="名称" rules={[{ required: true, message: '请输入名称' }]}>
             <Input placeholder="请输入名称" />
           </Form.Item>
           <Form.Item
@@ -243,7 +259,12 @@ export function List() {
           </Form.Item>
           <Form.Item className={styles.modalFooter}>
             <Space>
-              <Button onClick={() => { setCreateModalOpen(false); form.resetFields() }}>
+              <Button
+                onClick={() => {
+                  setCreateModalOpen(false)
+                  form.resetFields()
+                }}
+              >
                 取消
               </Button>
               <Button type="primary" htmlType="submit" loading={createLoading}>
@@ -256,4 +277,3 @@ export function List() {
     </div>
   )
 }
-

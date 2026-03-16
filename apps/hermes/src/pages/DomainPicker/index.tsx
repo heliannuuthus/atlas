@@ -29,7 +29,7 @@ export function DomainPicker() {
           </div>
         ) : (
           <Row gutter={[20, 20]}>
-            {domains?.map((d) => (
+            {domains?.map(d => (
               <Col key={d.domain_id} xs={24} sm={12} md={8}>
                 <Card
                   hoverable
@@ -38,9 +38,7 @@ export function DomainPicker() {
                 >
                   <div className={styles.cardBody}>
                     <div className={styles.cardName}>{d.name || d.domain_id}</div>
-                    {d.description && (
-                      <div className={styles.cardDesc}>{d.description}</div>
-                    )}
+                    {d.description && <div className={styles.cardDesc}>{d.description}</div>}
                     <Text type="secondary" className={styles.cardId}>
                       {d.domain_id}
                     </Text>

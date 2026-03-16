@@ -21,11 +21,7 @@ export default defineConfig({
     port: 17000,
     host: '0.0.0.0',
     open: false,
-    allowedHosts: [
-      'zwei.heliannuuthus.com',
-      'localhost',
-      '.heliannuuthus.com',
-    ],
+    allowedHosts: ['zwei.heliannuuthus.com', 'localhost', '.heliannuuthus.com'],
     hmr: {
       host: 'zwei.heliannuuthus.com',
     },

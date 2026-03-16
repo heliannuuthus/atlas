@@ -43,8 +43,16 @@ export interface DomainConfig {
 
 export const domainMapping: Record<string, DomainConfig> = {
   'zwei.heliannuuthus.com': { clientId: 'zwei', module: 'zwei', defaultPath: '/zwei' },
-  'hermes.heliannuuthus.com': { clientId: 'hermes', module: 'hermes', defaultPath: '/hermes/domains' },
-  'chaos.heliannuuthus.com': { clientId: 'chaos', module: 'chaos', defaultPath: '/chaos/dashboard' },
+  'hermes.heliannuuthus.com': {
+    clientId: 'hermes',
+    module: 'hermes',
+    defaultPath: '/hermes/domains',
+  },
+  'chaos.heliannuuthus.com': {
+    clientId: 'chaos',
+    module: 'chaos',
+    defaultPath: '/chaos/dashboard',
+  },
 }
 
 export function getCurrentDomainConfig(): DomainConfig | null {
