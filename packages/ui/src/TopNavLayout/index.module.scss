@@ -1,0 +1,135 @@
+$header-height: 56px;
+
+.layout {
+  min-height: 100vh;
+  background: #f8f8fa;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: $header-height;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.headerInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 24px;
+  gap: 8px;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 4px 8px 4px 4px;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+  margin-right: 8px;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.logoIcon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.logoText {
+  font-size: 16px;
+  font-weight: 600;
+  color: #18181b;
+  letter-spacing: -0.02em;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.navItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #52525b;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
+  white-space: nowrap;
+  line-height: 1.4;
+
+  &:hover {
+    color: #18181b;
+    background: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.navItemActive {
+  color: #fff !important;
+  background: var(--brand, #059669) !important;
+}
+
+.navItemIcon {
+  display: inline-flex;
+  font-size: 14px;
+}
+
+.leftSlot {
+  display: flex;
+  align-items: center;
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.content {
+  margin-top: $header-height;
+  min-height: calc(100vh - #{$header-height});
+  overflow-y: auto;
+}

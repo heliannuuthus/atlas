@@ -1,0 +1,76 @@
+.container {
+  padding: 24px;
+}
+
+.content {
+  margin-top: -12px;
+}
+
+.mainCard {
+  :global {
+    .ant-card-body {
+      padding: 0 24px 24px 24px;
+    }
+  }
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.tabs {
+  :global {
+    .ant-tabs-nav {
+      margin-bottom: 24px;
+      &::before {
+        border-bottom: 1px solid #f0f0f0;
+      }
+    }
+  }
+}
+
+.descriptions {
+  :global {
+    .ant-descriptions-item-label {
+      width: 140px;
+      color: #8c8c8c;
+      &::after {
+        content: ':';
+      }
+    }
+    .ant-descriptions-item-content {
+      font-weight: 500;
+      color: #262626;
+    }
+  }
+}
+
+.tabBadge {
+  margin-left: 8px;
+}
+
+.tokenExpiry {
+  .tokenRow {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    span:first-child {
+      color: #8c8c8c;
+    }
+  }
+}
+
+.relationshipsTab {
+  .tabHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding: 12px 16px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+  }
+}

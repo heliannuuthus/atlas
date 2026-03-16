@@ -1,0 +1,49 @@
+.breadcrumb {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.moduleRoot {
+  cursor: default !important;
+
+  &:hover {
+    color: inherit !important;
+    background: none !important;
+  }
+}
+
+.separator {
+  color: #d4d4d8;
+  font-size: 9px;
+  margin: 0 2px;
+  opacity: 0.6;
+}
+
+.breadcrumbItem {
+  display: inline-block;
+  transition: all 0.15s ease;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 13px;
+  color: #a1a1aa;
+  cursor: pointer;
+
+  &:hover:not(.active):not(.moduleRoot) {
+    color: #18181b;
+    background: #f4f4f5;
+  }
+}
+
+.active {
+  color: #18181b;
+  font-weight: 600;
+  cursor: default;
+}

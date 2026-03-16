@@ -1,0 +1,212 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: #f5f5f5;
+}
+
+.content {
+  max-width: 720px;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f5f5f5;
+}
+
+.header {
+  padding: 48px 48px 24px;
+  text-align: center;
+}
+
+.icon {
+  font-size: 56px;
+  color: #dc2626;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #171717;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #a3a3a3;
+}
+
+.info {
+  padding: 24px 48px;
+  margin: 0 48px;
+  background: #fafafa;
+  border-radius: 8px;
+}
+
+.infoItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.infoLabel {
+  font-weight: 500;
+  color: #a3a3a3;
+  min-width: 72px;
+  flex-shrink: 0;
+  font-size: 13px;
+}
+
+.infoValue {
+  flex: 1;
+  word-break: break-all;
+  font-size: 13px;
+  color: #404040;
+}
+
+.routePath {
+  display: inline-block;
+  padding: 2px 8px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+  font-size: 12px;
+  color: #171717;
+}
+
+.errorMessage {
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.details {
+  padding: 24px 48px;
+}
+
+.detailsTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #525252;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.codeBlock {
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 16px;
+  max-height: 320px;
+  overflow: auto;
+  font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+  font-size: 12px;
+  line-height: 1.7;
+  border: 1px solid #f5f5f5;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #d4d4d4;
+    border-radius: 3px;
+
+    &:hover {
+      background: #a3a3a3;
+    }
+  }
+}
+
+.errorMessageBlock {
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  background: #fef2f2;
+  border-left: 3px solid #dc2626;
+  border-radius: 4px;
+}
+
+.errorMessageText {
+  color: #dc2626;
+  font-weight: 500;
+  margin: 0;
+  font-size: 12px;
+}
+
+.stackSection {
+  margin-top: 16px;
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+.stackLabel {
+  color: #a3a3a3;
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stackContent {
+  color: #525252;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+  padding: 10px;
+  background: #ffffff;
+  border-radius: 4px;
+  border: 1px solid #f5f5f5;
+  font-size: 12px;
+}
+
+.actions {
+  padding: 24px 48px 40px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.actionButton {
+  min-width: 110px;
+  height: 36px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.primaryButton {
+  background: #7c3aed;
+  border: none;
+  color: #ffffff;
+
+  &:hover {
+    background: #6d28d9;
+  }
+}
+
+.secondaryButton {
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  color: #7c3aed;
+
+  &:hover {
+    border-color: #7c3aed;
+    color: #6d28d9;
+  }
+}
