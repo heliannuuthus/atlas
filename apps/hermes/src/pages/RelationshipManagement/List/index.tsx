@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { useRequest } from 'ahooks'
 import { Card, Table, Button, Space, Select, message, Popconfirm, Tag, Empty, Typography, Tooltip } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
@@ -40,7 +40,7 @@ export function List() {
 
   const tableData = data?.items ?? []
 
-  const handleDelete = async (rel: Relationship) => {
+  const handleDelete = useCallback(async (rel: Relationship) => {
     try {
       await relationshipApi.delete({
         service_id: rel.service_id,
@@ -55,7 +55,7 @@ export function List() {
     } catch {
       message.error('删除失败')
     }
-  }
+  }, [refresh])
 
   const columns: ColumnsType<Relationship> = useMemo(() => {
     const cols: ColumnsType<Relationship> = [
