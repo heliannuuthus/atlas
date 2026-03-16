@@ -2,14 +2,14 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom'
 import { useRequest } from 'ahooks'
 import { CloudServerOutlined, AppstoreAddOutlined, TeamOutlined } from '@ant-design/icons'
 import { Select, Divider, Button } from 'antd'
-import { MainLayout, Sidebar, Header, UserMenu, SearchTrigger } from '@atlas/ui'
-import type { SidebarMenuItem } from '@atlas/ui'
+import { TopNavLayout, UserMenu, SearchTrigger } from '@atlas/ui'
+import type { TopNavMenuItem } from '@atlas/ui'
 import { DomainContext } from '@/contexts/DomainContext'
 import { domainApi } from '@/services'
 
 const BRAND_COLOR = '#059669'
 
-function buildMenus(basePath: string): SidebarMenuItem[] {
+function buildMenus(basePath: string): TopNavMenuItem[] {
   return [
     {
       key: 'applications',
@@ -18,13 +18,7 @@ function buildMenus(basePath: string): SidebarMenuItem[] {
       path: `${basePath}/applications`,
     },
     { key: 'services', label: '服务', icon: <CloudServerOutlined />, path: `${basePath}/services` },
-    {
-      key: 'groups',
-      label: '组',
-      icon: <TeamOutlined />,
-      path: `${basePath}/groups`,
-      section: '平台管理',
-    },
+    { key: 'groups', label: '组', icon: <TeamOutlined />, path: `${basePath}/groups` },
   ]
 }
 
@@ -64,50 +58,45 @@ export function HermesLayout() {
 
   return (
     <DomainContext.Provider value={domainId}>
-      <MainLayout
-        renderSidebar={collapsed => (
-          <Sidebar
-            collapsed={collapsed}
-            menus={menus}
-            logo={hermesLogo}
-            brandColor={BRAND_COLOR}
-            onLogoClick={() => navigate(basePath)}
-            selectedKeys={[location.pathname]}
-            onMenuClick={key => navigate(key)}
+      <TopNavLayout
+        logo={hermesLogo}
+        menus={menus}
+        brandColor={BRAND_COLOR}
+        onLogoClick={() => navigate(basePath)}
+        onMenuClick={path => navigate(path)}
+        left={
+          <Select
+            value={domainId}
+            onChange={handleDomainChange}
+            options={domains.map(d => ({ label: d.name || d.domain_id, value: d.domain_id }))}
+            placeholder="选择域"
+            style={{ minWidth: 140 }}
+            size="middle"
+            variant="borderless"
+            popupRender={menu => (
+              <>
+                {menu}
+                <Divider style={{ margin: '8px 0' }} />
+                <div style={{ padding: '0 4px 4px' }}>
+                  <Button
+                    type="text"
+                    size="small"
+                    block
+                    style={{ textAlign: 'left' }}
+                    onClick={() => navigate('/', { replace: true })}
+                  >
+                    前往域列表
+                  </Button>
+                </div>
+              </>
+            )}
           />
-        )}
-        header={
-          <Header
-            left={
-              <Select
-                value={domainId}
-                onChange={handleDomainChange}
-                options={domains.map(d => ({ label: d.name || d.domain_id, value: d.domain_id }))}
-                placeholder="选择域"
-                style={{ minWidth: 160 }}
-                size="middle"
-                popupRender={menu => (
-                  <>
-                    {menu}
-                    <Divider style={{ margin: '8px 0' }} />
-                    <div style={{ padding: '0 4px 4px' }}>
-                      <Button
-                        type="text"
-                        size="small"
-                        block
-                        style={{ textAlign: 'left' }}
-                        onClick={() => navigate('/', { replace: true })}
-                      >
-                        前往域列表
-                      </Button>
-                    </div>
-                  </>
-                )}
-              />
-            }
-            center={<SearchTrigger />}
-            right={<UserMenu brandColor={BRAND_COLOR} />}
-          />
+        }
+        right={
+          <>
+            <SearchTrigger />
+            <UserMenu brandColor={BRAND_COLOR} />
+          </>
         }
       />
     </DomainContext.Provider>

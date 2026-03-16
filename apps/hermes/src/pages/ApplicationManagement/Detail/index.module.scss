@@ -1,15 +1,12 @@
+@use '@atlas/shared/styles/variables.scss' as *;
+
 .container {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  min-width: 320px;
-  max-width: 1400px;
-  min-height: 100%;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 28px 32px 48px;
+  min-height: 100%;
 
   @media (max-width: 768px) {
-    min-width: 0;
     padding: 16px;
   }
 }
@@ -18,225 +15,261 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 400px;
+  min-height: 480px;
 }
 
-// ── Overview Card ──
+// ── Page Header ──
 
-.overviewCard {
-  margin-bottom: 16px;
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
 
-  :global(.ant-card-body) {
-    padding: 16px 24px 14px;
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 16px;
   }
 }
 
-.overviewHeader {
+.pageHeaderLeft {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 16px;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
 }
 
 .backBtn {
-  flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #595959;
-  border-radius: 6px;
+  align-self: flex-start;
+  padding: 0 4px;
+  height: auto;
+  font-size: 13px;
+  color: $text-secondary;
+  font-weight: 500;
 
   &:hover {
-    color: #262626;
-    background-color: rgba(0, 0, 0, 0.04) !important;
+    color: $text-primary !important;
+    background: transparent !important;
+  }
+
+  :global(.anticon) {
+    font-size: 11px;
   }
 }
 
-.backIcon {
-  font-size: 16px;
-}
-
-.overviewTitleRow {
+.pageTitle {
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex: 1;
-  min-width: 0;
+  gap: 16px;
 }
 
-.overviewName {
-  margin: 0 !important;
+.pageTitleAvatar {
+  flex-shrink: 0;
+  background: $hermes-50;
+  color: $brand-hermes;
+  font-size: 20px;
+}
+
+.pageTitleText {
+  min-width: 0;
+
+  h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: $text-primary;
+    margin: 0;
+    letter-spacing: -0.025em;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  p {
+    font-size: 14px;
+    color: $text-tertiary;
+    margin: 2px 0 0;
+    line-height: 1.5;
+  }
+}
+
+.pageHeaderRight {
+  flex-shrink: 0;
+  padding-top: 36px;
+}
+
+// ── Stats Row ──
+
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+
+  @media (max-width: 960px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.statCard {
+  background: $bg-elevated;
+  border: 1px solid $border-color;
+  border-radius: $radius-lg;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: box-shadow $transition-fast;
+
+  &:hover {
+    box-shadow: $shadow-xs;
+  }
+}
+
+.statLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: $text-tertiary;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.statValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: $text-primary;
+  font-family: ui-monospace, 'SF Mono', 'Monaco', 'Consolas', monospace;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
+  line-height: 1.4;
 
-.overviewMeta {
-  :global {
-    .ant-descriptions-item-label {
-      font-size: 12px;
-      color: #8c8c8c;
-      padding-bottom: 4px;
-    }
-
-    .ant-descriptions-item-content {
-      padding-bottom: 10px;
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      font-size: 13px;
-      color: #262626;
-    }
+  :global(.ant-typography) {
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
+    font-family: inherit;
   }
-}
-
-.metaValue {
-  font-size: 13px;
-  color: #262626;
-  font-family: ui-monospace, 'SF Mono', 'Monaco', 'Consolas', monospace;
 
   :global(.ant-typography-copy) {
-    margin-left: 4px;
-    color: #8c8c8c;
+    margin-left: 6px;
+    color: $text-disabled;
+    font-size: 12px;
   }
 }
 
-// ── Main Card & Tabs ──
+.statCopyIcon {
+  font-size: 11px;
+}
 
-.mainCard {
-  flex: 1;
+// ── Main Content & Tabs ──
 
-  :global(.ant-card-body) {
-    padding: 0 24px 24px;
-
-    @media (max-width: 768px) {
-      padding: 0 16px 16px;
-    }
-  }
+.mainContent {
+  background: $bg-elevated;
+  border: 1px solid $border-color;
+  border-radius: $radius-lg;
+  min-height: 400px;
 }
 
 .tabs {
   :global {
     .ant-tabs-nav {
       margin-bottom: 0;
+      padding: 0 24px;
 
       &::before {
-        border-bottom: 1px solid #f0f0f0;
+        border-bottom: 1px solid $border-color;
       }
     }
 
     .ant-tabs-tab {
-      padding: 12px 0;
+      padding: 14px 4px;
+      font-size: 14px;
+      font-weight: 500;
+      color: $text-tertiary;
+      transition: color $transition-fast;
+
+      &:hover {
+        color: $text-primary;
+      }
+    }
+
+    .ant-tabs-tab-active .ant-tabs-tab-btn {
+      color: $brand-hermes !important;
+      font-weight: 600;
+    }
+
+    .ant-tabs-ink-bar {
+      background: $brand-hermes;
+      height: 2px;
+      border-radius: 2px;
+    }
+
+    .ant-tabs-content-holder {
+      padding: 24px;
+
+      @media (max-width: 768px) {
+        padding: 16px;
+      }
     }
   }
 }
 
-.tabLabel {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
+// ── Tab Content ──
 
-.tabBadge {
-  margin-left: 4px;
-  font-size: 12px;
-}
-
-// ── Settings Tab ──
-
-.settingsTab {
-  width: 80%;
+.tabContent {
+  max-width: 640px;
   margin: 0 auto;
-  padding-top: 18px;
 }
+
+// ── Settings Form ──
 
 .settingsForm {
   :global(.ant-form-item) {
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 
     &:last-child {
       margin-bottom: 0;
     }
   }
-}
 
-.section {
-  padding: 4px 0;
-}
-
-.sectionTitle {
-  font-size: 16px;
-  font-weight: 600;
-  color: #262626;
-  margin-bottom: 8px;
-}
-
-.sectionHint {
-  display: block;
-  font-size: 13px;
-  line-height: 1.5;
-  margin-bottom: 14px;
+  :global(.ant-form-item-label > label) {
+    font-weight: 500;
+    color: $text-primary;
+  }
 }
 
 .labelTooltipIcon {
   margin-left: 4px;
   font-size: 12px;
-  color: #8c8c8c;
+  color: $text-disabled;
   cursor: help;
 }
 
-.uriTagsInput {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  min-height: 32px;
-  padding: 4px 11px;
-  background: #fff;
-  border: 1px solid #d9d9d9;
-  border-radius: 6px;
-  transition: border-color 0.2s;
-
-  &:hover {
-    border-color: #4096ff;
-  }
-
-  &:focus-within {
-    border-color: #4096ff;
-    box-shadow: 0 0 0 2px rgba(5, 145, 255, 0.1);
-  }
-}
-
-.uriTag {
-  margin: 0;
-}
-
-.uriTagsInputField {
-  flex: 1;
-  min-width: 120px;
-  padding: 0;
-}
+// ── Logo Upload ──
 
 .logoField {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 28px;
 }
 
 .logoUpload {
   position: relative;
-  width: 72px;
-  height: 72px;
+  width: 80px;
+  height: 80px;
   cursor: pointer;
   border-radius: 50%;
 
   :global(.ant-avatar) {
-    background: #f5f5f5;
-    color: #bfbfbf;
+    background: $gray-100;
+    color: $gray-400;
     font-size: 28px;
   }
 }
@@ -252,26 +285,62 @@
   color: #fff;
   font-size: 20px;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity $transition-fast;
 
   .logoUpload:hover & {
     opacity: 1;
   }
 }
 
-.sectionBody {
-  padding-top: 8px;
+// ── URI Tags Input ──
+
+.uriTagsInput {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 4px 12px;
+  background: $bg-elevated;
+  border: 1px solid $border-color;
+  border-radius: $radius-sm;
+  transition:
+    border-color $transition-fast,
+    box-shadow $transition-fast;
+
+  &:hover {
+    border-color: $brand-hermes;
+  }
+
+  &:focus-within {
+    border-color: $brand-hermes;
+    box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.08);
+  }
 }
+
+.uriTag {
+  margin: 0;
+}
+
+.uriTagsInputField {
+  flex: 1;
+  min-width: 120px;
+  padding: 0;
+}
+
+// ── Divider ──
 
 .sectionDivider {
   height: 1px;
-  background: #f0f0f0;
-  margin: 20px 0;
+  background: $border-color;
+  margin: 24px 0;
 }
 
+// ── Token Section ──
+
 .tokenSection {
-  border: 1px solid #f0f0f0;
-  border-radius: 10px;
+  border: 1px solid $border-color;
+  border-radius: $radius-lg;
   overflow: hidden;
 }
 
@@ -283,11 +352,11 @@
   padding: 18px 20px;
 
   & + & {
-    border-top: 1px solid #f0f0f0;
+    border-top: 1px solid $border-color-light;
   }
 
   &:hover {
-    background: #fafafa;
+    background: $bg-hover;
   }
 
   @media (max-width: 768px) {
@@ -300,7 +369,7 @@
 .tokenRowInfo {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
   min-width: 0;
   flex: 1;
 }
@@ -308,13 +377,13 @@
 .tokenRowTitle {
   font-size: 14px;
   font-weight: 500;
-  color: #262626;
+  color: $text-primary;
 }
 
 .tokenRowDesc {
   font-size: 12px;
-  color: #8c8c8c;
-  line-height: 1.4;
+  color: $text-tertiary;
+  line-height: 1.5;
 }
 
 .durationInput {
@@ -334,20 +403,14 @@
 
 // ── IDP Tab ──
 
-.idpTab {
-  width: 80%;
-  margin: 0 auto;
-  padding-top: 20px;
-}
-
-.idpEmptyState {
-  margin: 40px 0;
+.emptyState {
+  margin: 48px 0;
 }
 
 .idpListHint {
   display: block;
   font-size: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .idpList {
@@ -360,22 +423,22 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 14px 18px;
-  background: #fff;
-  border: 1px solid #f0f0f0;
-  border-radius: 10px;
+  padding: 16px 20px;
+  background: $bg-elevated;
+  border: 1px solid $border-color;
+  border-radius: $radius-lg;
   transition:
-    box-shadow 0.2s,
-    border-color 0.2s;
+    box-shadow $transition-fast,
+    border-color $transition-fast;
 
   &:hover {
-    border-color: #d9d9d9;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    border-color: $gray-300;
+    box-shadow: $shadow-xs;
   }
 
   &[data-dragging='true'] {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-    border-color: #1677ff;
+    box-shadow: $shadow-lg;
+    border-color: $brand-hermes;
     z-index: 1;
   }
 }
@@ -386,14 +449,17 @@
   justify-content: center;
   width: 32px;
   height: 32px;
-  color: #bfbfbf;
+  color: $gray-400;
   cursor: grab;
-  border-radius: 6px;
+  border-radius: $radius-sm;
   flex-shrink: 0;
+  transition:
+    color $transition-fast,
+    background $transition-fast;
 
   &:hover {
-    color: #8c8c8c;
-    background: #f5f5f5;
+    color: $text-secondary;
+    background: $bg-subtle;
   }
 
   &:active {
@@ -426,7 +492,7 @@
 .idpTypeLabel {
   font-weight: 500;
   font-size: 14px;
-  color: #262626;
+  color: $text-primary;
 }
 
 .idpStrategy {
@@ -442,24 +508,8 @@
   font-size: 12px;
 }
 
-.idpEmpty {
-  font-size: 13px;
-}
-
 .idpCardActions {
   flex-shrink: 0;
-}
-
-.idpHeader {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-  padding: 12px 16px;
-  background: #fafafa;
-  border-radius: 8px;
 }
 
 .idpModalForm {
@@ -477,9 +527,8 @@
 // ── Permissions Tab ──
 
 .permissionsTab {
-  width: 80%;
+  max-width: 640px;
   margin: 0 auto;
-  padding-top: 20px;
   overflow-x: auto;
 }
 
@@ -490,10 +539,10 @@
 }
 
 .permissionsGraph {
-  border: 1px solid #f0f0f0;
-  border-radius: 8px;
+  border: 1px solid $border-color;
+  border-radius: $radius-md;
   overflow: hidden;
-  background: #fafafa;
+  background: $bg-hover;
 }
 
 .permissionsGraphLoading {
@@ -506,6 +555,6 @@
 .permissionsHeader {
   margin-bottom: 16px;
   padding: 12px 16px;
-  background: #fafafa;
-  border-radius: 8px;
+  background: $bg-hover;
+  border-radius: $radius-md;
 }
