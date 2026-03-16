@@ -301,6 +301,11 @@ export function Detail() {
   const navigate = useAppNavigate()
   const [activeTab, setActiveTab] = useState('basic')
   const [settingsDirty, setSettingsDirty] = useState(false)
+  const [prevData, setPrevData] = useState(data)
+  if (data !== prevData) {
+    setPrevData(data)
+    setSettingsDirty(false)
+  }
   const [settingsForm] = Form.useForm()
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
   const [idpModalOpen, setIdpModalOpen] = useState(false)
@@ -458,7 +463,6 @@ export function Detail() {
       refresh_token_expires_in: data.refresh_token_expires_in || undefined,
       refresh_token_absolute_expires_in: data.refresh_token_absolute_expires_in || undefined,
     })
-    setSettingsDirty(false)
   }, [data, settingsForm])
 
   const handleSaveSettings = async () => {

@@ -261,11 +261,17 @@ function AddPermissionDialog({
 }: AddPermissionDialogProps) {
   const [form] = Form.useForm()
   const [customRelation, setCustomRelation] = useState(false)
+  const [prevOpen, setPrevOpen] = useState(false)
+  if (open && !prevOpen) {
+    setCustomRelation(false)
+  }
+  if (open !== prevOpen) {
+    setPrevOpen(open)
+  }
 
   useEffect(() => {
     if (open) {
       form.resetFields()
-      setCustomRelation(false)
     }
   }, [open, form])
 

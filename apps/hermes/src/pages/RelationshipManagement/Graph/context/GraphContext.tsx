@@ -23,6 +23,7 @@ interface GraphContextType {
 
 const GraphContext = createContext<GraphContextType | null>(null)
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useGraphContext() {
   const context = useContext(GraphContext)
   if (!context) {
