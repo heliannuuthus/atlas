@@ -22,12 +22,12 @@ export function Create() {
       const serviceId = urlServiceId || (values.service_id as string)
       await relationshipApi.create({
         service_id: serviceId,
-        subject_type: values.subject_type as string,
+        subject_type: values.subject_type as 'user' | 'group' | 'application',
         subject_id: values.subject_id as string,
         relation: values.relation as string,
         object_type: values.object_type as string,
         object_id: values.object_id as string,
-        expires_at: values.expires_at ? (values.expires_at as typeof dayjs.Dayjs).toISOString() : undefined,
+        expires_at: values.expires_at ? (values.expires_at as dayjs.Dayjs).toISOString() : undefined,
       })
       message.success('创建成功')
       navigate(urlServiceId ? `/services/${urlServiceId}` : '/relationships')

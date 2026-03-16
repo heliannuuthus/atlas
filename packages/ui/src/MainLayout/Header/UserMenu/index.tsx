@@ -81,7 +81,7 @@ export function UserMenu({ brandColor = '#7c3aed', docUrl }: UserMenuProps) {
         trigger={['hover', 'click']}
         mouseEnterDelay={0.15}
         mouseLeaveDelay={0.15}
-        dropdownStyle={{ minWidth: 160, width: 'auto', maxWidth: 220 }}
+        overlayStyle={{ minWidth: 160, width: 'auto', maxWidth: 220 }}
       >
         <div className={styles.userTrigger} role="button" tabIndex={0}>
           <Avatar

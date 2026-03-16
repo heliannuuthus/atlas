@@ -5,7 +5,6 @@ import { DomainPicker } from '@/pages/DomainPicker'
 import { Dashboard } from '@/pages/Dashboard'
 import { ServiceManagement } from '@/pages/ServiceManagement'
 import { ApplicationManagement } from '@/pages/ApplicationManagement'
-import { RelationshipManagement } from '@/pages/RelationshipManagement'
 import { GroupManagement } from '@/pages/GroupManagement'
 import { NotFound } from '@/pages/NotFound'
 

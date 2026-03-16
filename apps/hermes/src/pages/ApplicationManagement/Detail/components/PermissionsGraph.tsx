@@ -255,7 +255,7 @@ interface AddPermissionDialogProps {
 function AddPermissionDialog({
   open,
   services,
-  existingServiceIds,
+  existingServiceIds: _existingServiceIds,
   onConfirm,
   onCancel,
 }: AddPermissionDialogProps) {

@@ -16,7 +16,6 @@ import type {
   ServiceUpdateRequest,
   ApplicationCreateRequest,
   ApplicationUpdateRequest,
-  ApplicationServiceRelationRequest,
   RelationshipCreateRequest,
   RelationshipDeleteRequest,
   GroupCreateRequest,

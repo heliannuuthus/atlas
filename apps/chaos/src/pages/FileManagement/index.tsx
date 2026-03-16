@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Card, Button, Input, message, Upload, Typography, Space, List, Tag } from 'antd'
-import type { UploadProps, RcCustomRequestOptions } from 'antd/es/upload/interface'
+import type { UploadProps } from 'antd'
 import { CopyOutlined, CheckCircleOutlined, CloudUploadOutlined } from '@ant-design/icons'
 import { getAuth, apiEndpoints } from '@atlas/shared'
 import styles from './index.module.scss'
@@ -33,7 +33,7 @@ export function FileManagement() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
   }
 
-  const customRequest = async (options: RcCustomRequestOptions) => {
+  const customRequest: NonNullable<UploadProps['customRequest']> = async (options) => {
     const { file, onSuccess, onError } = options
     const token = await getAuth().getAccessToken('chaos')
     if (!token) {

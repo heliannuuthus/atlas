@@ -3,12 +3,7 @@ import { useRequest } from 'ahooks'
 import {
   CloudServerOutlined,
   AppstoreAddOutlined,
-  ShareAltOutlined,
   TeamOutlined,
-  DashboardOutlined,
-  NodeIndexOutlined,
-  UnorderedListOutlined,
-  ArrowLeftOutlined,
 } from '@ant-design/icons'
 import { Select, Divider, Button } from 'antd'
 import { MainLayout, Sidebar, Header, UserMenu, SearchTrigger } from '@atlas/ui'

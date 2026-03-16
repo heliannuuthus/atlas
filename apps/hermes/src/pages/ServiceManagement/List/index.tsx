@@ -20,15 +20,15 @@ export function List() {
   const domainId = useDomainId()
   const [keyword, setKeyword] = useState('')
   const [searchBy, setSearchBy] = useState<'id' | 'name'>('name')
-  const [createModalOpen, setCreateModalOpen] = useState(false)
+  const shouldOpenCreate = (location.state as { openCreate?: boolean })?.openCreate ?? false
+  const [createModalOpen, setCreateModalOpen] = useState(shouldOpenCreate)
   const [form] = Form.useForm()
 
   useEffect(() => {
-    if ((location.state as { openCreate?: boolean })?.openCreate) {
-      setCreateModalOpen(true)
+    if (shouldOpenCreate) {
       navigate(location.pathname, { replace: true, state: {} })
     }
-  }, [location.state, location.pathname, navigate])
+  }, [shouldOpenCreate, location.pathname, navigate])
 
   const trimmedKeyword = keyword.trim()
   const debouncedKeyword = useDebounce(trimmedKeyword, { wait: 300 })

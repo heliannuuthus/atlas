@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useMemo, useEffect } from 'react'
+import { useParams } from 'react-router-dom'
 import { useRequest } from 'ahooks'
 import ReactFlow, {
   Controls,
@@ -107,8 +108,7 @@ function GraphCanvas() {
     }
   )
 
-  // 模拟用户列表（实际应该从 API 获取）
-  const relationshipItems = relationships?.items ?? []
+  const relationshipItems = useMemo(() => relationships?.items ?? [], [relationships])
 
   const users = useMemo(() => {
     if (!relationshipItems.length) return []

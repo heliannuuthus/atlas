@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useRequest } from 'ahooks'
-import { Card, Typography, Row, Col, Spin, Empty, message } from 'antd'
+import { Card, Typography, Row, Col, Spin, message } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { domainApi } from '@/services'
 import styles from './index.module.scss'

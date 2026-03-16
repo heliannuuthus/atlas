@@ -16,6 +16,7 @@ export interface Service {
   domain_id: string
   name: string
   description?: string
+  logo_url?: string
   access_token_expires_in: number
   refresh_token_expires_in: number
   created_at: string

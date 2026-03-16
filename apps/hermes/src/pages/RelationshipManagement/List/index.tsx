@@ -4,8 +4,8 @@ import { Card, Table, Button, Space, Select, message, Popconfirm, Tag, Empty, Ty
 import type { ColumnsType } from 'antd/es/table'
 import { PlusOutlined, DeleteOutlined, ShareAltOutlined, NodeIndexOutlined } from '@ant-design/icons'
 import { useParams } from 'react-router-dom'
-import { useAppNavigate, useDomainId } from '@/contexts/DomainContext'
-import { relationshipApi, serviceApi } from '@/services'
+import { useAppNavigate } from '@/contexts/DomainContext'
+import { relationshipApi } from '@/services'
 import type { Relationship } from '@/types'
 import { formatRelativeTime, isExpiringSoon } from '@atlas/shared'
 import styles from './index.module.scss'
@@ -29,13 +29,7 @@ const subjectTypeLabels: Record<string, string> = {
 export function List() {
   const { serviceId: urlServiceId } = useParams<{ serviceId: string }>()
   const navigate = useAppNavigate()
-  const domainId = useDomainId()
   const [subjectType, setSubjectType] = useState<string | undefined>()
-
-  const { data: services } = useRequest(
-    () => serviceApi.getList(domainId!),
-    { ready: !!domainId && !urlServiceId }
-  )
 
   const currentServiceId = urlServiceId
 
@@ -140,7 +134,7 @@ export function List() {
     }
 
     return cols
-  }, [urlServiceId])
+  }, [urlServiceId, handleDelete])
 
   // 空状态组件
   const emptyState = (
