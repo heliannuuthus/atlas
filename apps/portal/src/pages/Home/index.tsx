@@ -53,7 +53,7 @@ const services = [
     ),
     modules: [
       { icon: <FileTextOutlined />, title: '邮件模板', path: '/templates' },
-      { icon: <MailOutlined />, title: '邮件发送', path: '/templates' },
+      { icon: <MailOutlined />, title: '邮件发送', path: '/sending' },
       { icon: <CloudUploadOutlined />, title: '文件管理', path: '/files' },
     ],
   },
