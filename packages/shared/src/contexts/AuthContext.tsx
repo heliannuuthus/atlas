@@ -48,20 +48,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         ok = await auth.isAuthenticated()
       }
       if (ok) {
-        const u = await auth.getUser()
-        console.log(
-          '[Atlas:Auth] initialize: isAuthenticated=true, getUser=',
-          u ? { sub: u.sub, nic: u.nic, pic: u.pic } : null
-        )
-        setIsAuthenticated(true)
-        setUser(u)
+        let u = await auth.getUser()
+        if (!u) {
+          const keys = audienceKeys.length > 0 ? audienceKeys : [undefined]
+          for (const aud of keys) {
+            try {
+              await auth.getAccessToken(aud)
+            } catch { /* refresh failed, ignore */ }
+          }
+          u = await auth.getUser()
+        }
+        if (u) {
+          setIsAuthenticated(true)
+          setUser(u)
+        } else {
+          await auth.saveReturnTo(window.location.pathname + window.location.search)
+          const opts = getAuthorizeOptions()
+          const { url } = await auth.authorize({
+            scopes: opts.scopes,
+            audiences: opts.audiences ?? undefined,
+          })
+          window.location.href = url
+          return
+        }
       } else {
-        console.log('[Atlas:Auth] initialize: isAuthenticated=false')
         setIsAuthenticated(false)
         setUser(null)
       }
     } catch (e) {
-      console.log('[Atlas:Auth] initialize error:', e)
       setError(e instanceof Error ? e.message : 'Unknown error')
       setIsAuthenticated(false)
       setUser(null)
@@ -95,21 +109,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setIsLoading(true)
         setError(null)
         const result = await auth.handleCallback(code, state)
-        console.log('[Atlas:Auth] handleCallback: token result=', {
-          hasIdToken: !!result.id_token,
-          returnTo: result.returnTo,
-        })
         const u = await auth.getUser()
-        console.log(
-          '[Atlas:Auth] handleCallback: getUser=',
-          u ? { sub: u.sub, nic: u.nic, pic: u.pic } : null
-        )
         setIsAuthenticated(true)
         setUser(u)
         setIsLoading(false)
         return result
       } catch (e) {
-        console.log('[Atlas:Auth] handleCallback error:', e)
         setError(e instanceof Error ? e.message : 'Callback failed')
         setIsAuthenticated(false)
         setUser(null)
@@ -156,10 +161,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const onLogin = () =>
       auth.getUser().then(u => {
-        console.log(
-          '[Atlas:Auth] onLogin: getUser=',
-          u ? { sub: u.sub, nic: u.nic, pic: u.pic } : null
-        )
         setUser(u)
       })
     const offLogin = auth.on('login', onLogin)
