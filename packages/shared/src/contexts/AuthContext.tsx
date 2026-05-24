@@ -54,7 +54,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           for (const aud of keys) {
             try {
               await auth.getAccessToken(aud)
-            } catch { /* refresh failed, ignore */ }
+            } catch {
+              /* refresh failed, ignore */
+            }
           }
           u = await auth.getUser()
         }
@@ -189,6 +191,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAtlasAuthContext(): AtlasAuthContextValue {
   const ctx = useContext(AuthContext)
   if (!ctx) {
