@@ -29,10 +29,7 @@ const hermesLogo = {
         </linearGradient>
       </defs>
       <rect width="32" height="32" rx="10" fill="url(#hg)" />
-      <path
-        d="M10 22V10h3v4.5h6V10h3v12h-3v-5h-6v5z"
-        fill="#fff"
-      />
+      <path d="M10 22V10h3v4.5h6V10h3v12h-3v-5h-6v5z" fill="#fff" />
     </svg>
   ),
   text: 'Hermes',

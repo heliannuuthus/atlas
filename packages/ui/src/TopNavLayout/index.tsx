@@ -41,12 +41,7 @@ export function TopNavLayout({
       <header className={styles.header}>
         <div className={styles.headerInner}>
           <div className={styles.headerLeft}>
-            <div
-              className={styles.logo}
-              onClick={onLogoClick}
-              role="button"
-              tabIndex={0}
-            >
+            <div className={styles.logo} onClick={onLogoClick} role="button" tabIndex={0}>
               <span className={styles.logoIcon}>{logo.icon}</span>
               <span className={styles.logoText}>{logo.text}</span>
             </div>

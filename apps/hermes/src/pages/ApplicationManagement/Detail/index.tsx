@@ -873,8 +873,16 @@ export function Detail() {
       <div className={styles.statsRow}>
         <StatCard label="应用标识" value={data.app_id} icon={<KeyOutlined />} copyable />
         <StatCard label="域标识" value={data.domain_id} icon={<GlobalOutlined />} copyable />
-        <StatCard label="创建时间" value={formatDateTime(data.created_at)} icon={<ClockCircleOutlined />} />
-        <StatCard label="更新时间" value={formatDateTime(data.updated_at)} icon={<SyncOutlined />} />
+        <StatCard
+          label="创建时间"
+          value={formatDateTime(data.created_at)}
+          icon={<ClockCircleOutlined />}
+        />
+        <StatCard
+          label="更新时间"
+          value={formatDateTime(data.updated_at)}
+          icon={<SyncOutlined />}
+        />
       </div>
 
       {/* ── Tabs ── */}
