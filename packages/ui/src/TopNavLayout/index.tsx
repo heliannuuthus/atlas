@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react'
+import { type KeyboardEvent, type ReactNode } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import styles from './index.module.scss'
 
@@ -36,23 +36,39 @@ export function TopNavLayout({
     return matched
   }, null)
 
+  const handleLogoKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      onLogoClick?.()
+    }
+  }
+
   return (
     <div className={styles.layout}>
       <header className={styles.header}>
+        <div className={styles.headerGlow} />
         <div className={styles.headerInner}>
           <div className={styles.headerLeft}>
-            <div className={styles.logo} onClick={onLogoClick} role="button" tabIndex={0}>
+            <div
+              className={styles.logo}
+              onClick={onLogoClick}
+              onKeyDown={handleLogoKeyDown}
+              role="button"
+              tabIndex={0}
+            >
               <span className={styles.logoIcon}>{logo.icon}</span>
               <span className={styles.logoText}>{logo.text}</span>
             </div>
           </div>
-          <nav className={styles.headerCenter}>
+          <nav className={styles.headerCenter} aria-label="Primary">
             <div className={styles.nav}>
               {menus.map(item => (
                 <button
                   key={item.key}
+                  type="button"
                   className={`${styles.navItem} ${activeKey === item.path ? styles.navItemActive : ''}`}
                   onClick={() => onMenuClick?.(item.path)}
+                  aria-current={activeKey === item.path ? 'page' : undefined}
                   style={{ '--brand': brandColor } as React.CSSProperties}
                 >
                   {item.icon && <span className={styles.navItemIcon}>{item.icon}</span>}
