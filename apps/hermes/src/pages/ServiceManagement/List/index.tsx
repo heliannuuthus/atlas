@@ -78,14 +78,9 @@ export function List() {
 
   return (
     <div className={styles.container}>
-      <section className={styles.hero}>
-        <h1 className={styles.heroTitle}>服务</h1>
-        <p className={styles.heroDesc}>
-          服务是权限与关系的承载单元。每个服务可独立配置主体与对象之间的 ReBAC 关系、Token
-          有效期，并授权给指定应用使用。 创建服务后，可在此查看详情与已授权应用，或在
-          <strong>关系图谱</strong>中可视化配置关系与组。
-        </p>
-      </section>
+      <div className={styles.pageHeader}>
+        <h1 className={styles.pageTitle}>服务</h1>
+      </div>
 
       <div className={styles.toolbar}>
         <Space.Compact className={styles.searchCompact}>

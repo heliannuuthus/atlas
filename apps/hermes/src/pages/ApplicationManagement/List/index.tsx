@@ -78,15 +78,9 @@ export function List() {
 
   return (
     <div className={styles.container}>
-      <section className={styles.hero}>
-        <h1 className={styles.heroTitle}>应用</h1>
-        <p className={styles.heroDesc}>
-          应用代表接入方（Web 前端、移动端或第三方系统）。在此创建应用并配置
-          <strong>重定向 URI</strong>后，可为应用授权访问指定服务的关系与 Token 能力；
-          授权关系在服务详情或<strong>关系图谱</strong>中配置，应用侧即可按 ReBAC
-          策略进行鉴权与资源访问。
-        </p>
-      </section>
+      <div className={styles.pageHeader}>
+        <h1 className={styles.pageTitle}>应用</h1>
+      </div>
 
       <div className={styles.toolbar}>
         <Space.Compact className={styles.searchCompact}>
