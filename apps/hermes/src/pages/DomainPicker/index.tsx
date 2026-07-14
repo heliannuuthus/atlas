@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useRequest } from 'ahooks'
 import { Card, Typography, Row, Col, Spin, message } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
@@ -9,7 +9,17 @@ const { Title, Text } = Typography
 
 export function DomainPicker() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const { data: domains, loading: domainsLoading } = useRequest(() => domainApi.getList())
+  const requestedSection = searchParams.get('next')
+  const nextSection = ['applications', 'services', 'groups'].includes(requestedSection ?? '')
+    ? requestedSection
+    : undefined
+
+  const openDomain = (domainId: string) => {
+    const basePath = `/d/${encodeURIComponent(domainId)}`
+    navigate(nextSection ? `${basePath}/${nextSection}` : basePath)
+  }
 
   return (
     <div className={styles.wrapper}>
@@ -34,7 +44,7 @@ export function DomainPicker() {
                 <Card
                   hoverable
                   className={styles.domainCard}
-                  onClick={() => navigate(`/d/${encodeURIComponent(d.domain_id)}`)}
+                  onClick={() => openDomain(d.domain_id)}
                 >
                   <div className={styles.cardBody}>
                     <div className={styles.cardName}>{d.name || d.domain_id}</div>

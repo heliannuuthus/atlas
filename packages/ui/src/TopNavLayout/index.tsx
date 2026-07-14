@@ -25,7 +25,7 @@ export function TopNavLayout({
   onLogoClick,
   onMenuClick,
   right,
-  brandColor = '#059669',
+  brandColor = '#b94e20',
 }: TopNavLayoutProps) {
   const location = useLocation()
 

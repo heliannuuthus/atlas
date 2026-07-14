@@ -191,22 +191,22 @@
 }
 
 .primaryButton {
-  background: #7c3aed;
+  background: #2557d6;
   border: none;
   color: #ffffff;
 
   &:hover {
-    background: #6d28d9;
+    background: #1d46b5;
   }
 }
 
 .secondaryButton {
   background: #ffffff;
   border: 1px solid #e5e5e5;
-  color: #7c3aed;
+  color: #2557d6;
 
   &:hover {
-    border-color: #7c3aed;
-    color: #6d28d9;
+    border-color: #2557d6;
+    color: #1d46b5;
   }
 }

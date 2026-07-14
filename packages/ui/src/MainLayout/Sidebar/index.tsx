@@ -51,7 +51,7 @@ export function Sidebar({
   collapsed,
   menus,
   logo,
-  brandColor = '#7c3aed',
+  brandColor = '#2557d6',
   envLabel,
   onLogoClick,
   selectedKeys,

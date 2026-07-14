@@ -155,7 +155,7 @@ export function AddNodes({ users, groups, applications, onDragStart }: AddNodesP
       key: 'applications',
       label: (
         <div className={styles.collapseHeader}>
-          <AppstoreOutlined style={{ color: '#059669' }} />
+          <AppstoreOutlined style={{ color: '#b94e20' }} />
           <span>应用</span>
           <span className={styles.count}>{filteredEntities.appList.length}</span>
         </div>
@@ -163,7 +163,7 @@ export function AddNodes({ users, groups, applications, onDragStart }: AddNodesP
       children: renderEntityList(
         filteredEntities.appList,
         <AppstoreOutlined />,
-        '#059669',
+        '#b94e20',
         'subject'
       ),
     },

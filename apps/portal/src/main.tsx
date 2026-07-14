@@ -12,26 +12,30 @@ dayjs.locale('zh-cn')
 
 const themeConfig: ThemeConfig = {
   token: {
-    colorPrimary: '#7c3aed',
+    colorPrimary: '#2557d6',
     colorSuccess: '#16a34a',
     colorWarning: '#d97706',
     colorError: '#dc2626',
-    colorInfo: '#7c3aed',
-    borderRadius: 8,
+    colorInfo: '#2557d6',
+    colorText: '#15233b',
+    colorTextSecondary: '#5e6b82',
+    borderRadius: 10,
     fontFamily:
-      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+      "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif",
     colorBgContainer: '#ffffff',
-    colorBgLayout: '#f5f5f5',
-    colorBorder: '#e5e5e5',
-    colorBorderSecondary: '#f5f5f5',
+    colorBgLayout: '#f5f8fe',
+    colorBorder: '#dce5f2',
+    colorBorderSecondary: '#e8eef7',
   },
   components: {
-    Card: { paddingLG: 24 },
+    Button: { controlHeight: 40, borderRadius: 10 },
+    Card: { paddingLG: 24, borderRadiusLG: 18 },
+    Modal: { borderRadiusLG: 20 },
     Breadcrumb: {
       separatorMargin: 8,
-      linkColor: '#737373',
-      linkHoverColor: '#7c3aed',
-      lastItemColor: '#171717',
+      linkColor: '#5e6b82',
+      linkHoverColor: '#2557d6',
+      lastItemColor: '#15233b',
     },
   },
 }

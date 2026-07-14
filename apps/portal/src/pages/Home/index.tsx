@@ -1,151 +1,209 @@
-import { Typography } from 'antd'
+import { useMemo } from 'react'
+import { useOutletContext } from 'react-router-dom'
 import {
-  ApartmentOutlined,
-  CloudServerOutlined,
-  AppstoreAddOutlined,
-  TeamOutlined,
-  ShareAltOutlined,
-  MailOutlined,
-  FileTextOutlined,
-  CloudUploadOutlined,
-  BookOutlined,
-  HeartOutlined,
-  FireOutlined,
-  TagsOutlined,
   ArrowRightOutlined,
+  ClockCircleOutlined,
+  ExportOutlined,
+  SearchOutlined,
+  SafetyCertificateOutlined,
 } from '@ant-design/icons'
+import { useAtlasAuth } from '@atlas/shared'
+import type { PortalOutletContext } from '@/layouts'
+import {
+  atlasApps,
+  getRecentLaunches,
+  getTargetByKey,
+  launchTargets,
+  recordLaunchTarget,
+  type AtlasLaunchTarget,
+} from '@/config/apps'
 import styles from './index.module.scss'
 
-const { Title, Paragraph } = Typography
-
-const services = [
-  {
-    key: 'hermes',
-    name: 'Hermes',
-    description: '身份与访问管理',
-    color: '#059669',
-    origin: 'https://hermes.heliannuuthus.com',
-    icon: (
-      <svg viewBox="0 0 32 32" fill="none">
-        <rect width="32" height="32" rx="8" fill="#059669" />
-        <path d="M8 12h16M8 16h16M8 20h10" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-      </svg>
-    ),
-    modules: [
-      { icon: <ApartmentOutlined />, title: '域管理', path: '/domains' },
-      { icon: <CloudServerOutlined />, title: '服务管理', path: '/services' },
-      { icon: <AppstoreAddOutlined />, title: '应用管理', path: '/applications' },
-      { icon: <ShareAltOutlined />, title: '关系管理', path: '/relationships' },
-      { icon: <TeamOutlined />, title: '组管理', path: '/groups' },
-    ],
-  },
-  {
-    key: 'chaos',
-    name: 'Chaos',
-    description: '消息与文件服务',
-    color: '#d97706',
-    origin: 'https://chaos.heliannuuthus.com',
-    icon: (
-      <svg viewBox="0 0 32 32" fill="none">
-        <rect width="32" height="32" rx="8" fill="#d97706" />
-        <path d="M10 10l12 12M22 10l-12 12" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-      </svg>
-    ),
-    modules: [
-      { icon: <FileTextOutlined />, title: '邮件模板', path: '/templates' },
-      { icon: <MailOutlined />, title: '邮件发送', path: '/sending' },
-      { icon: <CloudUploadOutlined />, title: '文件管理', path: '/files' },
-    ],
-  },
-  {
-    key: 'zwei',
-    name: 'Zwei',
-    description: '菜谱业务平台',
-    color: '#ea580c',
-    origin: 'https://zwei.heliannuuthus.com',
-    icon: (
-      <svg viewBox="0 0 32 32" fill="none">
-        <rect width="32" height="32" rx="8" fill="#ea580c" />
-        <circle cx="16" cy="13" r="5" stroke="#fff" strokeWidth="2" fill="none" />
-        <path
-          d="M9 24c0-3.87 3.13-7 7-7s7 3.13 7 7"
-          stroke="#fff"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-      </svg>
-    ),
-    modules: [
-      { icon: <BookOutlined />, title: '菜谱管理', path: '/recipes' },
-      { icon: <HeartOutlined />, title: '收藏管理', path: '/favorites' },
-      { icon: <FireOutlined />, title: '推荐系统', path: '/recommend' },
-      { icon: <TagsOutlined />, title: '标签管理', path: '/tags' },
-    ],
-  },
-]
+function getGreeting() {
+  const hour = new Date().getHours()
+  if (hour < 6) return '夜深了'
+  if (hour < 12) return '早上好'
+  if (hour < 18) return '下午好'
+  return '晚上好'
+}
 
 export function Home() {
+  const { openLauncher } = useOutletContext<PortalOutletContext>()
+  const { user } = useAtlasAuth()
+  const userName = user?.nic?.trim()
+  const capabilityCount = atlasApps.reduce((count, app) => count + app.capabilities.length, 0)
+  const launcherShortcut = useMemo(
+    () =>
+      typeof navigator !== 'undefined' && navigator.platform.toUpperCase().includes('MAC')
+        ? '⌘ K'
+        : 'Ctrl K',
+    []
+  )
+
+  const recentTargets = useMemo(
+    () =>
+      getRecentLaunches()
+        .map(item => getTargetByKey(item.key))
+        .filter((target): target is AtlasLaunchTarget => Boolean(target)),
+    []
+  )
+
+  const suggestedTargets = useMemo(
+    () =>
+      ['hermes:applications', 'chaos:templates', 'zwei:recipes']
+        .map(getTargetByKey)
+        .filter((target): target is AtlasLaunchTarget => Boolean(target)),
+    []
+  )
+
+  const shortcuts = recentTargets.length > 0 ? recentTargets : suggestedTargets
+
   return (
-    <div className={styles.container}>
-      <section className={styles.hero}>
-        <div className={styles.heroInner}>
-          <div className={styles.heroLogo}>
-            <svg viewBox="0 0 48 48" fill="none">
-              <rect x="4" y="4" width="17" height="17" rx="5" fill="#18181b" opacity="0.9" />
-              <rect x="27" y="4" width="17" height="17" rx="5" fill="#18181b" opacity="0.4" />
-              <rect x="4" y="27" width="17" height="17" rx="5" fill="#18181b" opacity="0.4" />
-              <rect x="27" y="27" width="17" height="17" rx="5" fill="#18181b" opacity="0.15" />
-            </svg>
-          </div>
-          <Title level={2} className={styles.heroTitle}>
-            Atlas
-          </Title>
-          <Paragraph className={styles.heroDesc}>统一管控平台</Paragraph>
+    <div className={styles.page}>
+      <section className={styles.hero} aria-labelledby="atlas-title">
+        <div className={styles.heroCopy}>
+          <span className={styles.eyebrow}>Atlas Workspace</span>
+          <h1 id="atlas-title">
+            {getGreeting()}
+            {userName ? `，${userName}` : ''}
+            <br />
+            <span>从一个入口开始工作。</span>
+          </h1>
+          <p>在应用之间顺畅切换，快速抵达你需要的功能，并随时继续上次的工作。</p>
+        </div>
+
+        <button type="button" className={styles.heroSearch} onClick={openLauncher}>
+          <span className={styles.heroSearchIcon}>
+            <SearchOutlined aria-hidden="true" />
+          </span>
+          <span className={styles.heroSearchText}>
+            <strong>搜索应用和功能</strong>
+            <small>输入 Hermes、文件管理或菜谱管理</small>
+          </span>
+          <kbd>{launcherShortcut}</kbd>
+        </button>
+
+        <div className={styles.heroMeta} aria-label="Atlas 可用能力">
+          <span>
+            <SafetyCertificateOutlined aria-hidden="true" /> 统一身份已连接
+          </span>
+          <span>{atlasApps.length} 个应用</span>
+          <span>{capabilityCount} 个功能入口</span>
         </div>
       </section>
 
-      <section className={styles.grid}>
-        {services.map(svc => (
-          <div key={svc.key} className={styles.card}>
-            <div className={styles.cardHeader}>
-              <a
-                href={svc.origin}
-                className={styles.cardLogoLink}
-                onClick={e => {
-                  e.preventDefault()
-                  window.location.href = svc.origin
-                }}
-              >
-                <div className={styles.cardLogo}>{svc.icon}</div>
-                <div className={styles.cardInfo}>
-                  <span className={styles.cardName}>{svc.name}</span>
-                  <span className={styles.cardDesc}>{svc.description}</span>
-                </div>
-                <ArrowRightOutlined className={styles.cardArrow} />
-              </a>
+      <main className={styles.workspace}>
+        <section className={styles.section} aria-labelledby="recent-title">
+          <div className={styles.sectionHeader}>
+            <div>
+              <span className={styles.sectionKicker}>
+                <ClockCircleOutlined aria-hidden="true" />
+                {recentTargets.length > 0 ? '继续工作' : '建议从这里开始'}
+              </span>
+              <h2 id="recent-title">{recentTargets.length > 0 ? '最近访问' : '常用入口'}</h2>
             </div>
-
-            <div className={styles.modules}>
-              {svc.modules.map(mod => (
-                <a
-                  key={mod.path}
-                  href={`${svc.origin}${mod.path}`}
-                  className={styles.module}
-                  onClick={e => {
-                    e.preventDefault()
-                    window.location.href = `${svc.origin}${mod.path}`
-                  }}
-                >
-                  <span className={styles.moduleIcon} style={{ color: svc.color }}>
-                    {mod.icon}
-                  </span>
-                  <span className={styles.moduleTitle}>{mod.title}</span>
-                </a>
-              ))}
-            </div>
+            <button type="button" className={styles.textAction} onClick={openLauncher}>
+              查看全部 <ArrowRightOutlined aria-hidden="true" />
+            </button>
           </div>
-        ))}
-      </section>
+
+          <div className={styles.shortcutGrid}>
+            {shortcuts.map(target => (
+              <a
+                key={target.key}
+                className={styles.shortcut}
+                href={target.href}
+                onClick={() => recordLaunchTarget(target)}
+              >
+                <span
+                  className={styles.shortcutIcon}
+                  style={{ color: target.color, background: target.tint }}
+                >
+                  {target.icon}
+                </span>
+                <span className={styles.shortcutCopy}>
+                  <strong>{target.name}</strong>
+                  <small>{target.appName}</small>
+                </span>
+                <ArrowRightOutlined className={styles.shortcutArrow} aria-hidden="true" />
+              </a>
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.section} aria-labelledby="apps-title">
+          <div className={styles.sectionHeader}>
+            <div>
+              <span className={styles.sectionKicker}>工作空间</span>
+              <h2 id="apps-title">全部应用</h2>
+            </div>
+            <p className={styles.sectionDescription}>
+              每个应用独立运行，由 Atlas 提供统一入口与身份。
+            </p>
+          </div>
+
+          <div className={styles.appGrid}>
+            {atlasApps.map(app => {
+              const homeTarget = launchTargets.find(target => target.key === `${app.id}:home`)!
+
+              return (
+                <article
+                  key={app.id}
+                  className={styles.appCard}
+                  style={
+                    { '--app-color': app.color, '--app-tint': app.tint } as React.CSSProperties
+                  }
+                >
+                  <div className={styles.appHeader}>
+                    <span className={styles.appIcon}>{app.icon}</span>
+                    <span className={styles.status}>
+                      <i aria-hidden="true" /> 可用
+                    </span>
+                  </div>
+
+                  <div className={styles.appCopy}>
+                    <span className={styles.appCategory}>{app.category}</span>
+                    <h3>{app.name}</h3>
+                    <p>{app.description}</p>
+                    <strong className={styles.appMood}>{app.mood}</strong>
+                  </div>
+
+                  <div className={styles.capabilities}>
+                    {app.capabilities.map(capability => {
+                      const target = getTargetByKey(`${app.id}:${capability.id}`)!
+                      return (
+                        <a
+                          key={capability.id}
+                          href={target.href}
+                          onClick={() => recordLaunchTarget(target)}
+                          aria-label={`打开 ${app.name} 的${capability.name}`}
+                        >
+                          <span>{capability.icon}</span>
+                          {capability.name}
+                        </a>
+                      )
+                    })}
+                  </div>
+
+                  <a
+                    className={styles.openApp}
+                    href={homeTarget.href}
+                    onClick={() => recordLaunchTarget(homeTarget)}
+                  >
+                    进入 {app.name}
+                    <ExportOutlined aria-hidden="true" />
+                  </a>
+                </article>
+              )
+            })}
+          </div>
+        </section>
+      </main>
+
+      <footer className={styles.footer}>
+        <span>Atlas</span>
+        <span>一个入口，抵达所有工作空间。</span>
+      </footer>
     </div>
   )
 }

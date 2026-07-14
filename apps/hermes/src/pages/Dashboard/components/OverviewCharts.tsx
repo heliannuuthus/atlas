@@ -39,7 +39,7 @@ export function OverviewCharts({
     const option: echarts.EChartsOption = {
       tooltip: { trigger: 'item' },
       legend: { bottom: 0, left: 'center' },
-      color: ['#059669', '#0ea5e9', '#8b5cf6', '#f59e0b'],
+      color: ['#b94e20', '#2557d6', '#6b7280', '#c58a3b'],
       series: [
         {
           type: 'pie',
@@ -81,13 +81,7 @@ export function OverviewCharts({
         {
           type: 'bar',
           data: counts,
-          itemStyle: {
-            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: '#34d399' },
-              { offset: 1, color: '#059669' },
-            ]),
-            borderRadius: [4, 4, 0, 0],
-          },
+          itemStyle: { color: '#b94e20', borderRadius: [4, 4, 0, 0] },
         },
       ],
     }

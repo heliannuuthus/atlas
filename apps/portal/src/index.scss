@@ -1,26 +1,63 @@
-@use '@atlas/shared/styles/variables.scss' as *;
+:root {
+  --atlas-primary: #2557d6;
+  --atlas-primary-hover: #1d46b5;
+  --atlas-primary-soft: #eaf2ff;
+  --atlas-ink: #15233b;
+  --atlas-muted: #5e6b82;
+  --atlas-canvas: #f5f8fe;
+  --atlas-surface: #ffffff;
+  --atlas-border: #dce5f2;
+  --atlas-font:
+    Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+  color: var(--atlas-ink);
+  font-family: var(--atlas-font);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
 }
 
-html,
+html {
+  width: 100%;
+  min-width: 320px;
+  min-height: 100%;
+  background: var(--atlas-canvas);
+  scroll-behavior: smooth;
+}
+
 body {
   width: 100%;
-  height: 100%;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
-    'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: $bg-color;
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+  background: var(--atlas-canvas);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
 }
 
 #root {
   width: 100%;
-  height: 100%;
+  min-height: 100dvh;
+}
+
+::selection {
+  background: #d9e7ff;
+  color: #15233b;
 }
 
 ::-webkit-scrollbar {
@@ -29,15 +66,30 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: $gray-100;
-  border-radius: 4px;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: $gray-300;
-  border-radius: 4px;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: #cbd1dd;
+  background-clip: padding-box;
 
   &:hover {
-    background: $gray-400;
+    background: #aeb5c3;
+    background-clip: padding-box;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
 }

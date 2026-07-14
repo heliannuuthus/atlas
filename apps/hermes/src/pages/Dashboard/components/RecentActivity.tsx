@@ -27,8 +27,8 @@ interface ActivityItem {
 
 const typeConfig = {
   service: { icon: <CloudServerOutlined />, label: '服务', color: '#18181b' },
-  application: { icon: <AppstoreAddOutlined />, label: '应用', color: '#059669' },
-  group: { icon: <TeamOutlined />, label: '组', color: '#059669' },
+  application: { icon: <AppstoreAddOutlined />, label: '应用', color: '#b94e20' },
+  group: { icon: <TeamOutlined />, label: '组', color: '#b94e20' },
   relationship: { icon: <ShareAltOutlined />, label: '关系', color: '#d97706' },
 }
 

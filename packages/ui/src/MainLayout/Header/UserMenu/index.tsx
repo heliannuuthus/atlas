@@ -27,9 +27,10 @@ const truncateOpenId = (openId: string, head = 8, tail = 4) => {
 interface UserMenuProps {
   brandColor?: string
   docUrl?: string
+  compact?: boolean
 }
 
-export function UserMenu({ brandColor = '#7c3aed', docUrl }: UserMenuProps) {
+export function UserMenu({ brandColor = '#2557d6', docUrl, compact = false }: UserMenuProps) {
   const { logout, user } = useAtlasAuth()
   const userName = user?.nic
   const userAvatar = user?.pic ?? null
@@ -64,7 +65,12 @@ export function UserMenu({ brandColor = '#7c3aed', docUrl }: UserMenuProps) {
       )}
 
       <Tooltip title="通知" placement="bottom">
-        <Button type="text" className={styles.iconBtn} icon={<BellOutlined />} />
+        <Button
+          type="text"
+          className={styles.iconBtn}
+          icon={<BellOutlined />}
+          aria-label="查看通知"
+        />
       </Tooltip>
 
       <Dropdown
@@ -75,7 +81,18 @@ export function UserMenu({ brandColor = '#7c3aed', docUrl }: UserMenuProps) {
         mouseLeaveDelay={0.15}
         styles={{ root: { minWidth: 160, width: 'auto', maxWidth: 220 } }}
       >
-        <div className={styles.userTrigger} role="button" tabIndex={0}>
+        <div
+          className={`${styles.userTrigger} ${compact ? styles.compact : ''}`}
+          role="button"
+          tabIndex={0}
+          aria-label="打开用户菜单"
+          onKeyDown={event => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault()
+              event.currentTarget.click()
+            }
+          }}
+        >
           <Avatar
             src={userAvatar ?? undefined}
             size={32}
@@ -84,18 +101,20 @@ export function UserMenu({ brandColor = '#7c3aed', docUrl }: UserMenuProps) {
           >
             {!userAvatar ? getUserInitials(userName) : null}
           </Avatar>
-          <div className={styles.userTriggerText}>
-            <span className={styles.userTriggerName}>{userName || '用户'}</span>
-            {user?.sub && (
-              <Typography.Text
-                className={styles.userTriggerOpenid}
-                copyable={{ text: user.sub, tooltips: ['复制 OpenID', '已复制'] }}
-                onClick={e => e.stopPropagation()}
-              >
-                {truncateOpenId(user.sub)}
-              </Typography.Text>
-            )}
-          </div>
+          {!compact && (
+            <div className={styles.userTriggerText}>
+              <span className={styles.userTriggerName}>{userName || '用户'}</span>
+              {user?.sub && (
+                <Typography.Text
+                  className={styles.userTriggerOpenid}
+                  copyable={{ text: user.sub, tooltips: ['复制 OpenID', '已复制'] }}
+                  onClick={e => e.stopPropagation()}
+                >
+                  {truncateOpenId(user.sub)}
+                </Typography.Text>
+              )}
+            </div>
+          )}
         </div>
       </Dropdown>
     </div>

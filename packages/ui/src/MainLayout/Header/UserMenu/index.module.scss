@@ -57,11 +57,19 @@
     background: rgba(0, 0, 0, 0.04);
   }
 
-  &:focus,
   &:focus-visible {
     outline: none;
-    box-shadow: none;
+    box-shadow: 0 0 0 3px rgba(37, 87, 214, 0.18);
   }
+}
+
+.compact {
+  width: 44px;
+  height: 44px;
+  justify-content: center;
+  gap: 0;
+  padding: 0;
+  margin-left: 2px;
 }
 
 .userTriggerAvatar {

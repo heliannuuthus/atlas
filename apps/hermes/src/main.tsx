@@ -15,11 +15,11 @@ configureAudiences({ hermes: { scope: defaultScopeString } })
 
 const themeConfig: ThemeConfig = {
   token: {
-    colorPrimary: '#059669',
+    colorPrimary: '#b94e20',
     colorSuccess: '#16a34a',
     colorWarning: '#d97706',
     colorError: '#dc2626',
-    colorInfo: '#059669',
+    colorInfo: '#b94e20',
     borderRadius: 8,
     fontFamily:
       "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
@@ -34,8 +34,8 @@ const themeConfig: ThemeConfig = {
       itemMarginBlock: 4,
       itemMarginInline: 8,
       itemBorderRadius: 8,
-      itemSelectedBg: '#ecfdf5',
-      itemSelectedColor: '#059669',
+      itemSelectedBg: '#fff1e8',
+      itemSelectedColor: '#b94e20',
     },
     Card: { paddingLG: 24 },
     Table: {
@@ -46,10 +46,10 @@ const themeConfig: ThemeConfig = {
     Breadcrumb: {
       separatorMargin: 8,
       linkColor: '#737373',
-      linkHoverColor: '#059669',
+      linkHoverColor: '#b94e20',
       lastItemColor: '#171717',
     },
-    Select: { optionSelectedBg: '#ecfdf5' },
+    Select: { optionSelectedBg: '#fff1e8' },
     Tag: { defaultBg: '#fafafa' },
   },
 }

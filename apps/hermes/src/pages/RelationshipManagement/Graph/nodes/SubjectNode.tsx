@@ -25,7 +25,7 @@ const typeConfig = {
   application: {
     icon: <AppstoreOutlined />,
     label: 'application',
-    color: '#059669',
+    color: '#b94e20',
   },
 }
 

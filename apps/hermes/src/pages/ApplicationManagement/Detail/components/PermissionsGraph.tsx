@@ -67,7 +67,7 @@ function AppNodeComponent({ data }: NodeProps<AppNodeData>) {
     <div className={styles.appNode}>
       <Handle type="source" position={Position.Right} className={styles.handle} />
       <div className={styles.graphNodeHeader}>
-        <AppstoreOutlined className={styles.graphNodeIcon} style={{ color: '#059669' }} />
+        <AppstoreOutlined className={styles.graphNodeIcon} style={{ color: '#b94e20' }} />
         <span className={styles.graphNodeType}>application</span>
       </div>
       <div className={styles.graphNodeBody}>
@@ -75,7 +75,7 @@ function AppNodeComponent({ data }: NodeProps<AppNodeData>) {
           size={28}
           src={data.logoUrl}
           icon={!data.logoUrl && <AppstoreOutlined />}
-          style={{ backgroundColor: '#059669', flexShrink: 0 }}
+          style={{ backgroundColor: '#b94e20', flexShrink: 0 }}
         />
         <div className={styles.graphNodeInfo}>
           <Tooltip title={data.name || data.appId}>

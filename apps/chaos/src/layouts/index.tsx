@@ -8,7 +8,7 @@ import {
 import { MainLayout, Sidebar, Breadcrumb, Header, UserMenu, SearchTrigger } from '@atlas/ui'
 import type { SidebarMenuItem } from '@atlas/ui'
 
-const BRAND_COLOR = '#d97706'
+const BRAND_COLOR = '#545d6b'
 
 const chaosMenus: SidebarMenuItem[] = [
   { key: 'dashboard', label: '概览', icon: <DashboardOutlined />, path: '/dashboard' },
@@ -26,8 +26,14 @@ const chaosMenus: SidebarMenuItem[] = [
 const chaosLogo = {
   icon: (
     <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="32" height="32" rx="8" fill="#d97706" />
-      <path d="M10 10l12 12M22 10l-12 12" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
+      <rect width="32" height="32" rx="8" fill="#545d6b" />
+      <path
+        d="M9 11l6 5-6 5M23 11l-6 5 6 5"
+        stroke="#fff"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   ),
   text: 'Chaos',

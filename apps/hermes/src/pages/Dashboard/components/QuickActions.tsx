@@ -22,9 +22,9 @@ const actions = [
     label: '创建应用',
     path: 'applications',
     openCreate: true,
-    color: '#059669',
+    color: '#b94e20',
   },
-  { icon: <TeamOutlined />, label: '创建组', path: 'groups/create', color: '#059669' },
+  { icon: <TeamOutlined />, label: '创建组', path: 'groups/create', color: '#b94e20' },
   { icon: <ShareAltOutlined />, label: '配置关系', path: 'relationships/graph', color: '#d97706' },
 ]
 
