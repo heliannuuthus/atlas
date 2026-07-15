@@ -100,12 +100,20 @@ export function AppLauncher({ open, onClose }: AppLauncherProps) {
               role="option"
               aria-selected={index === activeIndex}
             >
-              <span
-                className={styles.resultIcon}
-                style={{ color: target.color, background: target.tint }}
-              >
-                {target.icon}
-              </span>
+              {target.icon ? (
+                <span
+                  className={styles.resultIcon}
+                  style={{ color: target.color, background: target.tint }}
+                >
+                  {target.icon}
+                </span>
+              ) : (
+                <span
+                  className={styles.resultAccent}
+                  style={{ backgroundColor: target.color }}
+                  aria-hidden="true"
+                />
+              )}
               <span className={styles.resultText}>
                 <span className={styles.resultName}>{target.name}</span>
                 <span className={styles.resultDescription}>{target.description}</span>

@@ -1,15 +1,25 @@
 :root {
-  --atlas-primary: #2557d6;
-  --atlas-primary-hover: #1d46b5;
-  --atlas-primary-soft: #eaf2ff;
-  --atlas-ink: #15233b;
-  --atlas-muted: #5e6b82;
-  --atlas-canvas: #f5f8fe;
+  --atlas-command: #0b4fbd;
+  --atlas-primary: #1677ff;
+  --atlas-primary-hover: #0958d9;
+  --atlas-primary-soft: #eaf3ff;
+  --atlas-signal: #6ba6ff;
+  --atlas-ink: #1d2633;
+  --atlas-muted: #657287;
+  --atlas-canvas: #eef5fc;
   --atlas-surface: #ffffff;
-  --atlas-border: #dce5f2;
+  --atlas-border: #e6eaf0;
+  --atlas-border-strong: #dfe5ee;
+  --atlas-radius-sm: 10px;
+  --atlas-radius-md: 16px;
+  --atlas-radius-lg: 24px;
+  --atlas-radius-pill: 999px;
+  --atlas-display:
+    'SF Pro Display', 'SF Pro SC', -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
   --atlas-font:
-    Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
-    'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+    'SF Pro Text', 'SF Pro SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif;
+  --atlas-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
   color: var(--atlas-ink);
   font-family: var(--atlas-font);
   font-synthesis: none;
@@ -56,8 +66,8 @@ a {
 }
 
 ::selection {
-  background: #d9e7ff;
-  color: #15233b;
+  background: #d8e5ff;
+  color: var(--atlas-ink);
 }
 
 ::-webkit-scrollbar {
@@ -91,5 +101,6 @@ a {
   *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

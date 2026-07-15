@@ -1,5 +1,5 @@
 import { BrowserRouter } from 'react-router-dom'
-import { AuthGuard, AuthProvider, ErrorBoundary } from '@atlas/shared'
+import { AuthProvider, ErrorBoundary } from '@atlas/shared'
 import { AppRoutes } from './routes'
 
 function App() {
@@ -7,9 +7,7 @@ function App() {
     <BrowserRouter>
       <ErrorBoundary>
         <AuthProvider>
-          <AuthGuard>
-            <AppRoutes />
-          </AuthGuard>
+          <AppRoutes />
         </AuthProvider>
       </ErrorBoundary>
     </BrowserRouter>

@@ -5,10 +5,18 @@ import {
   CloudUploadOutlined,
   SettingOutlined,
 } from '@ant-design/icons'
-import { MainLayout, Sidebar, Breadcrumb, Header, UserMenu, SearchTrigger } from '@atlas/ui'
+import {
+  PRODUCT_BRAND_COLORS,
+  MainLayout,
+  Sidebar,
+  Breadcrumb,
+  Header,
+  UserMenu,
+  SearchTrigger,
+} from '@atlas/ui'
 import type { SidebarMenuItem } from '@atlas/ui'
 
-const BRAND_COLOR = '#545d6b'
+const BRAND_COLOR = PRODUCT_BRAND_COLORS.chaos
 
 const chaosMenus: SidebarMenuItem[] = [
   { key: 'dashboard', label: '概览', icon: <DashboardOutlined />, path: '/dashboard' },
@@ -24,18 +32,6 @@ const chaosMenus: SidebarMenuItem[] = [
 ]
 
 const chaosLogo = {
-  icon: (
-    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="32" height="32" rx="8" fill="#545d6b" />
-      <path
-        d="M9 11l6 5-6 5M23 11l-6 5 6 5"
-        stroke="#fff"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  ),
   text: 'Chaos',
 }
 

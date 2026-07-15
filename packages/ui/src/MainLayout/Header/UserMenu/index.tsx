@@ -28,9 +28,17 @@ interface UserMenuProps {
   brandColor?: string
   docUrl?: string
   compact?: boolean
+  showNotifications?: boolean
+  variant?: 'default' | 'floating'
 }
 
-export function UserMenu({ brandColor = '#2557d6', docUrl, compact = false }: UserMenuProps) {
+export function UserMenu({
+  brandColor = '#2557d6',
+  docUrl,
+  compact = false,
+  showNotifications = true,
+  variant = 'default',
+}: UserMenuProps) {
   const { logout, user } = useAtlasAuth()
   const userName = user?.nic
   const userAvatar = user?.pic ?? null
@@ -38,7 +46,6 @@ export function UserMenu({ brandColor = '#2557d6', docUrl, compact = false }: Us
   const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
     switch (key) {
       case 'profile':
-        break
       case 'settings':
         break
       case 'logout':
@@ -47,12 +54,15 @@ export function UserMenu({ brandColor = '#2557d6', docUrl, compact = false }: Us
     }
   }
 
-  const menuItems: MenuProps['items'] = [
-    { key: 'profile', icon: <UserOutlined />, label: '个人中心' },
-    { key: 'settings', icon: <SettingOutlined />, label: '设置' },
-    { type: 'divider' },
-    { key: 'logout', icon: <LogoutOutlined />, label: '退出登录', danger: true },
-  ]
+  const menuItems: MenuProps['items'] =
+    variant === 'floating'
+      ? [{ key: 'logout', icon: <LogoutOutlined />, label: '退出登录', danger: true }]
+      : [
+          { key: 'profile', icon: <UserOutlined />, label: '个人中心' },
+          { key: 'settings', icon: <SettingOutlined />, label: '设置' },
+          { type: 'divider' },
+          { key: 'logout', icon: <LogoutOutlined />, label: '退出登录', danger: true },
+        ]
 
   return (
     <div className={styles.actions}>
@@ -64,14 +74,16 @@ export function UserMenu({ brandColor = '#2557d6', docUrl, compact = false }: Us
         </Tooltip>
       )}
 
-      <Tooltip title="通知" placement="bottom">
-        <Button
-          type="text"
-          className={styles.iconBtn}
-          icon={<BellOutlined />}
-          aria-label="查看通知"
-        />
-      </Tooltip>
+      {showNotifications && (
+        <Tooltip title="通知" placement="bottom">
+          <Button
+            type="text"
+            className={styles.iconBtn}
+            icon={<BellOutlined />}
+            aria-label="查看通知"
+          />
+        </Tooltip>
+      )}
 
       <Dropdown
         menu={{ items: menuItems, onClick: handleMenuClick }}
@@ -79,10 +91,42 @@ export function UserMenu({ brandColor = '#2557d6', docUrl, compact = false }: Us
         trigger={['hover', 'click']}
         mouseEnterDelay={0.15}
         mouseLeaveDelay={0.15}
-        styles={{ root: { minWidth: 160, width: 'auto', maxWidth: 220 } }}
+        styles={{ root: { minWidth: variant === 'floating' ? 240 : 160, maxWidth: 280 } }}
+        popupRender={
+          variant === 'floating'
+            ? menu => (
+                <div className={styles.userPopup}>
+                  <div className={styles.userSummary}>
+                    <Avatar
+                      src={userAvatar ?? undefined}
+                      size={44}
+                      style={
+                        !userAvatar ? { backgroundColor: brandColor, fontSize: 16 } : undefined
+                      }
+                    >
+                      {!userAvatar ? getUserInitials(userName) : null}
+                    </Avatar>
+                    <div>
+                      <strong>{userName || '用户'}</strong>
+                      {user?.sub ? (
+                        <Typography.Text
+                          copyable={{ text: user.sub, tooltips: ['复制 OpenID', '已复制'] }}
+                        >
+                          {truncateOpenId(user.sub, 12, 6)}
+                        </Typography.Text>
+                      ) : (
+                        <span>尚未登录</span>
+                      )}
+                    </div>
+                  </div>
+                  {menu}
+                </div>
+              )
+            : undefined
+        }
       >
         <div
-          className={`${styles.userTrigger} ${compact ? styles.compact : ''}`}
+          className={`${styles.userTrigger} ${compact ? styles.compact : ''} ${variant === 'floating' ? styles.floating : ''}`}
           role="button"
           tabIndex={0}
           aria-label="打开用户菜单"

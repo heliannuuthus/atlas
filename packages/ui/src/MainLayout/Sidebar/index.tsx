@@ -17,7 +17,7 @@ export interface SidebarMenuItem {
 export interface SidebarProps {
   collapsed: boolean
   menus: SidebarMenuItem[]
-  logo: { icon: React.ReactNode; text: string }
+  logo: { icon?: React.ReactNode; text: string }
   brandColor?: string
   envLabel?: string
   onLogoClick: () => void
@@ -109,17 +109,24 @@ export function Sidebar({
 
   return (
     <div className={styles.sidebar}>
-      <div className={styles.logo} onClick={onLogoClick}>
-        <div className={styles.logoIcon} style={{ '--brand': brandColor } as React.CSSProperties}>
-          {logo.icon}
+      {(logo.icon || !collapsed) && (
+        <div className={styles.logo} onClick={onLogoClick}>
+          {logo.icon && (
+            <div
+              className={styles.logoIcon}
+              style={{ '--brand': brandColor } as React.CSSProperties}
+            >
+              {logo.icon}
+            </div>
+          )}
+          {!collapsed && (
+            <div className={styles.logoContent}>
+              <span className={styles.logoMain}>{logo.text}</span>
+              {envLabel && <span className={styles.envBadge}>{envLabel}</span>}
+            </div>
+          )}
         </div>
-        {!collapsed && (
-          <div className={styles.logoContent}>
-            <span className={styles.logoMain}>{logo.text}</span>
-            {envLabel && <span className={styles.envBadge}>{envLabel}</span>}
-          </div>
-        )}
-      </div>
+      )}
 
       <div className={styles.navArea}>
         <ConfigProvider theme={menuTheme}>

@@ -12,20 +12,20 @@ dayjs.locale('zh-cn')
 
 const themeConfig: ThemeConfig = {
   token: {
-    colorPrimary: '#2557d6',
+    colorPrimary: '#1677ff',
     colorSuccess: '#16a34a',
     colorWarning: '#d97706',
     colorError: '#dc2626',
-    colorInfo: '#2557d6',
-    colorText: '#15233b',
-    colorTextSecondary: '#5e6b82',
-    borderRadius: 10,
+    colorInfo: '#1677ff',
+    colorText: '#1d2633',
+    colorTextSecondary: '#657287',
+    borderRadius: 12,
     fontFamily:
-      "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif",
+      "'SF Pro Text', 'SF Pro SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif",
     colorBgContainer: '#ffffff',
-    colorBgLayout: '#f5f8fe',
-    colorBorder: '#dce5f2',
-    colorBorderSecondary: '#e8eef7',
+    colorBgLayout: '#eaf1f8',
+    colorBorder: '#dfe5ee',
+    colorBorderSecondary: '#e6eaf0',
   },
   components: {
     Button: { controlHeight: 40, borderRadius: 10 },
@@ -33,9 +33,9 @@ const themeConfig: ThemeConfig = {
     Modal: { borderRadiusLG: 20 },
     Breadcrumb: {
       separatorMargin: 8,
-      linkColor: '#5e6b82',
-      linkHoverColor: '#2557d6',
-      lastItemColor: '#15233b',
+      linkColor: '#657287',
+      linkHoverColor: '#1677ff',
+      lastItemColor: '#1d2633',
     },
   },
 }

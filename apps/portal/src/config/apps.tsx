@@ -11,6 +11,7 @@ import {
   TagsOutlined,
   TeamOutlined,
 } from '@ant-design/icons'
+import { PRODUCT_BRAND_COLORS } from '@atlas/ui'
 
 export interface AtlasCapability {
   id: string
@@ -30,7 +31,6 @@ export interface AtlasAppManifest {
   homePath: string
   color: string
   tint: string
-  icon: ReactNode
   capabilities: AtlasCapability[]
 }
 
@@ -43,7 +43,7 @@ export interface AtlasLaunchTarget {
   href: string
   color: string
   tint: string
-  icon: ReactNode
+  icon?: ReactNode
   keywords: string[]
 }
 
@@ -51,13 +51,6 @@ export interface RecentLaunch {
   key: string
   visitedAt: number
 }
-
-const createAppIcon = (color: string, path: ReactNode) => (
-  <svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
-    <rect width="40" height="40" rx="12" fill={color} />
-    {path}
-  </svg>
-)
 
 export const atlasApps: AtlasAppManifest[] = [
   {
@@ -68,17 +61,8 @@ export const atlasApps: AtlasAppManifest[] = [
     description: '管理身份、应用、服务与访问关系',
     origin: 'https://hermes.heliannuuthus.com',
     homePath: '/',
-    color: '#b94e20',
+    color: PRODUCT_BRAND_COLORS.hermes,
     tint: '#fff1e8',
-    icon: createAppIcon(
-      '#b94e20',
-      <path
-        d="M12.5 11.5v17M27.5 11.5v17M12.5 20h15"
-        stroke="white"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-    ),
     capabilities: [
       { id: 'domains', name: '选择域', path: '/', icon: <ApartmentOutlined /> },
       {
@@ -104,21 +88,8 @@ export const atlasApps: AtlasAppManifest[] = [
     description: '集中处理消息模板、发送任务与文件',
     origin: 'https://chaos.heliannuuthus.com',
     homePath: '/dashboard',
-    color: '#545d6b',
+    color: PRODUCT_BRAND_COLORS.chaos,
     tint: '#f0f2f5',
-    icon: createAppIcon(
-      '#545d6b',
-      <>
-        <path
-          d="M11.5 13.5l7 6.5-7 6.5M28.5 13.5l-7 6.5 7 6.5"
-          stroke="white"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <circle cx="20" cy="20" r="2.5" fill="white" fillOpacity=".72" />
-      </>
-    ),
     capabilities: [
       { id: 'templates', name: '邮件模板', path: '/templates', icon: <FileTextOutlined /> },
       { id: 'files', name: '文件管理', path: '/files', icon: <CloudUploadOutlined /> },
@@ -132,25 +103,8 @@ export const atlasApps: AtlasAppManifest[] = [
     description: '运营菜谱、内容标签与个性化推荐',
     origin: 'https://zwei.heliannuuthus.com',
     homePath: '/',
-    color: '#b83f37',
+    color: PRODUCT_BRAND_COLORS.zwei,
     tint: '#fff0ee',
-    icon: createAppIcon(
-      '#b83f37',
-      <>
-        <path
-          d="M12 21h16c-.8 5-3.5 7.5-8 7.5S12.8 26 12 21Z"
-          stroke="white"
-          strokeWidth="2"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M16 17c-1.4-1.3-1.4-3 0-4.5M21 17c-1.4-1.3-1.4-3 0-4.5M26 17c-1.4-1.3-1.4-3 0-4.5"
-          stroke="white"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-        />
-      </>
-    ),
     capabilities: [
       { id: 'recipes', name: '菜谱管理', path: '/recipes', icon: <BookOutlined /> },
       { id: 'favorites', name: '收藏管理', path: '/favorites', icon: <HeartOutlined /> },
@@ -170,7 +124,6 @@ export const launchTargets: AtlasLaunchTarget[] = atlasApps.flatMap(app => [
     href: `${app.origin}${app.homePath}`,
     color: app.color,
     tint: app.tint,
-    icon: app.icon,
     keywords: [app.name, app.description],
   },
   ...app.capabilities.map(capability => ({
