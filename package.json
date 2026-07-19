@@ -10,6 +10,8 @@
     "dev:zwei": "turbo dev --filter=@atlas/zwei",
     "dev:chaos": "turbo dev --filter=@atlas/chaos",
     "build": "turbo build",
+    "css:check": "node scripts/check-css-policy.mjs",
+    "css:check:all": "node scripts/check-css-policy.mjs apps packages",
     "lint": "turbo lint",
     "type-check": "turbo type-check",
     "format": "prettier --write \"**/*.{ts,tsx,scss,css,json}\" --ignore-path .gitignore",

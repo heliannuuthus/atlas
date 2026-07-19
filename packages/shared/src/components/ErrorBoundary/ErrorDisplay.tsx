@@ -1,11 +1,5 @@
 import React from 'react'
-import { Button } from 'antd'
-import {
-  ReloadOutlined,
-  HomeOutlined,
-  ArrowLeftOutlined,
-  CloseCircleOutlined,
-} from '@ant-design/icons'
+import { ArrowLeft, CircleX, Home, RefreshCw } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import styles from './index.module.scss'
 
@@ -30,7 +24,7 @@ export function ErrorDisplay({
       <div className={styles.content}>
         <div className={styles.header}>
           <div className={styles.icon}>
-            <CloseCircleOutlined />
+            <CircleX />
           </div>
           <h1 className={styles.title}>页面加载失败</h1>
           <p className={styles.subtitle}>抱歉，页面遇到了一个错误</p>
@@ -73,31 +67,37 @@ export function ErrorDisplay({
         )}
 
         <div className={styles.actions}>
-          <Button
-            type="primary"
-            icon={<HomeOutlined />}
+          <button
+            type="button"
             onClick={() => navigate('/')}
             className={`${styles.actionButton} ${styles.primaryButton}`}
           >
+            <Home />
             回到主页
-          </Button>
-          <Button
-            icon={<ArrowLeftOutlined />}
+          </button>
+          <button
+            type="button"
             onClick={() => navigate(-1)}
             className={`${styles.actionButton} ${styles.secondaryButton}`}
           >
+            <ArrowLeft />
             返回上一页
-          </Button>
-          <Button
-            icon={<ReloadOutlined />}
+          </button>
+          <button
+            type="button"
             onClick={() => window.location.reload()}
             className={`${styles.actionButton} ${styles.secondaryButton}`}
           >
+            <RefreshCw />
             刷新页面
-          </Button>
-          <Button onClick={onReset} className={`${styles.actionButton} ${styles.secondaryButton}`}>
+          </button>
+          <button
+            type="button"
+            onClick={onReset}
+            className={`${styles.actionButton} ${styles.secondaryButton}`}
+          >
             重试
-          </Button>
+          </button>
         </div>
       </div>
     </div>

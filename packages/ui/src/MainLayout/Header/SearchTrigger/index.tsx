@@ -1,18 +1,21 @@
-import { useEffect, useState, useMemo } from 'react'
-import { Button, Input, Modal, Empty } from 'antd'
-import { SearchOutlined } from '@ant-design/icons'
+import { useEffect, useMemo, useState } from 'react'
+import { Search } from 'lucide-react'
+import { Button } from '../../../components/button'
+import { Dialog, DialogContent, DialogTitle } from '../../../components/dialog'
+import { EmptyState } from '../../../components/empty-state'
+import { Input } from '../../../components/input'
 import styles from './index.module.scss'
 
 export function SearchTrigger() {
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault()
+    const handler = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+        event.preventDefault()
         setOpen(true)
       }
-      if (e.key === 'Escape') setOpen(false)
+      if (event.key === 'Escape') setOpen(false)
     }
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
@@ -22,37 +25,32 @@ export function SearchTrigger() {
 
   return (
     <>
-      <Button type="text" className={styles.trigger} onClick={() => setOpen(true)}>
-        <SearchOutlined className={styles.icon} />
+      <Button
+        type="button"
+        variant="ghost"
+        className={styles.trigger}
+        onClick={() => setOpen(true)}
+      >
+        <Search className={styles.icon} />
         <span className={styles.placeholder}>搜索...</span>
         <kbd className={styles.kbd}>{isMac ? '⌘' : 'Ctrl'} K</kbd>
       </Button>
-
-      <Modal
-        open={open}
-        onCancel={() => setOpen(false)}
-        footer={null}
-        closable={false}
-        width={560}
-        className={styles.modal}
-        styles={{ body: { padding: 0 } }}
-      >
-        <Input
-          autoFocus
-          size="large"
-          placeholder="搜索域、服务、应用、用户..."
-          prefix={<SearchOutlined style={{ color: '#a1a1aa' }} />}
-          variant="borderless"
-          className={styles.searchInput}
-        />
-        <div className={styles.searchBody}>
-          <Empty
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description="输入关键词开始搜索"
-            className={styles.empty}
-          />
-        </div>
-      </Modal>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className={styles.modal}>
+          <DialogTitle className="sr-only">搜索</DialogTitle>
+          <div className={styles.inputWrapper}>
+            <Search className={styles.icon} />
+            <Input
+              autoFocus
+              placeholder="搜索域、服务、应用、用户..."
+              className={styles.searchInput}
+            />
+          </div>
+          <div className={styles.searchBody}>
+            <EmptyState title="输入关键词开始搜索" className={styles.empty} />
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

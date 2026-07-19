@@ -1,153 +1,133 @@
 import { useRequest } from 'ahooks'
-import { Form, Input, Card, message, Spin } from 'antd'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
+import { z } from 'zod'
+import { Card, CardContent } from '@atlas/ui/card'
+import { Input } from '@atlas/ui/input'
+import { Spinner } from '@atlas/ui/spinner'
+import { Textarea } from '@atlas/ui/textarea'
+import { toast } from '@atlas/ui/toast'
+import { PageHeader } from '@atlas/shared'
+import { FormActions } from '@/components/forms/FormActions'
+import { FormField } from '@/components/forms/FormField'
 import { useAppNavigate, useDomainId } from '@/contexts/DomainContext'
 import { applicationApi } from '@/services'
 import {
-  validateRedirectUrisMultiLine,
   validateAllowedOriginsMultiLine,
   validateLogoutUrisMultiLine,
+  validateRedirectUrisMultiLine,
 } from '@/utils/uri-validation'
-import { PageHeader, FormActions } from '@atlas/shared'
 import styles from './index.module.scss'
 
-const { TextArea } = Input
+function uriText(validator: (value: string) => string | null) {
+  return z.string().superRefine((value, context) => {
+    const error = validator(value)
+    if (error) context.addIssue({ code: 'custom', message: error })
+  })
+}
+const schema = z.object({
+  name: z.string().trim().min(1, '请输入名称'),
+  allowed_redirect_uris: uriText(validateRedirectUrisMultiLine),
+  allowed_origins: uriText(validateAllowedOriginsMultiLine),
+  allowed_logout_uris: uriText(validateLogoutUrisMultiLine),
+})
+type Values = z.infer<typeof schema>
+const lines = (value: string) =>
+  value
+    .split('\n')
+    .map(item => item.trim())
+    .filter(Boolean)
 
 export function Edit() {
   const { appId } = useParams<{ appId: string }>()
   const domainId = useDomainId()
   const navigate = useAppNavigate()
-  const [form] = Form.useForm()
-
-  const { data: _data, loading: detailLoading } = useRequest(
-    () => applicationApi.getDetail(domainId!, appId!),
-    {
-      ready: !!domainId && !!appId,
-      onSuccess: data => {
-        let redirectUris: string[] = []
-        let allowedOrigins: string[] = []
-        try {
-          const raw = data.allowed_redirect_uris
-          redirectUris = Array.isArray(raw) ? raw : typeof raw === 'string' ? JSON.parse(raw) : []
-        } catch {
-          redirectUris = []
-        }
-        try {
-          const raw = data.allowed_origins
-          allowedOrigins = Array.isArray(raw) ? raw : typeof raw === 'string' ? JSON.parse(raw) : []
-        } catch {
-          allowedOrigins = []
-        }
-        let logoutUris: string[] = []
-        try {
-          const raw = data.allowed_logout_uris
-          logoutUris = Array.isArray(raw) ? raw : typeof raw === 'string' ? JSON.parse(raw) : []
-        } catch {
-          logoutUris = []
-        }
-        form.setFieldsValue({
-          name: data.name,
-          allowed_redirect_uris: redirectUris.join('\n'),
-          allowed_origins: allowedOrigins.join('\n'),
-          allowed_logout_uris: logoutUris.join('\n'),
-        })
-      },
-      onError: () => message.error('获取应用信息失败'),
-    }
-  )
-
-  const { run: handleSubmit, loading } = useRequest(
-    async (values: Record<string, unknown>) => {
-      const allowedRedirectUris = values.allowed_redirect_uris
-        ? (values.allowed_redirect_uris as string)
-            .split('\n')
-            .map((s: string) => s.trim())
-            .filter(Boolean)
-        : []
-      const allowedOrigins = values.allowed_origins
-        ? (values.allowed_origins as string)
-            .split('\n')
-            .map((s: string) => s.trim())
-            .filter(Boolean)
-        : []
-      const allowedLogoutUris = values.allowed_logout_uris
-        ? (values.allowed_logout_uris as string)
-            .split('\n')
-            .map((s: string) => s.trim())
-            .filter(Boolean)
-        : []
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<Values>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      name: '',
+      allowed_redirect_uris: '',
+      allowed_origins: '',
+      allowed_logout_uris: '',
+    },
+  })
+  const { loading: detailLoading } = useRequest(() => applicationApi.getDetail(domainId!, appId!), {
+    ready: Boolean(domainId && appId),
+    onSuccess: data =>
+      reset({
+        name: data.name,
+        allowed_redirect_uris: (data.allowed_redirect_uris ?? []).join('\n'),
+        allowed_origins: (data.allowed_origins ?? []).join('\n'),
+        allowed_logout_uris: (data.allowed_logout_uris ?? []).join('\n'),
+      }),
+    onError: () => toast.error('获取应用信息失败'),
+  })
+  const { run: submit, loading } = useRequest(
+    async (values: Values) => {
       await applicationApi.update(domainId!, appId!, {
-        name: values.name as string,
-        allowed_redirect_uris: allowedRedirectUris,
-        allowed_origins: allowedOrigins,
-        allowed_logout_uris: allowedLogoutUris,
+        name: values.name,
+        allowed_redirect_uris: lines(values.allowed_redirect_uris),
+        allowed_origins: lines(values.allowed_origins),
+        allowed_logout_uris: lines(values.allowed_logout_uris),
       })
-      message.success('更新成功')
+      toast.success('更新成功')
       navigate(`/applications/${appId}`)
     },
-    { manual: true, onError: () => message.error('更新失败') }
+    { manual: true, onError: () => toast.error('更新失败') }
   )
-
-  if (detailLoading) return <Spin size="large" />
-
+  if (detailLoading)
+    return (
+      <div className="flex min-h-56 items-center justify-center">
+        <Spinner className="size-7" />
+      </div>
+    )
   return (
     <div className={styles.container}>
       <PageHeader title="编辑应用" onBack={() => navigate(`/applications/${appId}`)} />
-      <Card variant="borderless">
-        <Form form={form} layout="vertical" onFinish={handleSubmit} className={styles.form}>
-          <Form.Item name="name" label="名称" rules={[{ required: true, message: '请输入名称' }]}>
-            <Input placeholder="请输入名称" />
-          </Form.Item>
-          <Form.Item
-            name="allowed_redirect_uris"
-            label="重定向 URI（每行一个）"
-            rules={[
-              {
-                validator: (_, value) => {
-                  const err = validateRedirectUrisMultiLine(value ?? '')
-                  return err ? Promise.reject(new Error(err)) : Promise.resolve()
-                },
-              },
-            ]}
+      <Card>
+        <CardContent>
+          <form
+            onSubmit={handleSubmit(values => submit(values))}
+            className={styles.form}
+            noValidate
           >
-            <TextArea rows={3} placeholder="https://example.com/callback" />
-          </Form.Item>
-          <Form.Item
-            name="allowed_origins"
-            label="允许的来源 CORS（每行一个）"
-            rules={[
-              {
-                validator: (_, value) => {
-                  const err = validateAllowedOriginsMultiLine(value ?? '')
-                  return err ? Promise.reject(new Error(err)) : Promise.resolve()
-                },
-              },
-            ]}
-          >
-            <TextArea rows={2} placeholder="https://example.com" />
-          </Form.Item>
-          <Form.Item
-            name="allowed_logout_uris"
-            label="登出后跳转 URI（每行一个）"
-            rules={[
-              {
-                validator: (_, value) => {
-                  const err = validateLogoutUrisMultiLine(value ?? '')
-                  return err ? Promise.reject(new Error(err)) : Promise.resolve()
-                },
-              },
-            ]}
-          >
-            <TextArea rows={2} placeholder="https://example.com" />
-          </Form.Item>
-          <Form.Item>
+            <FormField label="名称" htmlFor="app-name" required error={errors.name?.message}>
+              <Input id="app-name" {...register('name')} />
+            </FormField>
+            <FormField
+              label="重定向 URI（每行一个）"
+              htmlFor="redirect-uris"
+              error={errors.allowed_redirect_uris?.message}
+            >
+              <Textarea id="redirect-uris" rows={3} {...register('allowed_redirect_uris')} />
+            </FormField>
+            <FormField
+              label="允许的来源 CORS（每行一个）"
+              htmlFor="allowed-origins"
+              error={errors.allowed_origins?.message}
+            >
+              <Textarea id="allowed-origins" rows={2} {...register('allowed_origins')} />
+            </FormField>
+            <FormField
+              label="登出后跳转 URI（每行一个）"
+              htmlFor="logout-uris"
+              error={errors.allowed_logout_uris?.message}
+            >
+              <Textarea id="logout-uris" rows={2} {...register('allowed_logout_uris')} />
+            </FormField>
             <FormActions
-              loading={loading}
+              submitting={loading}
               submitText="保存"
-              cancelPath={`/applications/${appId}`}
+              onCancel={() => navigate(`/applications/${appId}`)}
             />
-          </Form.Item>
-        </Form>
+          </form>
+        </CardContent>
       </Card>
     </div>
   )

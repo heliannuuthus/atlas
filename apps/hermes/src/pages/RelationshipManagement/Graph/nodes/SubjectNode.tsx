@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { Handle, Position, type NodeProps } from 'reactflow'
-import { Tooltip, Button } from 'antd'
-import { UserOutlined, TeamOutlined, AppstoreOutlined, DeleteOutlined } from '@ant-design/icons'
+import { Button } from '@atlas/ui/button'
+import { User, Users, Boxes, Trash2 } from 'lucide-react'
 import { useGraphContext } from '../context/GraphContext'
 import styles from '../index.module.scss'
 
@@ -13,17 +13,17 @@ export interface SubjectNodeData {
 
 const typeConfig = {
   user: {
-    icon: <UserOutlined />,
+    icon: <User />,
     label: 'user',
     color: '#171717',
   },
   group: {
-    icon: <TeamOutlined />,
+    icon: <Users />,
     label: 'group',
     color: '#4d7c0f',
   },
   application: {
-    icon: <AppstoreOutlined />,
+    icon: <Boxes />,
     label: 'application',
     color: '#b94e20',
   },
@@ -55,25 +55,27 @@ function SubjectNodeComponent({ id, data, selected }: NodeProps<SubjectNodeData>
           {config.icon}
         </span>
         <span className={styles.nodeType}>{config.label}</span>
-        <Tooltip title="删除节点">
-          <Button
-            type="text"
-            size="small"
-            icon={<DeleteOutlined />}
-            className={styles.deleteBtn}
-            onClick={e => {
-              e.stopPropagation()
-              deleteNode(id)
-            }}
-          />
-        </Tooltip>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          title="删除节点"
+          aria-label="删除节点"
+          className={styles.deleteBtn}
+          onClick={e => {
+            e.stopPropagation()
+            deleteNode(id)
+          }}
+        >
+          <Trash2 />
+        </Button>
       </div>
 
       {/* 节点内容 */}
       <div className={styles.nodeContent}>
-        <Tooltip title={data.id}>
-          <span className={styles.nodeId}>{data.label || data.id}</span>
-        </Tooltip>
+        <span className={styles.nodeId} title={data.id}>
+          {data.label || data.id}
+        </span>
       </div>
 
       {/* 输出 Handle（右侧） */}

@@ -1,123 +1,183 @@
 import { useRequest } from 'ahooks'
-import { Form, Input, Select, Card, message, DatePicker } from 'antd'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Controller, useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
+import { z } from 'zod'
+import { Card, CardContent } from '@atlas/ui/card'
+import { Input } from '@atlas/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@atlas/ui/select'
+import { toast } from '@atlas/ui/toast'
+import { PageHeader } from '@atlas/shared'
+import { FormActions } from '@/components/forms/FormActions'
+import { FormField } from '@/components/forms/FormField'
 import { useAppNavigate, useDomainId } from '@/contexts/DomainContext'
 import { relationshipApi, serviceApi } from '@/services'
-import { PageHeader, FormActions } from '@atlas/shared'
-import dayjs from 'dayjs'
 import styles from './index.module.scss'
+
+const schema = z.object({
+  service_id: z.string(),
+  subject_type: z.enum(['user', 'group', 'application'], { message: '请选择主体类型' }),
+  subject_id: z.string().trim().min(1, '请输入主体 ID'),
+  relation: z.string().trim().min(1, '请输入关系'),
+  object_type: z.string().trim().min(1, '请选择对象类型'),
+  object_id: z.string().trim().min(1, '请输入对象 ID'),
+  expires_at: z.string(),
+})
+type Values = z.infer<typeof schema>
 
 export function Create() {
   const { serviceId: urlServiceId } = useParams<{ serviceId: string }>()
   const navigate = useAppNavigate()
   const domainId = useDomainId()
-  const [form] = Form.useForm()
-  const { data: services } = useRequest(() => serviceApi.getList(domainId!), {
-    ready: !!domainId && !urlServiceId,
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Values>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      service_id: urlServiceId ?? '',
+      subject_type: undefined,
+      subject_id: '',
+      relation: '',
+      object_type: '',
+      object_id: '',
+      expires_at: '',
+    },
   })
-
-  const { run: handleSubmit, loading } = useRequest(
-    async (values: Record<string, unknown>) => {
-      const serviceId = urlServiceId || (values.service_id as string)
+  const { data: services } = useRequest(() => serviceApi.getList(domainId!), {
+    ready: Boolean(domainId && !urlServiceId),
+  })
+  const { run: submit, loading } = useRequest(
+    async (values: Values) => {
       await relationshipApi.create({
-        service_id: serviceId,
-        subject_type: values.subject_type as 'user' | 'group' | 'application',
-        subject_id: values.subject_id as string,
-        relation: values.relation as string,
-        object_type: values.object_type as string,
-        object_id: values.object_id as string,
-        expires_at: values.expires_at
-          ? (values.expires_at as dayjs.Dayjs).toISOString()
-          : undefined,
+        service_id: urlServiceId || values.service_id,
+        subject_type: values.subject_type,
+        subject_id: values.subject_id,
+        relation: values.relation,
+        object_type: values.object_type,
+        object_id: values.object_id,
+        expires_at: values.expires_at ? new Date(values.expires_at).toISOString() : undefined,
       })
-      message.success('创建成功')
+      toast.success('创建成功')
       navigate(urlServiceId ? `/services/${urlServiceId}` : '/relationships')
     },
-    { manual: true, onError: () => message.error('创建失败') }
+    { manual: true, onError: () => toast.error('创建失败') }
   )
+  const backPath = urlServiceId ? `/services/${urlServiceId}` : '/relationships'
 
   return (
     <div className={styles.container}>
-      <PageHeader
-        title="新建关系"
-        onBack={() => navigate(urlServiceId ? `/services/${urlServiceId}` : '/relationships')}
-      />
-      <Card variant="borderless">
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSubmit}
-          className={styles.form}
-          initialValues={{ service_id: urlServiceId }}
-        >
-          {!urlServiceId && (
-            <Form.Item
-              name="service_id"
-              label="服务"
-              rules={[{ required: true, message: '请选择服务' }]}
+      <PageHeader title="新建关系" onBack={() => navigate(backPath)} />
+      <Card>
+        <CardContent>
+          <form
+            onSubmit={handleSubmit(values => submit(values))}
+            className={styles.form}
+            noValidate
+          >
+            {!urlServiceId ? (
+              <FormField
+                label="服务"
+                htmlFor="relationship-service"
+                required
+                error={errors.service_id?.message}
+              >
+                <Controller
+                  control={control}
+                  name="service_id"
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger id="relationship-service">
+                        <SelectValue placeholder="请选择服务" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(services?.items ?? []).map(service => (
+                          <SelectItem key={service.service_id} value={service.service_id}>
+                            {service.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </FormField>
+            ) : null}
+            <FormField
+              label="主体类型"
+              htmlFor="subject-type"
+              required
+              error={errors.subject_type?.message}
             >
-              <Select placeholder="请选择服务">
-                {(services?.items ?? []).map(s => (
-                  <Select.Option key={s.service_id} value={s.service_id}>
-                    {s.name}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-          )}
-          <Form.Item
-            name="subject_type"
-            label="主体类型"
-            rules={[{ required: true, message: '请选择主体类型' }]}
-          >
-            <Select placeholder="请选择主体类型">
-              <Select.Option value="user">用户</Select.Option>
-              <Select.Option value="group">组</Select.Option>
-              <Select.Option value="application">应用</Select.Option>
-            </Select>
-          </Form.Item>
-          <Form.Item
-            name="subject_id"
-            label="主体ID"
-            rules={[{ required: true, message: '请输入主体ID' }]}
-          >
-            <Input placeholder="请输入主体ID" />
-          </Form.Item>
-          <Form.Item
-            name="relation"
-            label="关系"
-            rules={[{ required: true, message: '请输入关系' }]}
-          >
-            <Input placeholder="请输入关系，如：owner, editor, viewer" />
-          </Form.Item>
-          <Form.Item
-            name="object_type"
-            label="对象类型"
-            rules={[{ required: true, message: '请选择对象类型' }]}
-          >
-            <Select placeholder="请选择对象类型">
-              <Select.Option value="resource">资源</Select.Option>
-              <Select.Option value="group">组</Select.Option>
-            </Select>
-          </Form.Item>
-          <Form.Item
-            name="object_id"
-            label="对象ID"
-            rules={[{ required: true, message: '请输入对象ID' }]}
-          >
-            <Input placeholder="请输入对象ID" />
-          </Form.Item>
-          <Form.Item name="expires_at" label="过期时间">
-            <DatePicker showTime style={{ width: '100%' }} />
-          </Form.Item>
-          <Form.Item>
+              <Controller
+                control={control}
+                name="subject_type"
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger id="subject-type">
+                      <SelectValue placeholder="请选择主体类型" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="user">用户</SelectItem>
+                      <SelectItem value="group">组</SelectItem>
+                      <SelectItem value="application">应用</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </FormField>
+            <FormField
+              label="主体 ID"
+              htmlFor="subject-id"
+              required
+              error={errors.subject_id?.message}
+            >
+              <Input id="subject-id" {...register('subject_id')} />
+            </FormField>
+            <FormField label="关系" htmlFor="relation" required error={errors.relation?.message}>
+              <Input id="relation" placeholder="owner、editor、viewer" {...register('relation')} />
+            </FormField>
+            <FormField
+              label="对象类型"
+              htmlFor="object-type"
+              required
+              error={errors.object_type?.message}
+            >
+              <Controller
+                control={control}
+                name="object_type"
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger id="object-type">
+                      <SelectValue placeholder="请选择对象类型" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="resource">资源</SelectItem>
+                      <SelectItem value="group">组</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </FormField>
+            <FormField
+              label="对象 ID"
+              htmlFor="object-id"
+              required
+              error={errors.object_id?.message}
+            >
+              <Input id="object-id" {...register('object_id')} />
+            </FormField>
+            <FormField label="过期时间" htmlFor="expires-at" error={errors.expires_at?.message}>
+              <Input id="expires-at" type="datetime-local" {...register('expires_at')} />
+            </FormField>
             <FormActions
-              loading={loading}
+              submitting={loading}
               submitText="创建"
-              cancelPath={urlServiceId ? `/services/${urlServiceId}` : '/relationships'}
+              onCancel={() => navigate(backPath)}
             />
-          </Form.Item>
-        </Form>
+          </form>
+        </CardContent>
       </Card>
     </div>
   )

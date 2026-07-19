@@ -146,19 +146,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   line-height: 1.4;
-
-  :global(.ant-typography) {
-    font-size: inherit;
-    font-weight: inherit;
-    color: inherit;
-    font-family: inherit;
-  }
-
-  :global(.ant-typography-copy) {
-    margin-left: 6px;
-    color: $text-disabled;
-    font-size: 12px;
-  }
 }
 
 .statCopyIcon {
@@ -177,45 +164,6 @@
 
 .tabs {
   :global {
-    .ant-tabs-nav {
-      margin-bottom: 0;
-      padding: 0 32px;
-
-      &::before {
-        border-bottom: 1px solid $border-color;
-      }
-    }
-
-    .ant-tabs-tab {
-      padding: 16px 4px;
-      font-size: 14px;
-      font-weight: 500;
-      color: $text-tertiary;
-      transition: color $transition-fast;
-
-      &:hover {
-        color: $text-primary;
-      }
-    }
-
-    .ant-tabs-tab-active .ant-tabs-tab-btn {
-      color: $brand-hermes !important;
-      font-weight: 600;
-    }
-
-    .ant-tabs-ink-bar {
-      background: $brand-hermes;
-      height: 2px;
-      border-radius: 2px;
-    }
-
-    .ant-tabs-content-holder {
-      padding: 28px 32px;
-
-      @media (max-width: 768px) {
-        padding: 20px 16px;
-      }
-    }
   }
 }
 
@@ -229,18 +177,6 @@
 // ── Settings Form ──
 
 .settingsForm {
-  :global(.ant-form-item) {
-    margin-bottom: 20px;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  :global(.ant-form-item-label > label) {
-    font-weight: 500;
-    color: $text-primary;
-  }
 }
 
 .labelTooltipIcon {
@@ -264,12 +200,6 @@
   height: 80px;
   cursor: pointer;
   border-radius: 50%;
-
-  :global(.ant-avatar) {
-    background: $gray-100;
-    color: $gray-400;
-    font-size: 28px;
-  }
 }
 
 .logoOverlay {
@@ -515,14 +445,6 @@
 
 .idpModalForm {
   padding-top: 8px;
-
-  :global(.ant-form-item) {
-    margin-bottom: 16px;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
 }
 
 // ── Permissions Tab ──

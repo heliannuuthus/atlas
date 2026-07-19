@@ -1,58 +1,81 @@
 import { useRequest } from 'ahooks'
-import { Form, Input, Card, message, Spin } from 'antd'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
+import { z } from 'zod'
+import { Card, CardContent } from '@atlas/ui/card'
+import { Input } from '@atlas/ui/input'
+import { Spinner } from '@atlas/ui/spinner'
+import { Textarea } from '@atlas/ui/textarea'
+import { toast } from '@atlas/ui/toast'
+import { PageHeader } from '@atlas/shared'
+import { FormActions } from '@/components/forms/FormActions'
+import { FormField } from '@/components/forms/FormField'
 import { useAppNavigate } from '@/contexts/DomainContext'
 import { groupApi } from '@/services'
-import { PageHeader, FormActions } from '@atlas/shared'
 import styles from './index.module.scss'
 
-const { TextArea } = Input
+const schema = z.object({
+  name: z.string().trim().min(1, '请输入名称'),
+  description: z.string().trim().optional(),
+})
+type Values = z.infer<typeof schema>
 
 export function Edit() {
   const { groupId } = useParams<{ groupId: string }>()
   const navigate = useAppNavigate()
-  const [form] = Form.useForm()
-
-  const { data: _data, loading: detailLoading } = useRequest(() => groupApi.getDetail(groupId!), {
-    ready: !!groupId,
-    onSuccess: _data => {
-      form.setFieldsValue({
-        name: _data.name,
-        description: _data.description,
-      })
-    },
-    onError: () => message.error('获取组信息失败'),
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<Values>({
+    resolver: zodResolver(schema),
+    defaultValues: { name: '', description: '' },
   })
-
-  const { run: handleSubmit, loading } = useRequest(
-    async (values: Record<string, unknown>) => {
-      await groupApi.update(groupId!, {
-        name: values.name as string | undefined,
-        description: values.description as string | undefined,
-      })
-      message.success('更新成功')
+  const { loading: detailLoading } = useRequest(() => groupApi.getDetail(groupId!), {
+    ready: Boolean(groupId),
+    onSuccess: data => reset({ name: data.name, description: data.description ?? '' }),
+    onError: () => toast.error('获取组信息失败'),
+  })
+  const { run: submit, loading } = useRequest(
+    async (values: Values) => {
+      await groupApi.update(groupId!, values)
+      toast.success('更新成功')
       navigate(`/groups/${groupId}`)
     },
-    { manual: true, onError: () => message.error('更新失败') }
+    { manual: true, onError: () => toast.error('更新失败') }
   )
 
-  if (detailLoading) return <Spin size="large" />
-
+  if (detailLoading)
+    return (
+      <div className="flex min-h-56 items-center justify-center">
+        <Spinner className="size-7" />
+      </div>
+    )
   return (
     <div className={styles.container}>
       <PageHeader title="编辑组" onBack={() => navigate(`/groups/${groupId}`)} />
-      <Card variant="borderless">
-        <Form form={form} layout="vertical" onFinish={handleSubmit} className={styles.form}>
-          <Form.Item name="name" label="名称" rules={[{ required: true, message: '请输入名称' }]}>
-            <Input placeholder="请输入名称" />
-          </Form.Item>
-          <Form.Item name="description" label="描述">
-            <TextArea rows={4} placeholder="请输入描述" />
-          </Form.Item>
-          <Form.Item>
-            <FormActions loading={loading} submitText="保存" cancelPath={`/groups/${groupId}`} />
-          </Form.Item>
-        </Form>
+      <Card>
+        <CardContent>
+          <form
+            onSubmit={handleSubmit(values => submit(values))}
+            className={styles.form}
+            noValidate
+          >
+            <FormField label="名称" htmlFor="group-name" required error={errors.name?.message}>
+              <Input id="group-name" {...register('name')} />
+            </FormField>
+            <FormField label="描述" htmlFor="group-description" error={errors.description?.message}>
+              <Textarea id="group-description" rows={4} {...register('description')} />
+            </FormField>
+            <FormActions
+              submitting={loading}
+              submitText="保存"
+              onCancel={() => navigate(`/groups/${groupId}`)}
+            />
+          </form>
+        </CardContent>
       </Card>
     </div>
   )

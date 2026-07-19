@@ -1,10 +1,7 @@
-import { Button, Select, Space, Tooltip, Badge } from 'antd'
-import {
-  SaveOutlined,
-  ReloadOutlined,
-  FullscreenOutlined,
-  FullscreenExitOutlined,
-} from '@ant-design/icons'
+import { LoaderCircle, Maximize2, Minimize2, RefreshCw, Save } from 'lucide-react'
+import { Badge } from '@atlas/ui/badge'
+import { Button } from '@atlas/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@atlas/ui/select'
 import type { Service } from '@/types'
 import styles from './index.module.scss'
 
@@ -22,75 +19,59 @@ interface CanvasHeaderProps {
   isLocked?: boolean
 }
 
-export function CanvasHeader({
-  services,
-  selectedServiceId,
-  onServiceChange,
-  onSave,
-  onReset,
-  onToggleFullscreen,
-  isFullscreen,
-  isDirty,
-  saving,
-  relationCount,
-  isLocked,
-}: CanvasHeaderProps) {
+export function CanvasHeader(props: CanvasHeaderProps) {
   return (
-    <div className={styles.canvasHeader}>
+    <header className={styles.canvasHeader}>
       <div className={styles.headerLeft}>
-        <span className={styles.headerTitle}>关系图谱</span>
-        {selectedServiceId && (
+        <strong className={styles.headerTitle}>关系图谱</strong>
+        {props.selectedServiceId ? (
           <span className={styles.relationCount}>
-            服务: <strong>{selectedServiceId}</strong> | 已建立 <strong>{relationCount}</strong>{' '}
-            条关系
+            服务 <strong>{props.selectedServiceId}</strong> · {props.relationCount} 条关系
           </span>
-        )}
+        ) : null}
       </div>
-
       <div className={styles.headerRight}>
-        <Space size="middle">
-          {!isLocked && (
-            <Select
-              placeholder="选择服务"
-              style={{ width: 200 }}
-              value={selectedServiceId}
-              onChange={onServiceChange}
-              allowClear
-              options={services.map(s => ({
-                value: s.service_id,
-                label: s.name,
-              }))}
-            />
-          )}
-
-          <Tooltip title="重置画布">
-            <Button icon={<ReloadOutlined />} onClick={onReset}>
-              重置
-            </Button>
-          </Tooltip>
-
-          <Tooltip title={isDirty ? '有未保存的更改' : '保存'}>
-            <Badge dot={isDirty} offset={[-4, 4]}>
-              <Button
-                type="primary"
-                icon={<SaveOutlined />}
-                onClick={onSave}
-                loading={saving}
-                disabled={!isDirty || !selectedServiceId}
-              >
-                保存
-              </Button>
+        {!props.isLocked ? (
+          <Select value={props.selectedServiceId} onValueChange={props.onServiceChange}>
+            <SelectTrigger className="w-52">
+              <SelectValue placeholder="选择服务" />
+            </SelectTrigger>
+            <SelectContent>
+              {props.services.map(service => (
+                <SelectItem key={service.service_id} value={service.service_id}>
+                  {service.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ) : null}
+        <Button type="button" variant="outline" title="重置画布" onClick={props.onReset}>
+          <RefreshCw />
+          重置
+        </Button>
+        <Button
+          type="button"
+          disabled={!props.isDirty || !props.selectedServiceId || props.saving}
+          onClick={props.onSave}
+        >
+          {props.saving ? <LoaderCircle className="animate-spin" /> : <Save />}保存
+          {props.isDirty ? (
+            <Badge variant="secondary" className="ml-1 px-1.5">
+              未保存
             </Badge>
-          </Tooltip>
-
-          <Tooltip title={isFullscreen ? '退出全屏' : '全屏'}>
-            <Button
-              icon={isFullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
-              onClick={onToggleFullscreen}
-            />
-          </Tooltip>
-        </Space>
+          ) : null}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          title={props.isFullscreen ? '退出全屏' : '全屏'}
+          aria-label={props.isFullscreen ? '退出全屏' : '全屏'}
+          onClick={props.onToggleFullscreen}
+        >
+          {props.isFullscreen ? <Minimize2 /> : <Maximize2 />}
+        </Button>
       </div>
-    </div>
+    </header>
   )
 }

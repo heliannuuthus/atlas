@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import { Spin } from 'antd'
+import { LoaderCircle } from 'lucide-react'
 import { useAtlasAuth } from '../../hooks/useAtlasAuth'
 import styles from './index.module.scss'
 
@@ -27,7 +27,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
   if (isLoading) {
     return (
       <div className={styles.loading}>
-        <Spin size="large" />
+        <LoaderCircle size={28} aria-label="加载中" className={styles.spinner} />
       </div>
     )
   }
@@ -35,7 +35,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
   if (!isAuthenticated) {
     return (
       <div className={styles.loading}>
-        <Spin size="large" />
+        <LoaderCircle size={28} aria-label="加载中" className={styles.spinner} />
       </div>
     )
   }

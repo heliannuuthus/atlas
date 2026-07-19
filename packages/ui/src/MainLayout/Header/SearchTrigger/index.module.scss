@@ -8,7 +8,10 @@
   border-radius: 8px;
   background: #fafafa;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    box-shadow 150ms ease;
   outline: none;
   min-width: 200px;
 
@@ -18,8 +21,8 @@
   }
 
   &:focus-visible {
-    border-color: #2557d6;
-    box-shadow: 0 0 0 2px rgba(37, 87, 214, 0.12);
+    border-color: var(--ring);
+    box-shadow: 0 0 0 2px color-mix(in oklch, var(--ring) 14%, transparent);
   }
 }
 
@@ -48,19 +51,27 @@
 }
 
 .modal {
-  top: 120px;
+  max-width: 560px;
+  padding: 0;
+  overflow: hidden;
+}
 
-  :global(.ant-modal-content) {
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.14);
-  }
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-bottom: 1px solid #f0f0f2;
 }
 
 .searchInput {
   font-size: 16px;
-  padding: 14px 16px;
-  border-bottom: 1px solid #f0f0f2;
+  border: 0;
+  box-shadow: none;
+
+  &:focus-visible {
+    box-shadow: none;
+  }
 }
 
 .searchBody {

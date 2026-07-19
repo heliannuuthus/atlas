@@ -183,11 +183,21 @@
 }
 
 .actionButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   min-width: 110px;
   height: 36px;
   border-radius: 6px;
   font-weight: 500;
   font-size: 13px;
+  cursor: pointer;
+
+  svg {
+    width: 15px;
+    height: 15px;
+  }
 }
 
 .primaryButton {

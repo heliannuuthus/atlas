@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { Handle, Position, type NodeProps } from 'reactflow'
-import { Tooltip, Button } from 'antd'
-import { DatabaseOutlined, DeleteOutlined } from '@ant-design/icons'
+import { Button } from '@atlas/ui/button'
+import { Database, Trash2 } from 'lucide-react'
 import { useGraphContext } from '../context/GraphContext'
 import styles from '../index.module.scss'
 
@@ -33,28 +33,30 @@ function ObjectNodeComponent({ id, data, selected }: NodeProps<ObjectNodeData>) 
       {/* 节点头部 */}
       <div className={styles.nodeHeader} style={{ borderBottomColor: '#f0f0f0' }}>
         <span className={styles.nodeIcon} style={{ color: '#a3a3a3' }}>
-          <DatabaseOutlined />
+          <Database />
         </span>
         <span className={styles.nodeType}>{data.type}</span>
-        <Tooltip title="删除节点">
-          <Button
-            type="text"
-            size="small"
-            icon={<DeleteOutlined />}
-            className={styles.deleteBtn}
-            onClick={e => {
-              e.stopPropagation()
-              deleteNode(id)
-            }}
-          />
-        </Tooltip>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          title="删除节点"
+          aria-label="删除节点"
+          className={styles.deleteBtn}
+          onClick={e => {
+            e.stopPropagation()
+            deleteNode(id)
+          }}
+        >
+          <Trash2 />
+        </Button>
       </div>
 
       {/* 节点内容 */}
       <div className={styles.nodeContent}>
-        <Tooltip title={data.id}>
-          <span className={styles.nodeId}>{data.label || data.id}</span>
-        </Tooltip>
+        <span className={styles.nodeId} title={data.id}>
+          {data.label || data.id}
+        </span>
       </div>
 
       {/* 输出 Handle（右侧）- 对象也可以作为源 */}

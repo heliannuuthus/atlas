@@ -1,34 +1,25 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import {
-  DashboardOutlined,
-  FileTextOutlined,
-  CloudUploadOutlined,
-  SettingOutlined,
-} from '@ant-design/icons'
-import {
-  PRODUCT_BRAND_COLORS,
-  MainLayout,
-  Sidebar,
-  Breadcrumb,
-  Header,
-  UserMenu,
-  SearchTrigger,
-} from '@atlas/ui'
-import type { SidebarMenuItem } from '@atlas/ui'
+import { FileText, LayoutDashboard, Settings, UploadCloud } from 'lucide-react'
+import { Breadcrumb } from '@atlas/ui/breadcrumb'
+import { PRODUCT_BRAND_COLORS } from '@atlas/ui/brand-colors'
+import { Header } from '@atlas/ui/header'
+import { MainLayout } from '@atlas/ui/main-layout'
+import { Sidebar, type SidebarMenuItem } from '@atlas/ui/sidebar'
+import { UserMenu } from '@atlas/ui/user-menu'
 
 const BRAND_COLOR = PRODUCT_BRAND_COLORS.chaos
 
 const chaosMenus: SidebarMenuItem[] = [
-  { key: 'dashboard', label: '概览', icon: <DashboardOutlined />, path: '/dashboard' },
+  { key: 'dashboard', label: '概览', icon: <LayoutDashboard />, path: '/dashboard' },
   {
     key: 'templates',
     label: '邮件模板',
-    icon: <FileTextOutlined />,
+    icon: <FileText />,
     path: '/templates',
     section: '内容管理',
   },
-  { key: 'files', label: '文件管理', icon: <CloudUploadOutlined />, path: '/files' },
-  { key: 'settings', label: '设置', icon: <SettingOutlined />, path: '/settings', bottom: true },
+  { key: 'files', label: '文件管理', icon: <UploadCloud />, path: '/files' },
+  { key: 'settings', label: '设置', icon: <Settings />, path: '/settings', bottom: true },
 ]
 
 const chaosLogo = {
@@ -65,7 +56,6 @@ export function ChaosLayout() {
       header={
         <Header
           left={<Breadcrumb config={breadcrumbConfig} />}
-          center={<SearchTrigger />}
           right={<UserMenu brandColor={BRAND_COLOR} />}
         />
       }

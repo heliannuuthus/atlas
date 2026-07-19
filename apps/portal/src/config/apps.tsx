@@ -11,7 +11,7 @@ import {
   TagsOutlined,
   TeamOutlined,
 } from '@ant-design/icons'
-import { PRODUCT_BRAND_COLORS } from '@atlas/ui'
+import { PRODUCT_BRAND_COLORS } from '@atlas/ui/brand-colors'
 
 export interface AtlasCapability {
   id: string

@@ -10,16 +10,13 @@ import {
   AppstoreOutlined,
   SettingOutlined,
 } from '@ant-design/icons'
-import {
-  PRODUCT_BRAND_COLORS,
-  MainLayout,
-  Sidebar,
-  Breadcrumb,
-  Header,
-  UserMenu,
-  SearchTrigger,
-} from '@atlas/ui'
-import type { SidebarMenuItem } from '@atlas/ui'
+import { Breadcrumb } from '@atlas/ui/breadcrumb'
+import { PRODUCT_BRAND_COLORS } from '@atlas/ui/brand-colors'
+import { Header } from '@atlas/ui/header'
+import { MainLayout } from '@atlas/ui/main-layout'
+import { SearchTrigger } from '@atlas/ui/search-trigger'
+import { Sidebar, type SidebarMenuItem } from '@atlas/ui/sidebar'
+import { UserMenu } from '@atlas/ui/user-menu'
 
 const BRAND_COLOR = PRODUCT_BRAND_COLORS.zwei
 

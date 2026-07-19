@@ -1,810 +1,769 @@
 .dashboard {
-  width: 100%;
+  --accent: #b94e20;
+  --accent-soft: #fff2eb;
+  --ink: #172033;
+  --muted: #69758a;
+  --subtle: #929cad;
+  --line: #e1e7ef;
+  --line-strong: #d5dde8;
+  --panel: #fff;
+  --mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+
+  width: min(1480px, 100%);
+  margin: 0 auto;
+  padding: 8px 0 48px;
+  color: var(--ink);
 }
 
-// ─── 当前域介绍 ───
-.domainIntro {
-  margin-bottom: 32px;
+.hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 32px;
+  align-items: end;
+  min-height: 196px;
+  padding: 34px 38px;
+  overflow: hidden;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 12px 35px rgba(36, 50, 72, 0.045);
+  animation: enter 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  &::before {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 5px;
+    background: var(--accent);
+    content: '';
+  }
+
+  &::after {
+    position: absolute;
+    right: 32px;
+    bottom: -58px;
+    width: 220px;
+    height: 160px;
+    border: 1px solid #edf0f4;
+    border-radius: 50%;
+    box-shadow:
+      0 0 0 24px #fafbfc,
+      0 0 0 25px #edf0f4,
+      0 0 0 48px #fff;
+    content: '';
+    pointer-events: none;
+  }
 }
 
-.domainName {
-  font-size: 24px;
-  font-weight: 600;
-  color: #18181b;
-  margin: 0 0 6px 0;
-  letter-spacing: -0.02em;
+.heroCopy {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+
+  h1 {
+    margin: 8px 0 8px;
+    color: var(--ink);
+    font-size: clamp(30px, 4vw, 48px);
+    font-weight: 680;
+    line-height: 1.08;
+    letter-spacing: -0.052em;
+  }
+
+  > p {
+    max-width: 650px;
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.7;
+  }
 }
 
-.domainDesc {
-  font-size: 14px;
-  color: #52525b;
-  line-height: 1.5;
-  margin: 0 0 8px 0;
-  max-width: 560px;
+.eyebrow,
+.panelIndex,
+.footerNote,
+.resourceColumnTitle,
+.metricLabel {
+  font-family: var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
-.domainId {
-  font-size: 13px;
-  color: #a1a1aa;
-  margin: 0;
-  font-variant-numeric: tabular-nums;
+.eyebrow {
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 700;
 }
 
-.domainIntroShimmer {
-  height: 72px;
-  border-radius: 8px;
-  background: #e8e8eb;
-  animation: shimmer 1.2s ease-in-out infinite alternate;
-}
-
-// ─── 当前域统计条（保留给其他引用） ───
-.currentDomainStrip {
+.domainMeta {
   display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 14px 18px;
-  margin-bottom: 24px;
-  background: #f4f4f5;
-  border: 1px solid #e4e4e7;
-  border-radius: 10px;
-}
-
-.currentDomainMain {
-  min-width: 0;
-}
-
-.currentDomainName {
-  display: inline-flex;
-  align-items: center;
   gap: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #18181b;
-
-  .anticon {
-    color: #b94e20;
-  }
-}
-
-.currentDomainDesc {
-  margin-top: 4px;
+  align-items: center;
+  margin-top: 20px;
+  color: var(--subtle);
   font-size: 12px;
-  color: #71717a;
-  line-height: 1.4;
+
+  code {
+    padding: 3px 7px;
+    color: #536177;
+    background: #f4f6f9;
+    border-radius: 5px;
+    font-family: var(--mono);
+    font-size: 11px;
+  }
 }
 
-.currentDomainMeta {
+.liveDot {
+  width: 7px;
+  height: 7px;
+  background: #2f8a68;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px #e7f5ef;
+}
+
+.heroActions {
+  position: relative;
+  z-index: 1;
   display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-left: auto;
+  gap: 10px;
 }
 
-.currentDomainStat {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: #52525b;
-
-  .anticon {
-    color: #71717a;
-  }
+.dataAlert {
+  margin-top: 16px;
+  border-radius: 12px;
 }
 
-.currentDomainShimmer {
-  height: 20px;
-  width: 100%;
-  border-radius: 4px;
-  background: #e8e8eb;
-  animation: shimmer 1.2s ease-in-out infinite alternate;
-}
-
-@keyframes shimmer {
-  0% {
-    opacity: 0.55;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-// ─── 统计图表 ───
-.chartsRow {
+.metrics {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-
-  @media (max-width: 900px) {
-    grid-template-columns: 1fr;
-  }
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+  animation: enter 420ms 70ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.chartBox {
-  min-height: 260px;
-  background: #fafafa;
-  border-radius: 10px;
-  padding: 16px;
-}
-
-.chartLabel {
-  font-size: 13px;
-  font-weight: 500;
-  color: #52525b;
-  margin-bottom: 12px;
-}
-
-.chart {
-  height: 220px;
-  width: 100%;
-}
-
-.chartEmpty {
-  height: 220px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #a1a1aa;
-  font-size: 13px;
-}
-
-.chartShimmer {
-  height: 280px;
-  border-radius: 10px;
-  background: #e8e8eb;
-  animation: shimmer 1.2s ease-in-out infinite alternate;
-}
-
-// ─── 域 ───
-.domainGrid {
+.metricCard {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 12px;
-}
-
-.domainCard {
-  display: flex;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
   align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  background: #fafafa;
-  border: 1px solid #e4e4e7;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.15s ease;
+  height: auto;
+  min-height: 118px;
+  padding: 20px;
   text-align: left;
-  outline: none;
-  width: 100%;
+  white-space: normal;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  transition:
+    transform 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
 
   &:hover {
-    background: #f4f4f5;
-    border-color: #d4d4d8;
+    color: inherit;
+    background: var(--panel);
+    border-color: #c9d3df;
+    box-shadow: 0 12px 28px rgba(39, 53, 74, 0.07);
+    transform: translateY(-2px);
   }
 }
 
-.domainCardIcon {
+.metricIcon {
+  display: grid;
   width: 40px;
   height: 40px;
+  place-items: center;
+  color: var(--accent);
+  background: var(--accent-soft);
   border-radius: 10px;
-  background: #fff1e8;
-  color: #b94e20;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  flex-shrink: 0;
+  font-size: 17px;
 }
 
-.domainCardBody {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+.metricBody {
+  display: grid;
   min-width: 0;
 }
 
-.domainCardName {
-  font-size: 14px;
-  font-weight: 600;
-  color: #18181b;
+.metricLabel {
+  color: var(--subtle);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.metricBody strong {
+  margin-top: 2px;
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 28px;
+  line-height: 1.1;
+}
+
+.metricNote {
+  margin-top: 5px;
   overflow: hidden;
+  color: var(--muted);
+  font-size: 11px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.domainCardMeta {
-  font-size: 12px;
-  color: #71717a;
+.metricArrow {
+  color: #b2bac6;
+  font-size: 11px;
 }
 
-.domainCardShimmer {
-  height: 64px;
-  border-radius: 10px;
-  background: #e8e8eb;
-  animation: shimmer 1.5s ease-in-out infinite alternate;
-}
-
-// ─── 应用与服务 ───
-.appServiceGrid {
+.primaryGrid,
+.secondaryGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1.65fr) minmax(300px, 0.72fr);
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.primaryGrid {
+  animation: enter 420ms 120ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.secondaryGrid {
+  animation: enter 420ms 170ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.resourcePanel,
+.governancePanel,
+.launchPanel,
+.activityPanel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 480px;
+}
+
+.resourcePanel,
+.launchPanel,
+.activityPanel {
+  padding: 26px;
+}
+
+.panelHeader,
+.panelHeaderCompact {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   gap: 20px;
 
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
+  > div:first-child,
+  &.panelHeaderCompact {
+    display: flex;
+    gap: 13px;
+  }
+
+  h2 {
+    margin: -2px 0 3px;
+    color: var(--ink);
+    font-size: 16px;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
   }
 }
 
-.appServiceCol {
-  background: #fafafa;
-  border: 1px solid #e4e4e7;
-  border-radius: 10px;
-  padding: 14px 16px;
+.panelHeader {
 }
 
-.appServiceColHeader {
+.panelHeaderCompact {
+  justify-content: flex-start;
+}
+
+.panelIndex {
+  flex: 0 0 auto;
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.topology {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 94px minmax(0, 1fr);
+  gap: 18px;
+  margin-top: 26px;
+}
+
+.resourceColumn {
+  min-width: 0;
+  padding: 16px;
+  background: #fafbfc;
+  border: 1px solid #e8ecf2;
+  border-radius: 12px;
+}
+
+.resourceColumnTitle {
   display: flex;
-  align-items: center;
   gap: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #18181b;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #e4e4e7;
-}
+  align-items: center;
+  margin-bottom: 11px;
+  color: #5d6a7e;
+  font-size: 9px;
+  font-weight: 700;
 
-.appServiceColIcon {
-  color: #52525b;
-  font-size: 14px;
-}
-
-.appServiceColCount {
-  margin-left: auto;
-  font-size: 12px;
-  font-weight: 500;
-  color: #71717a;
-  background: #fff;
-  padding: 2px 8px;
-  border-radius: 6px;
-}
-
-.appServiceList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.appServiceGroup {
-  margin-bottom: 12px;
-
-  &:last-of-type {
-    margin-bottom: 0;
+  span {
+    margin-left: auto;
+    color: var(--ink);
+    font-size: 11px;
   }
 }
 
-.appServiceGroupName {
-  display: block;
-  font-size: 11px;
-  font-weight: 600;
-  color: #a1a1aa;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  margin-bottom: 6px;
+.resourceList {
+  display: grid;
+  gap: 6px;
 }
 
-.appServiceItem {
-  display: block;
+.resourceItem {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
   width: 100%;
-  padding: 6px 10px;
-  margin-bottom: 2px;
-  font-size: 13px;
-  color: #18181b;
+  padding: 9px 10px;
+  color: inherit;
+  text-align: left;
   background: #fff;
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: 9px;
   cursor: pointer;
-  text-align: left;
-  transition: all 0.12s ease;
-  outline: none;
+  transition:
+    border-color 140ms ease,
+    transform 140ms ease;
 
-  &:hover {
-    border-color: #d4d4d8;
-    background: #fff;
+  &:hover,
+  &:focus-visible {
+    border-color: #d5dce6;
+    outline: none;
+    transform: translateX(2px);
+  }
+
+  > span:last-child {
+    display: grid;
+    min-width: 0;
+  }
+
+  strong,
+  code {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  strong {
+    color: #354156;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  code {
+    margin-top: 2px;
+    color: #98a1b0;
+    font-family: var(--mono);
+    font-size: 9px;
   }
 }
 
-.appServiceMore {
-  margin-top: 12px;
-  font-size: 12px;
-  color: #b94e20;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px 0;
-  outline: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
-}
-
-.appServiceHint {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 12px;
-  padding: 10px 14px;
-  background: #fff1e8;
-  border: 1px solid #f0c8b2;
-  border-radius: 8px;
-  font-size: 12px;
-  color: #713014;
-
-  svg {
-    flex-shrink: 0;
-    color: #b94e20;
-  }
-}
-
-.appServiceShimmer,
-.relationByServiceShimmer {
-  height: 120px;
-  border-radius: 10px;
-  background: #e8e8eb;
-  animation: shimmer 1.5s ease-in-out infinite alternate;
-}
-
-// ─── 服务内关系 ───
-.relationByServiceGrid {
+.resourceGlyph {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 12px;
-}
-
-.relationByServiceCard {
-  background: #fafafa;
-  border: 1px solid #e4e4e7;
-  border-radius: 10px;
-  padding: 14px 16px;
-}
-
-.relationByServiceCardHead {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-
-.relationByServiceCardName {
-  font-size: 13px;
-  font-weight: 600;
-  color: #18181b;
-}
-
-.relationByServiceCardCount {
-  font-size: 11px;
-  color: #71717a;
-  font-weight: 500;
-}
-
-.relationByServicePreview {
-  list-style: none;
-  margin: 0 0 10px 0;
-  padding: 0;
-  font-size: 11px;
-  color: #52525b;
-}
-
-.relationByServicePreviewItem {
-  padding: 4px 0;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex-wrap: wrap;
-
-  &:not(:last-child) {
-    border-bottom: 1px solid #f4f4f5;
-  }
-}
-
-.relationByServiceArrow {
-  color: #d4d4d8;
-  font-size: 10px;
-}
-
-.relationByServiceEmpty {
-  font-size: 12px;
-  color: #a1a1aa;
-  margin: 0 0 10px 0;
-}
-
-.relationByServiceBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: #b94e20;
-  background: #fff;
-  border: 1px solid #edb798;
-  border-radius: 6px;
-  padding: 6px 12px;
-  cursor: pointer;
-  transition: all 0.12s ease;
-  outline: none;
-
-  &:hover {
-    background: #fff1e8;
-    border-color: #b94e20;
-  }
-}
-
-.relationByServiceFull {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 14px;
-  font-size: 12px;
-  color: #71717a;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px 0;
-  outline: none;
-
-  &:hover {
-    color: #18181b;
-    text-decoration: underline;
-  }
-}
-
-// ─── Stats (保留给 StatCard 等) ───
-.statsRow {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.stat {
-  flex: 1;
-  min-width: 140px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 16px 18px;
-  background: #fff;
-  border: 1px solid #e4e4e7;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  text-align: left;
-  outline: none;
-
-  &:hover {
-    border-color: #d4d4d8;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  }
-}
-
-.statIcon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  flex-shrink: 0;
-}
-
-.statBody {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.statCount {
-  font-size: 24px;
-  font-weight: 700;
-  color: #18181b;
-  line-height: 1.1;
-  letter-spacing: -0.5px;
-}
-
-.statTitle {
-  font-size: 12px;
-  font-weight: 500;
-  color: #a1a1aa;
-}
-
-.statShimmer {
-  width: 100%;
-  height: 40px;
-  border-radius: 6px;
-  background: #e8e8eb;
-  animation: shimmer 1.5s ease-in-out infinite alternate;
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-// ─── Main Grid ───
-.mainGrid {
-  display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: 16px;
-
-  @media (max-width: 960px) {
-    grid-template-columns: 1fr;
-  }
-}
-
-.mainLeft {
-  min-width: 0;
-}
-
-.mainRight {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-// ─── Card Label ───
-.cardLabel {
-  font-size: 13px;
-  font-weight: 600;
-  color: #18181b;
-  margin-bottom: 4px;
-}
-
-.cardDescSmall {
-  font-size: 12px;
-  color: #71717a;
-  margin-bottom: 12px;
-  line-height: 1.4;
-}
-
-// ─── Quick Actions ───
-.quickActionsCard {
-  background: #fff;
-  border: 1px solid #e4e4e7;
-  border-radius: 12px;
-  padding: 16px;
-}
-
-.quickGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.quickBtn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 14px 8px;
-  border: 1px solid #f0f0f2;
-  border-radius: 10px;
-  background: #fafafa;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  outline: none;
-
-  &:hover {
-    background: #f4f4f5;
-    border-color: #e4e4e7;
-  }
-}
-
-.quickBtnIcon {
-  font-size: 18px;
-  color: #52525b;
-}
-
-.quickBtnLabel {
-  font-size: 12px;
-  font-weight: 500;
-  color: #52525b;
-}
-
-// ─── Activity ───
-.activityCard {
-  background: #fff;
-  border: 1px solid #e4e4e7;
-  border-radius: 12px;
-  padding: 16px;
-  flex: 1;
-}
-
-.activityEmpty {
-  text-align: center;
-  padding: 24px 0;
-  font-size: 13px;
-  color: #a1a1aa;
-}
-
-.timeline {
-  display: flex;
-  flex-direction: column;
-}
-
-.timelineItem {
-  display: flex;
-  gap: 10px;
-  padding: 8px 0;
-  position: relative;
-
-  &:not(:last-child) {
-    border-bottom: 1px solid #f4f4f5;
-  }
-}
-
-.timelineDot {
   width: 28px;
   height: 28px;
-  border-radius: 8px;
-  background: #f4f4f5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  flex-shrink: 0;
-}
-
-.timelineContent {
-  flex: 1;
-  min-width: 0;
-}
-
-.timelineRow {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.timelineTag {
+  place-items: center;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 7px;
+  font-family: var(--mono);
   font-size: 10px;
-  font-weight: 600;
-  color: #a1a1aa;
-  background: #f4f4f5;
-  padding: 1px 5px;
-  border-radius: 3px;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  flex-shrink: 0;
+  font-weight: 700;
 }
 
-.timelineName {
-  font-size: 13px;
-  font-weight: 500;
-  color: #18181b;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.serviceGlyph {
+  color: #285f9e;
+  background: #edf5ff;
 }
 
-.timelineAction {
+.emptyResource,
+.emptyActivity {
+  padding: 28px 12px;
+  color: #9aa4b2;
+  text-align: center;
   font-size: 12px;
-  color: #a1a1aa;
-  margin-top: 1px;
 }
 
-.timelineWarning {
-  color: #d97706;
-  font-weight: 500;
-}
+.flowRail {
+  display: grid;
+  grid-template-rows: 1fr auto 1fr;
+  place-items: center;
+  color: var(--accent);
 
-// ─── Graph Preview ───
-.graphCard {
-  background: #fff;
-  border: 1px solid #e4e4e7;
-  border-radius: 12px;
-  padding: 16px 20px;
-}
+  > span {
+    width: 1px;
+    height: 100%;
+    background: #e0c3b5;
+  }
 
-.graphCardHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
+  > div {
+    display: grid;
+    width: 64px;
+    height: 64px;
+    place-items: center;
+    background: #fff8f3;
+    border: 1px solid #e8cdbf;
+    border-radius: 50%;
+    box-shadow: 0 0 0 8px #fff;
 
-.graphExpandBtn {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  color: #71717a;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 6px;
-  transition: all 0.15s ease;
+    svg {
+      font-size: 16px;
+    }
+  }
 
-  &:hover {
-    background: #f4f4f5;
-    color: #18181b;
+  small {
+    color: #a46a4d;
+    font-family: var(--mono);
+    font-size: 7px;
+    line-height: 1.2;
+    text-align: center;
   }
 }
 
-.graphLoading {
-  text-align: center;
-  padding: 32px 0;
-  color: #a1a1aa;
-  font-size: 13px;
-}
-
-.graphBody {
+.governancePanel {
   display: flex;
   flex-direction: column;
+  padding: 26px;
 }
 
-.relationList {
-  display: flex;
-  flex-direction: column;
+.coverageGauge {
+  display: grid;
+  place-items: center;
+  margin: 22px 0 14px;
+}
+
+.coverageRing {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 156px;
+  height: 156px;
+  border-radius: 50%;
+  background: conic-gradient(var(--primary) var(--coverage), var(--muted) 0);
+
+  &::before {
+    position: absolute;
+    width: 136px;
+    height: 136px;
+    border-radius: 50%;
+    background: var(--card);
+    content: '';
+  }
+
+  .gaugeValue {
+    position: relative;
+  }
+}
+
+.gaugeValue {
+  display: grid;
+  place-items: center;
+
+  strong {
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 25px;
+  }
+
+  small {
+    margin-top: 2px;
+    color: var(--subtle);
+    font-size: 10px;
+  }
+}
+
+.governanceRows {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 18px;
+  border-block: 1px solid #edf0f4;
+
+  > div {
+    display: grid;
+    gap: 5px;
+    padding: 13px 10px;
+
+    &:first-child {
+      border-right: 1px solid #edf0f4;
+    }
+  }
+
+  span {
+    color: var(--muted);
+    font-size: 10px;
+  }
+
+  strong {
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 18px;
+  }
+}
+
+.warning {
+  color: #b15f1d;
+}
+
+.launchGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
-  margin-bottom: 12px;
+  margin-top: 22px;
 }
 
-.relationItem {
-  display: flex;
+.launchItem {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
   align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  background: #fafafa;
+  height: auto;
+  min-height: 76px;
+  padding: 13px 14px;
+  text-align: left;
+  white-space: normal;
+  background: #fafbfc;
+  border: 1px solid #edf0f4;
+  border-radius: 10px;
+
+  &:hover {
+    color: inherit;
+    background: #fff;
+    border-color: #d5dce6;
+  }
+
+  > span:first-child {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: 9px;
+  }
+
+  > span:nth-child(2) {
+    display: grid;
+  }
+
+  strong {
+    color: #354156;
+    font-size: 12px;
+  }
+
+  small {
+    margin-top: 3px;
+    color: #8a95a6;
+    font-size: 10px;
+  }
+
+  > svg {
+    color: #aeb6c2;
+    font-size: 10px;
+  }
+}
+
+.activityList {
+  display: grid;
+  margin-top: 18px;
+}
+
+.activityItem {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 11px;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid #f0f2f5;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  > div > span {
+    display: flex;
+    gap: 7px;
+    align-items: center;
+    min-width: 0;
+  }
+
+  strong {
+    overflow: hidden;
+    color: #465267;
+    font-size: 11px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  small {
+    flex: 0 0 auto;
+    color: #9aa3b1;
+    font-size: 10px;
+  }
+}
+
+.activityIcon {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  color: var(--accent);
+  background: #fff6f0;
   border-radius: 8px;
-  font-size: 13px;
-}
-
-.relationEntity {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 80px;
-}
-
-.entityType {
-  font-size: 10px;
-  color: #a1a1aa;
-  text-transform: uppercase;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
-
-.entityId {
-  font-weight: 500;
-  color: #18181b;
-  word-break: break-all;
-}
-
-.relationBadge {
-  padding: 2px 8px;
-  background: #fff;
-  border: 1px solid #e4e4e7;
-  border-radius: 4px;
-  font-size: 11px;
-  color: #52525b;
-  font-weight: 500;
-  flex-shrink: 0;
-}
-
-.relationArrowIcon {
-  font-size: 14px;
-  color: #d4d4d8;
-  flex-shrink: 0;
-}
-
-.moreHint {
-  text-align: center;
-  color: #a1a1aa;
   font-size: 12px;
-  margin-bottom: 8px;
+}
+
+.footerNote {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 20px;
+  padding: 0 4px;
+  color: #9ca5b3;
+  font-size: 8px;
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1180px) {
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .primaryGrid,
+  .secondaryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .governancePanel {
+    display: grid;
+    grid-template-columns: minmax(190px, 0.8fr) minmax(180px, 0.7fr) minmax(220px, 1fr);
+    gap: 20px;
+    align-items: center;
+
+    .coverageGauge {
+      grid-row: 1 / 3;
+      grid-column: 2;
+      margin: 0;
+    }
+
+    .panelHeaderCompact {
+      grid-row: 1 / 3;
+      grid-column: 1;
+    }
+
+    .governanceRows {
+      grid-row: 1;
+      grid-column: 3;
+      margin-bottom: 0;
+    }
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard {
+    padding-top: 0;
+  }
+
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 22px;
+    padding: 26px 24px;
+  }
+
+  .heroActions {
+    flex-wrap: wrap;
+  }
+
+  .topology {
+    grid-template-columns: 1fr;
+  }
+
+  .flowRail {
+    grid-template-rows: auto;
+    grid-template-columns: 1fr auto 1fr;
+
+    > span {
+      width: 100%;
+      height: 1px;
+    }
+  }
+
+  .governancePanel {
+    display: flex;
+  }
+}
+
+@media (max-width: 560px) {
+  .metrics,
+  .launchGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .resourcePanel,
+  .governancePanel,
+  .launchPanel,
+  .activityPanel {
+    padding: 20px;
+  }
+
+  .panelHeader {
+    flex-direction: column;
+  }
+
+  .activityItem > div {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .footerNote {
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero,
+  .metrics,
+  .primaryGrid,
+  .secondaryGrid {
+    animation: none;
+  }
+
+  .metricCard,
+  .resourceItem {
+    transition: none;
+  }
 }

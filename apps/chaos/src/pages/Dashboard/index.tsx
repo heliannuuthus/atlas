@@ -1,112 +1,89 @@
-import { Card, Row, Col, Statistic, Typography, Space } from 'antd'
-import { MailOutlined, FileTextOutlined, CloudUploadOutlined } from '@ant-design/icons'
 import { useRequest } from 'ahooks'
+import { ArrowUpRight, Cloud, FileCode2, Mail, Plus, Radio, UploadCloud } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { Badge } from '@atlas/ui/badge'
+import { Button } from '@atlas/ui/button'
+import { Card } from '@atlas/ui/card'
+import { Progress } from '@atlas/ui/progress'
+import { Skeleton } from '@atlas/ui/skeleton'
 import { chaosTemplateApi, type EmailTemplate } from '@/services'
 import styles from './index.module.scss'
 
-const { Title, Paragraph } = Typography
-
 export function Dashboard() {
   const navigate = useNavigate()
-
-  const { data: templates } = useRequest(() => chaosTemplateApi.getList())
-
-  const templateList = (templates as EmailTemplate[] | undefined) ?? []
-  const templateCount = templateList.length
-  const enabledTemplateCount = templateList.filter(t => t.is_enabled).length
+  const { data, loading } = useRequest(() => chaosTemplateApi.getList())
+  const templates = (data as EmailTemplate[] | undefined) ?? []
+  const enabled = templates.filter(template => template.is_enabled).length
+  const builtIn = templates.filter(template => template.is_builtin).length
+  const coverage = templates.length ? Math.round((enabled / templates.length) * 100) : 0
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <Title level={3}>Chaos 业务聚合</Title>
-        <Paragraph type="secondary">邮件发送、文件上传等业务聚合服务</Paragraph>
-      </div>
+    <div className={styles.page}>
+      <section className={styles.hero}>
+        <div className={styles.heroGlow} aria-hidden="true" />
+        <div className={styles.heroCopy}>
+          <div className={styles.eyebrow}><Radio /> DELIVERY CONTROL PLANE</div>
+          <h1>让每一次投递，<br /><span>有迹可循。</span></h1>
+          <p>集中管理邮件模板与对象存储，把内容生产、预览和分发收束到一个可靠入口。</p>
+          <div className={styles.heroActions}>
+            <Button size="lg" onClick={() => navigate('/templates/create')}><Plus />创建模板</Button>
+            <Button size="lg" variant="outline" onClick={() => navigate('/files')}><UploadCloud />上传文件</Button>
+          </div>
+        </div>
+        <div className={styles.orbit} aria-hidden="true">
+          <div className={styles.orbitRing} />
+          <div className={styles.core}><Mail /></div>
+          <span className={styles.nodeOne}><FileCode2 /></span>
+          <span className={styles.nodeTwo}><Cloud /></span>
+          <span className={styles.nodeThree}><ArrowUpRight /></span>
+        </div>
+      </section>
 
-      <Row gutter={[24, 24]}>
-        <Col xs={24} sm={12} lg={6}>
-          <Card hoverable className={styles.statCard} onClick={() => navigate('/templates')}>
-            <Statistic
-              title="邮件模板"
-              value={templateCount}
-              prefix={<FileTextOutlined />}
-              suffix="个"
-            />
-            <div className={styles.subStat}>启用 {enabledTemplateCount} 个</div>
-          </Card>
-        </Col>
+      <section className={styles.metrics} aria-label="服务概览">
+        <Card className={styles.metric}>
+          <span className={styles.metricLabel}>模板资产</span>
+          {loading ? <Skeleton className={styles.valueSkeleton} /> : <strong>{templates.length.toString().padStart(2, '0')}</strong>}
+          <span>含 {builtIn} 个内置模板</span>
+        </Card>
+        <Card className={styles.metric}>
+          <span className={styles.metricLabel}>启用模板</span>
+          {loading ? <Skeleton className={styles.valueSkeleton} /> : <strong>{enabled.toString().padStart(2, '0')}</strong>}
+          <div className={styles.progressRow}><Progress value={coverage} /><span>{coverage}%</span></div>
+        </Card>
+        <Card className={styles.metric}>
+          <span className={styles.metricLabel}>邮件通道</span>
+          <strong className={styles.statusValue}><i />在线</strong>
+          <span>SMTP 服务连接正常</span>
+        </Card>
+        <Card className={styles.metric}>
+          <span className={styles.metricLabel}>对象存储</span>
+          <strong className={styles.storageValue}>R2</strong>
+          <span>Cloudflare 全球存储</span>
+        </Card>
+      </section>
 
-        <Col xs={24} sm={12} lg={6}>
-          <Card hoverable className={styles.statCard} onClick={() => navigate('/files')}>
-            <Statistic
-              title="文件上传"
-              value="上传"
-              prefix={<CloudUploadOutlined />}
-              valueStyle={{ fontSize: 20 }}
-            />
-            <div className={styles.subStat}>点击上传文件</div>
-          </Card>
-        </Col>
-
-        <Col xs={24} sm={12} lg={6}>
-          <Card className={styles.statCard}>
-            <Statistic
-              title="邮件服务"
-              value="运行中"
-              prefix={<MailOutlined />}
-              valueStyle={{ color: '#52c41a', fontSize: 20 }}
-            />
-            <div className={styles.subStat}>SMTP 连接正常</div>
-          </Card>
-        </Col>
-
-        <Col xs={24} sm={12} lg={6}>
-          <Card className={styles.statCard}>
-            <Statistic
-              title="文件存储"
-              value="Cloudflare R2"
-              prefix={<CloudUploadOutlined />}
-              valueStyle={{ fontSize: 16 }}
-            />
-            <div className={styles.subStat}>对象存储服务</div>
-          </Card>
-        </Col>
-      </Row>
-
-      <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
-        <Col xs={24} lg={12}>
-          <Card title="快速操作" className={styles.actionCard}>
-            <Space direction="vertical" style={{ width: '100%' }}>
-              <Card.Grid
-                style={{ width: '50%', textAlign: 'center', cursor: 'pointer' }}
-                onClick={() => navigate('/templates/create')}
-              >
-                <FileTextOutlined style={{ fontSize: 24, marginBottom: 8 }} />
-                <div>创建邮件模板</div>
-              </Card.Grid>
-              <Card.Grid
-                style={{ width: '50%', textAlign: 'center', cursor: 'pointer' }}
-                onClick={() => navigate('/files')}
-              >
-                <CloudUploadOutlined style={{ fontSize: 24, marginBottom: 8 }} />
-                <div>上传文件</div>
-              </Card.Grid>
-            </Space>
-          </Card>
-        </Col>
-
-        <Col xs={24} lg={12}>
-          <Card title="说明" className={styles.recentCard}>
-            <Paragraph>
-              <strong>文件上传</strong>：文件直接上传到 Cloudflare R2，暂不落库。
-            </Paragraph>
-            <Paragraph>
-              <strong>邮件模板</strong>：支持 Go template 语法，可配置变量。
-            </Paragraph>
-            <Paragraph type="secondary">后续将通过 Cloudflare Worker 实现文件访问控制。</Paragraph>
-          </Card>
-        </Col>
-      </Row>
+      <section className={styles.workspace}>
+        <div className={styles.sectionHeading}>
+          <div><span>WORKSPACE</span><h2>今天从这里开始</h2></div>
+          <Button variant="ghost" onClick={() => navigate('/templates')}>查看全部模板 <ArrowUpRight /></Button>
+        </div>
+        <div className={styles.actionGrid}>
+          <button type="button" className={styles.actionCard} onClick={() => navigate('/templates/create')}>
+            <span className={styles.actionIndex}>01</span><span className={styles.actionIcon}><FileCode2 /></span>
+            <strong>设计一封邮件</strong><p>使用 Go Template 变量创建可复用的 HTML 邮件。</p><ArrowUpRight className={styles.actionArrow} />
+          </button>
+          <button type="button" className={styles.actionCard} onClick={() => navigate('/files')}>
+            <span className={styles.actionIndex}>02</span><span className={styles.actionIcon}><UploadCloud /></span>
+            <strong>分发一个文件</strong><p>上传至 R2 并立即获得可复制的公开访问地址。</p><ArrowUpRight className={styles.actionArrow} />
+          </button>
+          <div className={styles.serviceCard}>
+            <div className={styles.serviceTop}><Badge variant="secondary">SYSTEM NOTE</Badge><span>CHAOS / 01</span></div>
+            <blockquote>“模板负责表达，存储负责抵达。Chaos 让两者共享同一条可靠的分发路径。”</blockquote>
+            <div className={styles.serviceLine}><span>MAIL</span><i /><b>READY</b></div>
+            <div className={styles.serviceLine}><span>STORAGE</span><i /><b>READY</b></div>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }

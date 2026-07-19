@@ -1,33 +1,42 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { useLocation } from 'react-router-dom'
-import { useRequest, useDebounce } from 'ahooks'
+import { useDebounce, useRequest } from 'ahooks'
+import { Button } from '@atlas/ui/button'
 import {
-  Button,
-  Input,
-  Form,
-  Modal,
-  Select,
-  Space,
-  Typography,
-  Tooltip,
-  Avatar,
-  Row,
-  Col,
-  Card,
-  Flex,
-  message,
-} from 'antd'
-import {
-  PlusOutlined,
-  EditOutlined,
-  CloudServerOutlined,
-  DeleteOutlined,
-  EyeOutlined,
-} from '@ant-design/icons'
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@atlas/ui/dialog'
+import { EmptyState } from '@atlas/ui/empty-state'
+import { Input } from '@atlas/ui/input'
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@atlas/ui/input-group'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@atlas/ui/select'
+import { Skeleton } from '@atlas/ui/skeleton'
+import { Textarea } from '@atlas/ui/textarea'
+import { toast } from '@atlas/ui/toast'
+import { LoaderCircle, Plus, Search, Server } from 'lucide-react'
 import { eq, prefix } from '@atlas/shared'
+import { FormField } from '@/components/forms/FormField'
+import { ResourceList } from '@/components/ResourceList'
 import { useAppNavigate, useDomainId } from '@/contexts/DomainContext'
 import { serviceApi } from '@/services'
 import styles from './index.module.scss'
+
+interface ServiceDraft {
+  service_id: string
+  name: string
+  description: string
+}
+
+const emptyDraft: ServiceDraft = { service_id: '', name: '', description: '' }
+
+function createdAtTimestamp(value?: string) {
+  const timestamp = value ? Date.parse(value) : Number.NaN
+  return Number.isFinite(timestamp) ? timestamp : 0
+}
 
 export function List() {
   const navigate = useAppNavigate()
@@ -36,17 +45,16 @@ export function List() {
   const [keyword, setKeyword] = useState('')
   const [searchBy, setSearchBy] = useState<'id' | 'name'>('name')
   const shouldOpenCreate = (location.state as { openCreate?: boolean })?.openCreate ?? false
-  const [createModalOpen, setCreateModalOpen] = useState(shouldOpenCreate)
-  const [form] = Form.useForm()
+  const [createDialogOpen, setCreateDialogOpen] = useState(shouldOpenCreate)
+  const [draft, setDraft] = useState<ServiceDraft>(emptyDraft)
+  const [pendingDelete, setPendingDelete] = useState<{ id: string; name: string } | null>(null)
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
-    if (shouldOpenCreate) {
-      navigate(location.pathname, { replace: true, state: {} })
-    }
+    if (shouldOpenCreate) navigate(location.pathname, { replace: true, state: {} })
   }, [shouldOpenCreate, location.pathname, navigate])
 
-  const trimmedKeyword = keyword.trim()
-  const debouncedKeyword = useDebounce(trimmedKeyword, { wait: 300 })
+  const debouncedKeyword = useDebounce(keyword.trim(), { wait: 300 })
   const { data, loading, refresh } = useRequest(
     () => {
       const filter = debouncedKeyword
@@ -59,214 +67,216 @@ export function List() {
     { ready: !!domainId, refreshDeps: [domainId, debouncedKeyword, searchBy] }
   )
 
-  const list = data?.items ?? []
-
-  const { run: runCreate, loading: createLoading } = useRequest(
-    async (values: { service_id: string; name: string; description: string }) => {
-      await serviceApi.create(domainId!, {
-        service_id: values.service_id,
-        name: values.name,
-        description: values.description,
-      })
-      message.success('创建成功')
-      setCreateModalOpen(false)
-      form.resetFields()
-      refresh()
-    },
-    { manual: true, onError: () => message.error('创建失败') }
+  const services = [...(data?.items ?? [])].sort(
+    (left, right) =>
+      createdAtTimestamp(right.created_at) - createdAtTimestamp(left.created_at) ||
+      left.service_id.localeCompare(right.service_id)
   )
 
+  const { runAsync: createService, loading: createLoading } = useRequest(
+    async (values: ServiceDraft) => {
+      await serviceApi.create(domainId!, values)
+      toast.success('服务已创建')
+      setCreateDialogOpen(false)
+      setDraft(emptyDraft)
+      refresh()
+    },
+    { manual: true, onError: () => toast.error('创建失败，请检查输入后重试') }
+  )
+
+  const handleCreate = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (!draft.service_id.trim() || !draft.name.trim() || !draft.description.trim()) {
+      toast.error('请完整填写服务标识、名称和描述')
+      return
+    }
+    void createService({
+      service_id: draft.service_id.trim(),
+      name: draft.name.trim(),
+      description: draft.description.trim(),
+    })
+  }
+
   return (
-    <div className={styles.container}>
-      <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>服务</h1>
-      </div>
+    <section className={styles.container} aria-labelledby="services-title">
+      <header className={styles.pageHeader}>
+        <div>
+          <h1 id="services-title" className={styles.pageTitle}>
+            服务管理
+          </h1>
+          <p className={styles.pageDescription}>管理服务身份、访问关系与 Token 生命周期。</p>
+        </div>
+      </header>
 
       <div className={styles.toolbar}>
-        <Space.Compact className={styles.searchCompact}>
-          <Select
-            value={searchBy}
-            onChange={v => setSearchBy(v as 'id' | 'name')}
-            options={[
-              { label: '名称', value: 'name' },
-              { label: '标识', value: 'id' },
-            ]}
-            style={{ width: 88 }}
-          />
-          <Input
-            placeholder={searchBy === 'id' ? '输入服务 ID' : '输入服务名称'}
-            allowClear
-            value={keyword}
-            onChange={e => setKeyword(e.target.value)}
-            style={{ width: 220 }}
-          />
-        </Space.Compact>
+        <div className={styles.listMeta} aria-live="polite">
+          <span>{loading ? '正在加载服务…' : `${services.length} 个服务`}</span>
+          <span>{debouncedKeyword ? `匹配“${debouncedKeyword}”` : '按创建时间 · 最新优先'}</span>
+        </div>
+        <div className={styles.headerActions}>
+          <InputGroup className={styles.searchGroup} role="search">
+            <label className={styles.srOnly} htmlFor="service-search">
+              搜索服务
+            </label>
+            <Select value={searchBy} onValueChange={value => setSearchBy(value as 'id' | 'name')}>
+              <SelectTrigger className={styles.searchType}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="name">按名称</SelectItem>
+                <SelectItem value="id">按标识</SelectItem>
+              </SelectContent>
+            </Select>
+            <InputGroupAddon>
+              <Search aria-hidden="true" />
+            </InputGroupAddon>
+            <InputGroupInput
+              id="service-search"
+              name="service-search"
+              autoComplete="off"
+              placeholder={searchBy === 'id' ? '例如 hermes…' : '输入服务名称…'}
+              value={keyword}
+              onChange={event => setKeyword(event.target.value)}
+            />
+          </InputGroup>
+          <Button type="button" onClick={() => setCreateDialogOpen(true)}>
+            <Plus aria-hidden="true" />
+            新建服务
+          </Button>
+        </div>
       </div>
 
       {loading ? (
-        <Row gutter={[24, 24]}>
-          {[1, 2, 3, 4, 5, 6].map(i => (
-            <Col key={i} xs={24} sm={12} md={8} lg={8} xl={6}>
-              <Card loading className={styles.cardSkeleton} />
-            </Col>
+        <div className={styles.skeletonList} aria-label="正在加载服务">
+          {Array.from({ length: 5 }, (_, index) => (
+            <Skeleton key={index} className={styles.listSkeleton} />
           ))}
-        </Row>
+        </div>
+      ) : services.length > 0 ? (
+        <ResourceList
+          resourceLabel="服务"
+          items={services.map(service => ({
+            id: service.service_id,
+            name: service.name || service.service_id,
+            description: service.description,
+            logoUrl: service.logo_url,
+            createdAt: service.created_at,
+            fallbackIcon: <Server />,
+          }))}
+          onView={item => navigate(`/services/${encodeURIComponent(item.id)}`)}
+          onDelete={item => setPendingDelete({ id: item.id, name: item.name })}
+        />
       ) : (
-        <Row gutter={[24, 24]}>
-          <Col xs={24} sm={12} md={8} lg={8} xl={6}>
-            <div
-              className={`${styles.cardWrap} ${styles.createCard}`}
-              onClick={() => setCreateModalOpen(true)}
-              onKeyDown={e => e.key === 'Enter' && setCreateModalOpen(true)}
-              role="button"
-              tabIndex={0}
-            >
-              <Card className={styles.card} variant="borderless">
-                <Flex gap={14} align="flex-start" className={styles.cardHead}>
-                  <div className={styles.cardIcon}>
-                    <PlusOutlined />
-                  </div>
-                  <Flex vertical gap={2} className={styles.cardTitleBlock}>
-                    <div className={styles.cardIdWrap}>
-                      <span className={styles.cardId}>创建服务</span>
-                    </div>
-                    <span className={styles.cardName}>配置关系与 Token 有效期</span>
-                  </Flex>
-                </Flex>
-                <p className={styles.cardDescMuted}>点击创建新服务</p>
-              </Card>
-            </div>
-          </Col>
-          {list.map(service => (
-            <Col key={service.service_id} xs={24} sm={12} md={8} lg={8} xl={6}>
-              <div
-                className={styles.cardWrap}
-                onClick={() => navigate(`/services/${service.service_id}`)}
-              >
-                <Card className={styles.card} variant="borderless">
-                  <Flex gap={14} align="flex-start" className={styles.cardHead}>
-                    <div className={styles.cardIcon}>
-                      {service.logo_url ? (
-                        <Avatar src={service.logo_url} shape="square" size={44} />
-                      ) : (
-                        <CloudServerOutlined />
-                      )}
-                    </div>
-                    <Flex vertical gap={2} className={styles.cardTitleBlock}>
-                      <div className={styles.cardIdWrap}>
-                        <Typography.Text
-                          copyable={{ text: service.service_id, tooltips: ['复制标识', '已复制'] }}
-                          className={styles.cardId}
-                        >
-                          {service.service_id}
-                        </Typography.Text>
-                      </div>
-                      <span className={styles.cardName}>{service.name || service.service_id}</span>
-                    </Flex>
-                  </Flex>
-                  {service.description ? (
-                    <p className={styles.cardDesc}>{service.description}</p>
-                  ) : (
-                    <p className={styles.cardDescMuted}>暂无描述</p>
-                  )}
-                </Card>
-
-                <div className={styles.rightTrigger} />
-                <div className={styles.overlayRight} onClick={e => e.stopPropagation()}>
-                  <Tooltip title="查看详情" placement="left">
-                    <Button
-                      type="text"
-                      icon={<EyeOutlined />}
-                      className={styles.overlayBtn}
-                      onClick={() => navigate(`/services/${service.service_id}`)}
-                    />
-                  </Tooltip>
-                  <Tooltip title="编辑服务" placement="left">
-                    <Button
-                      type="text"
-                      icon={<EditOutlined />}
-                      className={styles.overlayBtn}
-                      onClick={() => navigate(`/services/${service.service_id}/edit`)}
-                    />
-                  </Tooltip>
-                  <Tooltip title="删除服务" placement="left">
-                    <Button
-                      type="text"
-                      danger
-                      icon={<DeleteOutlined />}
-                      className={`${styles.overlayBtn} ${styles.deleteBtn}`}
-                      onClick={() => {
-                        Modal.confirm({
-                          title: '删除服务',
-                          content: `确定删除服务「${service.name || service.service_id}」？关联的关系、组等将一并删除。`,
-                          okText: '删除',
-                          okType: 'danger',
-                          cancelText: '取消',
-                          onOk: async () => {
-                            await serviceApi.delete(domainId!, service.service_id)
-                            refresh()
-                          },
-                        })
-                      }}
-                    />
-                  </Tooltip>
-                </div>
-              </div>
-            </Col>
-          ))}
-        </Row>
+        <EmptyState
+          title={debouncedKeyword ? '没有匹配的服务' : '尚未创建服务'}
+          description={
+            debouncedKeyword ? '尝试更换关键词或搜索字段。' : '创建第一个服务以开始配置访问关系。'
+          }
+          action={
+            <Button type="button" onClick={() => setCreateDialogOpen(true)}>
+              <Plus aria-hidden="true" />
+              新建服务
+            </Button>
+          }
+          className={styles.emptyState}
+        />
       )}
 
-      <Modal
-        title="新建服务"
-        open={createModalOpen}
-        onCancel={() => {
-          setCreateModalOpen(false)
-          form.resetFields()
-        }}
-        footer={null}
-        destroyOnHidden
-        width={400}
-      >
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={v => runCreate(v as { service_id: string; name: string; description: string })}
-        >
-          <Form.Item
-            name="service_id"
-            label="服务标识"
-            rules={[{ required: true, message: '请输入服务标识' }]}
-          >
-            <Input placeholder="请输入服务标识" />
-          </Form.Item>
-          <Form.Item name="name" label="名称" rules={[{ required: true, message: '请输入名称' }]}>
-            <Input placeholder="请输入名称" />
-          </Form.Item>
-          <Form.Item
-            name="description"
-            label="描述"
-            rules={[{ required: true, message: '请输入描述' }]}
-          >
-            <Input.TextArea placeholder="请输入描述" rows={3} />
-          </Form.Item>
-          <Form.Item className={styles.modalFooter}>
-            <Space>
-              <Button
-                onClick={() => {
-                  setCreateModalOpen(false)
-                  form.resetFields()
-                }}
-              >
+      <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>新建服务</DialogTitle>
+            <DialogDescription>
+              服务标识创建后用于 API 路径和访问关系，请使用稳定名称。
+            </DialogDescription>
+          </DialogHeader>
+          <form className={styles.dialogForm} onSubmit={handleCreate}>
+            <FormField label="服务标识" htmlFor="service-id" required>
+              <Input
+                id="service-id"
+                name="service_id"
+                autoComplete="off"
+                spellCheck={false}
+                placeholder="例如 billing-api…"
+                value={draft.service_id}
+                onChange={event =>
+                  setDraft(current => ({ ...current, service_id: event.target.value }))
+                }
+              />
+            </FormField>
+            <FormField label="显示名称" htmlFor="service-name" required>
+              <Input
+                id="service-name"
+                name="name"
+                autoComplete="off"
+                placeholder="例如账单服务…"
+                value={draft.name}
+                onChange={event => setDraft(current => ({ ...current, name: event.target.value }))}
+              />
+            </FormField>
+            <FormField label="描述" htmlFor="service-description" required>
+              <Textarea
+                id="service-description"
+                name="description"
+                placeholder="说明服务职责和访问边界…"
+                value={draft.description}
+                onChange={event =>
+                  setDraft(current => ({ ...current, description: event.target.value }))
+                }
+              />
+            </FormField>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setCreateDialogOpen(false)}>
                 取消
               </Button>
-              <Button type="primary" htmlType="submit" loading={createLoading}>
-                创建
+              <Button type="submit" disabled={createLoading}>
+                {createLoading ? (
+                  <LoaderCircle className={styles.spinner} aria-hidden="true" />
+                ) : null}
+                创建服务
               </Button>
-            </Space>
-          </Form.Item>
-        </Form>
-      </Modal>
-    </div>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={pendingDelete !== null} onOpenChange={open => !open && setPendingDelete(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>删除服务</DialogTitle>
+            <DialogDescription>
+              确定删除“{pendingDelete?.name}”？关联关系和配置也会被删除，此操作无法撤销。
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setPendingDelete(null)}>
+              取消
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              disabled={deleting}
+              onClick={async () => {
+                if (!pendingDelete) return
+                setDeleting(true)
+                try {
+                  await serviceApi.delete(domainId!, pendingDelete.id)
+                  toast.success('服务已删除')
+                  setPendingDelete(null)
+                  refresh()
+                } catch {
+                  toast.error('删除失败，请稍后重试')
+                } finally {
+                  setDeleting(false)
+                }
+              }}
+            >
+              {deleting ? <LoaderCircle className={styles.spinner} aria-hidden="true" /> : null}
+              删除服务
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </section>
   )
 }

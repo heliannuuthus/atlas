@@ -155,19 +155,19 @@
 // ── Handle ──
 
 .handle {
-  width: 8px !important;
-  height: 8px !important;
-  border: 2px solid #fff !important;
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--card);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  background-color: #a3a3a3 !important;
+  background-color: var(--muted-foreground);
 }
 
 .appNode .handle {
-  background-color: #b94e20 !important;
+  background-color: var(--primary);
 }
 
 .serviceNode .handle {
-  background-color: #0ea5e9 !important;
+  background-color: var(--secondary-foreground);
 }
 
 // ── 边 ──
@@ -199,17 +199,7 @@
 }
 
 .permissionTag {
-  margin: 0 !important;
-  font-size: 11px !important;
+  margin: 0;
+  font-size: 11px;
   cursor: default;
-
-  :global(.anticon-close) {
-    opacity: 0;
-    transition: opacity 0.2s;
-    font-size: 10px;
-  }
-}
-
-.permissionEdgeLabel:hover .permissionTag :global(.anticon-close) {
-  opacity: 1;
 }

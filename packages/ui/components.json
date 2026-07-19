@@ -1,0 +1,22 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "radix-luma",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "css": "src/styles/globals.css",
+    "baseColor": "stone",
+    "cssVariables": true
+  },
+  "iconLibrary": "lucide",
+  "aliases": {
+    "components": "@atlas/ui/components",
+    "hooks": "@atlas/ui/hooks",
+    "lib": "@atlas/ui/lib",
+    "utils": "@atlas/ui/lib/utils",
+    "ui": "@atlas/ui/components"
+  },
+  "menuColor": "default-translucent",
+  "menuAccent": "subtle",
+  "rtl": false
+}

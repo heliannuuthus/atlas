@@ -1,90 +1,63 @@
 import { useRequest } from 'ahooks'
-import { Card, Table, Button, Empty, Typography } from 'antd'
-import type { ColumnsType } from 'antd/es/table'
-import { EyeOutlined, ApartmentOutlined } from '@ant-design/icons'
+import { Eye, Network } from 'lucide-react'
+import { Button } from '@atlas/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@atlas/ui/card'
+import { EmptyState } from '@atlas/ui/empty-state'
+import { Spinner } from '@atlas/ui/spinner'
+import { DataTable, type DataTableColumn } from '@atlas/ui/table'
 import { useAppNavigate } from '@/contexts/DomainContext'
 import { domainApi } from '@/services'
 import type { Domain } from '@/types'
 import styles from './index.module.scss'
 
-const { Text } = Typography
-
 export function List() {
   const navigate = useAppNavigate()
-
-  const { data, loading } = useRequest(() => domainApi.getList(), {
-    refreshDeps: [],
-  })
-
-  const tableData = data || []
-
-  const columns: ColumnsType<Domain> = [
+  const { data = [], loading } = useRequest(domainApi.getList)
+  const columns: DataTableColumn<Domain>[] = [
     {
-      title: '域ID',
-      dataIndex: 'domain_id',
       key: 'domain_id',
-      width: 120,
+      header: '域 ID',
+      width: 140,
+      render: domain => <code>{domain.domain_id}</code>,
     },
+    { key: 'name', header: '名称', width: 180, render: domain => domain.name },
     {
-      title: '名称',
-      dataIndex: 'name',
-      key: 'name',
-      width: 180,
-    },
-    {
-      title: '描述',
-      dataIndex: 'description',
       key: 'description',
-      ellipsis: true,
-      render: text => text || <Text type="secondary">-</Text>,
+      header: '描述',
+      render: domain => domain.description || <span className="text-muted-foreground">—</span>,
     },
     {
-      title: '操作',
       key: 'action',
-      width: 80,
-      fixed: 'right',
-      render: (_, record) => (
-        <Button
-          type="link"
-          size="small"
-          icon={<EyeOutlined />}
-          onClick={() => navigate(`/domains/${record.domain_id}`)}
-        >
+      header: '操作',
+      width: 90,
+      render: domain => (
+        <Button variant="ghost" size="sm" onClick={() => navigate(`/domains/${domain.domain_id}`)}>
+          <Eye />
           查看
         </Button>
       ),
     },
   ]
-
-  // 空状态组件
-  const emptyState = (
-    <Empty
-      image={<ApartmentOutlined style={{ fontSize: 48, color: '#d9d9d9' }} />}
-      imageStyle={{ height: 60 }}
-      description="暂无域数据"
-    />
-  )
-
   return (
     <div className={styles.container}>
       <Card>
-        <div className={styles.header}>
-          <div className={styles.headerLeft}>
-            <div className={styles.title}>域</div>
-            <Typography.Text type="secondary" className={styles.headerDesc}>
-              域是身份与权限的隔离边界，当前仅展示该域本身；服务、应用与组均在域下创建与查看。
-            </Typography.Text>
-          </div>
-        </div>
-
-        <Table
-          columns={columns}
-          dataSource={tableData}
-          loading={loading}
-          rowKey="domain_id"
-          scroll={{ x: 800 }}
-          locale={{ emptyText: emptyState }}
-        />
+        <CardHeader>
+          <CardTitle>域</CardTitle>
+          <p className={styles.headerDesc}>
+            域是身份与权限的隔离边界，当前仅展示该域本身；服务、应用与组均在域下创建与查看。
+          </p>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="flex min-h-40 items-center justify-center">
+              <Spinner />
+            </div>
+          ) : data.length ? (
+            <DataTable columns={columns} data={data} rowKey="domain_id" />
+          ) : (
+            <EmptyState title="暂无域数据" icon={<Network className="size-8" />} />
+          )}
+        </CardContent>
       </Card>
     </div>
   )
