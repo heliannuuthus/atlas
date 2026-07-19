@@ -2,7 +2,11 @@
   "name": "atlas-monorepo",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "packageManager": "pnpm@10.28.1",
+  "engines": {
+    "node": "24.13.x"
+  },
   "scripts": {
     "dev": "turbo dev",
     "dev:portal": "turbo dev --filter=@atlas/portal",
