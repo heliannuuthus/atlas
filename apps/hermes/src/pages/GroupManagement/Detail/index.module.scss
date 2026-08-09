@@ -8,9 +8,6 @@
 
 .mainCard {
   :global {
-    .ant-card-body {
-      padding: 0 24px 24px 24px;
-    }
   }
 }
 
@@ -23,28 +20,11 @@
 
 .tabs {
   :global {
-    .ant-tabs-nav {
-      margin-bottom: 24px;
-      &::before {
-        border-bottom: 1px solid #f0f0f0;
-      }
-    }
   }
 }
 
 .descriptions {
   :global {
-    .ant-descriptions-item-label {
-      width: 140px;
-      color: #8c8c8c;
-      &::after {
-        content: ':';
-      }
-    }
-    .ant-descriptions-item-content {
-      font-weight: 500;
-      color: #262626;
-    }
   }
 }
 
@@ -75,7 +55,10 @@
   padding: 12px;
   background: #fafafa;
   border-radius: 8px;
-  transition: all 0.2s;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s,
+    box-shadow 0.2s;
   border: 1px solid transparent;
 
   &:hover {

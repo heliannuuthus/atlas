@@ -1,4 +1,4 @@
-import { message } from 'antd'
+import { toast } from 'sonner'
 import type { AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios'
 import axios from 'axios'
 import { getServiceUrl, apiEndpoints, type ServiceName } from '../config/env'
@@ -38,7 +38,7 @@ function responseSuccessHandler(response: AxiosResponse<ApiResponse>): any {
     data.code !== 200
   ) {
     const errorMsg = data.message || '请求失败'
-    message.error(errorMsg)
+    toast.error(errorMsg)
     return Promise.reject(new Error(errorMsg))
   }
   if (data && typeof data === 'object' && !Array.isArray(data) && data.data !== undefined) {
@@ -84,16 +84,16 @@ function responseErrorHandler(error: AxiosError<ApiResponse>) {
         errorMsg = data?.message || `请求失败 (${status})`
     }
 
-    message.error(errorMsg)
+    toast.error(errorMsg)
     return Promise.reject(new Error(errorMsg))
   }
 
   if (error.request) {
-    message.error('网络错误，请检查网络连接')
+    toast.error('网络错误，请检查网络连接')
     return Promise.reject(new Error('网络错误'))
   }
 
-  message.error('请求失败，请稍后重试')
+  toast.error('请求失败，请稍后重试')
   return Promise.reject(error)
 }
 

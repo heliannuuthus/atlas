@@ -1,26 +1,73 @@
-@use '@atlas/shared/styles/variables.scss' as *;
+:root {
+  --atlas-command: #0b4fbd;
+  --atlas-primary: #1677ff;
+  --atlas-primary-hover: #0958d9;
+  --atlas-primary-soft: #eaf3ff;
+  --atlas-signal: #6ba6ff;
+  --atlas-ink: #1d2633;
+  --atlas-muted: #657287;
+  --atlas-canvas: #eef5fc;
+  --atlas-surface: #ffffff;
+  --atlas-border: #e6eaf0;
+  --atlas-border-strong: #dfe5ee;
+  --atlas-radius-sm: 10px;
+  --atlas-radius-md: 16px;
+  --atlas-radius-lg: 24px;
+  --atlas-radius-pill: 999px;
+  --atlas-display:
+    'SF Pro Display', 'SF Pro SC', -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+  --atlas-font:
+    'SF Pro Text', 'SF Pro SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif;
+  --atlas-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  color: var(--atlas-ink);
+  font-family: var(--atlas-font);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
 }
 
-html,
+html {
+  width: 100%;
+  min-width: 320px;
+  min-height: 100%;
+  background: var(--atlas-canvas);
+  scroll-behavior: smooth;
+}
+
 body {
   width: 100%;
-  height: 100%;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
-    'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: $bg-color;
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+  background: var(--atlas-canvas);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
 }
 
 #root {
   width: 100%;
-  height: 100%;
+  min-height: 100dvh;
+}
+
+::selection {
+  background: #d8e5ff;
+  color: var(--atlas-ink);
 }
 
 ::-webkit-scrollbar {
@@ -29,15 +76,31 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: $gray-100;
-  border-radius: 4px;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: $gray-300;
-  border-radius: 4px;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: #cbd1dd;
+  background-clip: padding-box;
 
   &:hover {
-    background: $gray-400;
+    background: #aeb5c3;
+    background-clip: padding-box;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

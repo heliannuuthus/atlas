@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Button, Tooltip } from 'antd'
-import { ArrowLeftOutlined } from '@ant-design/icons'
+import { ArrowLeft } from 'lucide-react'
 import styles from './index.module.scss'
 
 interface PageHeaderProps {
@@ -28,14 +27,15 @@ export function PageHeader({ title, backPath, onBack, extra }: PageHeaderProps) 
     <div className={styles.header}>
       <div className={styles.titleRow}>
         {showBack && (
-          <Tooltip title="返回" placement="bottomLeft">
-            <Button
-              type="text"
-              icon={<ArrowLeftOutlined style={{ fontSize: '16px' }} />}
-              onClick={handleBack}
-              className={styles.backBtn}
-            />
-          </Tooltip>
+          <button
+            type="button"
+            title="返回"
+            aria-label="返回"
+            onClick={handleBack}
+            className={styles.backBtn}
+          >
+            <ArrowLeft size={16} />
+          </button>
         )}
         <div className={styles.title}>{title}</div>
       </div>

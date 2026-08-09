@@ -10,10 +10,15 @@ import {
   AppstoreOutlined,
   SettingOutlined,
 } from '@ant-design/icons'
-import { MainLayout, Sidebar, Breadcrumb, Header, UserMenu, SearchTrigger } from '@atlas/ui'
-import type { SidebarMenuItem } from '@atlas/ui'
+import { Breadcrumb } from '@atlas/ui/breadcrumb'
+import { PRODUCT_BRAND_COLORS } from '@atlas/ui/brand-colors'
+import { Header } from '@atlas/ui/header'
+import { MainLayout } from '@atlas/ui/main-layout'
+import { SearchTrigger } from '@atlas/ui/search-trigger'
+import { Sidebar, type SidebarMenuItem } from '@atlas/ui/sidebar'
+import { UserMenu } from '@atlas/ui/user-menu'
 
-const BRAND_COLOR = '#ea580c'
+const BRAND_COLOR = PRODUCT_BRAND_COLORS.zwei
 
 const zweiMenus: SidebarMenuItem[] = [
   { key: 'dashboard', label: '概览', icon: <AppstoreOutlined />, path: '/' },
@@ -64,18 +69,6 @@ const zweiMenus: SidebarMenuItem[] = [
 ]
 
 const zweiLogo = {
-  icon: (
-    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="32" height="32" rx="8" fill="#ea580c" />
-      <circle cx="16" cy="13" r="5" stroke="#fff" strokeWidth="2" fill="none" />
-      <path
-        d="M9 24c0-3.87 3.13-7 7-7s7 3.13 7 7"
-        stroke="#fff"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-    </svg>
-  ),
   text: 'Zwei',
 }
 

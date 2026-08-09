@@ -1,32 +1,43 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { useDebounce, useRequest } from 'ahooks'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
 import { useLocation } from 'react-router-dom'
-import { useRequest, useDebounce } from 'ahooks'
+import { AppWindow, LoaderCircle, Plus, Search } from 'lucide-react'
+import { z } from 'zod'
+import { Button } from '@atlas/ui/button'
 import {
-  Button,
-  Input,
-  Form,
-  Select,
-  Space,
-  Typography,
-  Modal,
-  Tooltip,
-  Avatar,
-  Row,
-  Col,
-  Card,
-  Flex,
-  message,
-} from 'antd'
-import {
-  PlusOutlined,
-  EditOutlined,
-  AppstoreAddOutlined,
-  EyeOutlined,
-  DeleteOutlined,
-} from '@ant-design/icons'
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@atlas/ui/dialog'
+import { EmptyState } from '@atlas/ui/empty-state'
+import { Input } from '@atlas/ui/input'
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@atlas/ui/input-group'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@atlas/ui/select'
+import { Skeleton } from '@atlas/ui/skeleton'
+import { Textarea } from '@atlas/ui/textarea'
+import { toast } from '@atlas/ui/toast'
+import { FormField } from '@/components/forms/FormField'
+import { ResourceList } from '@/components/ResourceList'
 import { useAppNavigate, useDomainId } from '@/contexts/DomainContext'
 import { applicationApi } from '@/services'
 import styles from './index.module.scss'
+
+const createSchema = z.object({
+  app_id: z.string().trim(),
+  name: z.string().trim().min(1, '请输入名称'),
+  description: z.string().trim().min(1, '请输入描述'),
+})
+type CreateValues = z.infer<typeof createSchema>
+
+function createdAtTimestamp(value?: string) {
+  const timestamp = value ? Date.parse(value) : Number.NaN
+  return Number.isFinite(timestamp) ? timestamp : 0
+}
 
 export function List() {
   const navigate = useAppNavigate()
@@ -35,239 +46,216 @@ export function List() {
   const [keyword, setKeyword] = useState('')
   const [searchBy, setSearchBy] = useState<'id' | 'name'>('name')
   const shouldOpenCreate = (location.state as { openCreate?: boolean })?.openCreate ?? false
-  const [createModalOpen, setCreateModalOpen] = useState(shouldOpenCreate)
-  const [form] = Form.useForm()
+  const [createOpen, setCreateOpen] = useState(shouldOpenCreate)
+  const [pendingDelete, setPendingDelete] = useState<{ id: string; name: string } | null>(null)
+  const [deleting, setDeleting] = useState(false)
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<CreateValues>({
+    resolver: zodResolver(createSchema),
+    defaultValues: { app_id: '', name: '', description: '' },
+  })
 
   useEffect(() => {
-    if (shouldOpenCreate) {
-      navigate(location.pathname, { replace: true, state: {} })
-    }
+    if (shouldOpenCreate) navigate(location.pathname, { replace: true, state: {} })
   }, [shouldOpenCreate, location.pathname, navigate])
 
-  const trimmedKeyword = keyword.trim()
-  const debouncedKeyword = useDebounce(trimmedKeyword, { wait: 300 })
+  const debouncedKeyword = useDebounce(keyword.trim(), { wait: 300 })
   const { data, loading, refresh } = useRequest(() => applicationApi.getList(domainId!), {
-    ready: !!domainId,
+    ready: Boolean(domainId),
     refreshDeps: [domainId],
   })
+  const applications = [...(data?.items ?? [])]
+    .filter(
+      app =>
+        !debouncedKeyword ||
+        (searchBy === 'id' ? app.app_id : (app.name ?? ''))
+          .toLowerCase()
+          .includes(debouncedKeyword.toLowerCase())
+    )
+    .sort(
+      (left, right) =>
+        createdAtTimestamp(right.created_at) - createdAtTimestamp(left.created_at) ||
+        left.app_id.localeCompare(right.app_id)
+    )
 
-  const list = (data?.items ?? []).filter(app => {
-    if (!debouncedKeyword) return true
-    if (searchBy === 'id') return app.app_id.toLowerCase().includes(debouncedKeyword.toLowerCase())
-    return (app.name ?? '').toLowerCase().includes(debouncedKeyword.toLowerCase())
-  })
-
-  const { run: runCreate, loading: createLoading } = useRequest(
-    async (values: { app_id: string; name: string; description: string }) => {
+  const { run: create, loading: creating } = useRequest(
+    async (values: CreateValues) => {
       await applicationApi.create(domainId!, {
-        app_id: values.app_id,
-        name: values.name,
-        description: values.description,
+        ...values,
         allowed_redirect_uris: [],
         allowed_origins: [],
         allowed_logout_uris: [],
         need_key: false,
       })
-      message.success('创建成功')
-      setCreateModalOpen(false)
-      form.resetFields()
+      toast.success('应用已创建')
+      setCreateOpen(false)
+      reset()
       refresh()
     },
-    { manual: true, onError: () => message.error('创建失败') }
+    { manual: true, onError: () => toast.error('创建失败') }
   )
 
   return (
-    <div className={styles.container}>
-      <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>应用</h1>
-      </div>
-
+    <section className={styles.container} aria-label="应用列表">
       <div className={styles.toolbar}>
-        <Space.Compact className={styles.searchCompact}>
-          <Select
-            value={searchBy}
-            onChange={v => setSearchBy(v as 'id' | 'name')}
-            options={[
-              { label: '名称', value: 'name' },
-              { label: '标识', value: 'id' },
-            ]}
-            style={{ width: 88 }}
-          />
-          <Input
-            placeholder={searchBy === 'id' ? '输入应用标识' : '输入应用名称'}
-            allowClear
-            value={keyword}
-            onChange={e => setKeyword(e.target.value)}
-            style={{ width: 220 }}
-          />
-        </Space.Compact>
+        <div className={styles.listMeta} aria-live="polite">
+          <span>{loading ? '正在加载应用…' : `${applications.length} 个应用`}</span>
+          <span>{debouncedKeyword ? `匹配“${debouncedKeyword}”` : '按创建时间 · 最新优先'}</span>
+        </div>
+        <div className={styles.headerActions}>
+          <InputGroup className={styles.searchGroup} role="search">
+            <label className={styles.srOnly} htmlFor="application-search">
+              搜索应用
+            </label>
+            <Select value={searchBy} onValueChange={value => setSearchBy(value as 'id' | 'name')}>
+              <SelectTrigger className={styles.searchType}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="name">按名称</SelectItem>
+                <SelectItem value="id">按标识</SelectItem>
+              </SelectContent>
+            </Select>
+            <InputGroupAddon>
+              <Search aria-hidden="true" />
+            </InputGroupAddon>
+            <InputGroupInput
+              id="application-search"
+              autoComplete="off"
+              placeholder={searchBy === 'id' ? '输入应用标识…' : '输入应用名称…'}
+              value={keyword}
+              onChange={event => setKeyword(event.target.value)}
+            />
+          </InputGroup>
+          <Button type="button" onClick={() => setCreateOpen(true)}>
+            <Plus aria-hidden="true" />
+            新建应用
+          </Button>
+        </div>
       </div>
 
       {loading ? (
-        <Row gutter={[24, 24]}>
-          {[1, 2, 3, 4, 5, 6].map(i => (
-            <Col key={i} xs={24} sm={12} md={8} lg={8} xl={6}>
-              <Card loading className={styles.cardSkeleton} />
-            </Col>
+        <div className={styles.skeletonList} aria-label="正在加载应用">
+          {Array.from({ length: 5 }, (_, index) => (
+            <Skeleton key={index} className={styles.listSkeleton} />
           ))}
-        </Row>
+        </div>
+      ) : applications.length ? (
+        <ResourceList
+          resourceLabel="应用"
+          items={applications.map(app => ({
+            id: app.app_id,
+            name: app.name || app.app_id,
+            description: app.description,
+            logoUrl: app.logo_url,
+            createdAt: app.created_at,
+            fallbackIcon: <AppWindow />,
+          }))}
+          onView={item => navigate(`/applications/${encodeURIComponent(item.id)}`)}
+          onDelete={item => setPendingDelete({ id: item.id, name: item.name })}
+        />
       ) : (
-        <Row gutter={[24, 24]}>
-          <Col xs={24} sm={12} md={8} lg={8} xl={6}>
-            <div
-              className={`${styles.cardWrap} ${styles.createCard}`}
-              onClick={() => setCreateModalOpen(true)}
-              onKeyDown={e => e.key === 'Enter' && setCreateModalOpen(true)}
-              role="button"
-              tabIndex={0}
-            >
-              <Card className={styles.card} variant="borderless">
-                <Flex gap={14} align="flex-start" className={styles.cardHead}>
-                  <div className={styles.cardIcon}>
-                    <PlusOutlined />
-                  </div>
-                  <Flex vertical gap={2} className={styles.cardTitleBlock}>
-                    <div className={styles.cardIdWrap}>
-                      <span className={styles.cardId}>创建应用</span>
-                    </div>
-                    <span className={styles.cardName}>配置重定向 URI 与授权</span>
-                  </Flex>
-                </Flex>
-                <p className={styles.cardDescMuted}>点击创建新应用</p>
-              </Card>
-            </div>
-          </Col>
-          {list.map(app => (
-            <Col key={app.app_id} xs={24} sm={12} md={8} lg={8} xl={6}>
-              <div
-                className={styles.cardWrap}
-                onClick={() => navigate(`/applications/${app.app_id}`)}
-              >
-                <Card className={styles.card} variant="borderless">
-                  <Flex gap={14} align="flex-start" className={styles.cardHead}>
-                    <div className={styles.cardIcon}>
-                      {app.logo_url ? (
-                        <Avatar src={app.logo_url} shape="square" size={44} />
-                      ) : (
-                        <AppstoreAddOutlined />
-                      )}
-                    </div>
-                    <Flex vertical gap={2} className={styles.cardTitleBlock}>
-                      <div className={styles.cardIdWrap}>
-                        <Typography.Text
-                          copyable={{ text: app.app_id, tooltips: ['复制标识', '已复制'] }}
-                          className={styles.cardId}
-                        >
-                          {app.app_id}
-                        </Typography.Text>
-                      </div>
-                      <span className={styles.cardName}>{app.name || app.app_id}</span>
-                    </Flex>
-                  </Flex>
-                  {app.description ? (
-                    <p className={styles.cardDesc}>{app.description}</p>
-                  ) : (
-                    <p className={styles.cardDescMuted}>暂无描述</p>
-                  )}
-                </Card>
-
-                <div className={styles.rightTrigger} />
-                <div className={styles.overlayRight} onClick={e => e.stopPropagation()}>
-                  <Tooltip title="查看详情" placement="left">
-                    <Button
-                      type="text"
-                      icon={<EyeOutlined />}
-                      className={styles.overlayBtn}
-                      onClick={() => navigate(`/applications/${app.app_id}`)}
-                    />
-                  </Tooltip>
-                  <Tooltip title="编辑应用" placement="left">
-                    <Button
-                      type="text"
-                      icon={<EditOutlined />}
-                      className={styles.overlayBtn}
-                      onClick={() => navigate(`/applications/${app.app_id}/edit`)}
-                    />
-                  </Tooltip>
-                  <Tooltip title="删除应用" placement="left">
-                    <Button
-                      type="text"
-                      danger
-                      icon={<DeleteOutlined />}
-                      className={`${styles.overlayBtn} ${styles.deleteBtn}`}
-                      onClick={() => {
-                        Modal.confirm({
-                          title: '删除应用',
-                          content: `确定删除应用「${app.name || app.app_id}」？删除后无法恢复。`,
-                          okText: '删除',
-                          okType: 'danger',
-                          cancelText: '取消',
-                          onOk: async () => {
-                            await applicationApi.delete(domainId!, app.app_id)
-                            refresh()
-                          },
-                        })
-                      }}
-                    />
-                  </Tooltip>
-                </div>
-              </div>
-            </Col>
-          ))}
-        </Row>
+        <EmptyState
+          title={debouncedKeyword ? '没有匹配的应用' : '尚未创建应用'}
+          description={
+            debouncedKeyword
+              ? '尝试更换关键词或搜索字段。'
+              : '创建第一个应用以开始配置认证和服务授权。'
+          }
+          action={
+            <Button type="button" onClick={() => setCreateOpen(true)}>
+              <Plus aria-hidden="true" />
+              新建应用
+            </Button>
+          }
+          className={styles.emptyState}
+        />
       )}
 
-      <Modal
-        title="新建应用"
-        open={createModalOpen}
-        onCancel={() => {
-          setCreateModalOpen(false)
-          form.resetFields()
-        }}
-        footer={null}
-        destroyOnHidden
-        width={400}
-      >
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={v =>
-            runCreate({
-              ...v,
-              app_id: (v as { app_id?: string }).app_id?.trim() ?? '',
-            } as { app_id: string; name: string; description: string })
-          }
-        >
-          <Form.Item name="app_id" label="应用标识">
-            <Input placeholder="选填，不填则自动生成" />
-          </Form.Item>
-          <Form.Item name="name" label="名称" rules={[{ required: true, message: '请输入名称' }]}>
-            <Input placeholder="请输入名称" />
-          </Form.Item>
-          <Form.Item
-            name="description"
-            label="描述"
-            rules={[{ required: true, message: '请输入描述' }]}
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>新建应用</DialogTitle>
+            <DialogDescription>应用标识可留空，由服务端自动生成。</DialogDescription>
+          </DialogHeader>
+          <form
+            className={styles.dialogForm}
+            onSubmit={handleSubmit(values => create(values))}
+            noValidate
           >
-            <Input.TextArea placeholder="请输入描述" rows={3} />
-          </Form.Item>
-          <Form.Item className={styles.modalFooter}>
-            <Space>
+            <FormField label="应用标识" htmlFor="create-app-id" error={errors.app_id?.message}>
+              <Input id="create-app-id" {...register('app_id')} />
+            </FormField>
+            <FormField label="名称" htmlFor="create-app-name" required error={errors.name?.message}>
+              <Input id="create-app-name" {...register('name')} />
+            </FormField>
+            <FormField
+              label="描述"
+              htmlFor="create-app-description"
+              required
+              error={errors.description?.message}
+            >
+              <Textarea id="create-app-description" rows={3} {...register('description')} />
+            </FormField>
+            <DialogFooter>
               <Button
+                type="button"
+                variant="outline"
                 onClick={() => {
-                  setCreateModalOpen(false)
-                  form.resetFields()
+                  setCreateOpen(false)
+                  reset()
                 }}
               >
                 取消
               </Button>
-              <Button type="primary" htmlType="submit" loading={createLoading}>
-                创建
+              <Button type="submit" disabled={creating}>
+                {creating ? <LoaderCircle className={styles.spinner} aria-hidden="true" /> : null}
+                创建应用
               </Button>
-            </Space>
-          </Form.Item>
-        </Form>
-      </Modal>
-    </div>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={pendingDelete !== null} onOpenChange={open => !open && setPendingDelete(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>删除应用</DialogTitle>
+            <DialogDescription>确定删除“{pendingDelete?.name}”？删除后无法恢复。</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setPendingDelete(null)}>
+              取消
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              disabled={deleting}
+              onClick={async () => {
+                if (!pendingDelete) return
+                setDeleting(true)
+                try {
+                  await applicationApi.delete(domainId!, pendingDelete.id)
+                  toast.success('应用已删除')
+                  setPendingDelete(null)
+                  refresh()
+                } catch {
+                  toast.error('删除失败')
+                } finally {
+                  setDeleting(false)
+                }
+              }}
+            >
+              {deleting ? <LoaderCircle className={styles.spinner} aria-hidden="true" /> : null}
+              删除应用
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </section>
   )
 }

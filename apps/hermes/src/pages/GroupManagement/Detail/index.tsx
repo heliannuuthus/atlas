@@ -1,236 +1,186 @@
 import { useRequest } from 'ahooks'
-import {
-  Card,
-  Descriptions,
-  Spin,
-  message,
-  Tabs,
-  Table,
-  Empty,
-  Typography,
-  Tag,
-  Tooltip,
-  Button,
-  Avatar,
-  List,
-} from 'antd'
-import type { ColumnsType } from 'antd/es/table'
+import { GitBranch, Info, Share2, User, Users } from 'lucide-react'
 import { useParams } from 'react-router-dom'
+import { Badge } from '@atlas/ui/badge'
+import { Button } from '@atlas/ui/button'
+import { Card, CardContent } from '@atlas/ui/card'
+import { DescriptionList } from '@atlas/ui/description-list'
+import { EmptyState } from '@atlas/ui/empty-state'
+import { Spinner } from '@atlas/ui/spinner'
+import { DataTable, type DataTableColumn } from '@atlas/ui/table'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@atlas/ui/tabs'
+import { toast } from '@atlas/ui/toast'
+import { PageHeader, formatDateTime, formatRelativeTime, isExpiringSoon } from '@atlas/shared'
 import { useAppNavigate } from '@/contexts/DomainContext'
-import {
-  InfoCircleOutlined,
-  TeamOutlined,
-  ShareAltOutlined,
-  NodeIndexOutlined,
-  UserOutlined,
-} from '@ant-design/icons'
 import { groupApi, relationshipApi } from '@/services'
 import type { Relationship } from '@/types'
-import { PageHeader, formatDateTime, formatRelativeTime, isExpiringSoon } from '@atlas/shared'
 import styles from './index.module.scss'
-
-const { Text } = Typography
 
 export function Detail() {
   const { groupId } = useParams<{ groupId: string }>()
   const navigate = useAppNavigate()
-
   const { data, loading } = useRequest(() => groupApi.getDetail(groupId!), {
-    ready: !!groupId,
-    onError: () => message.error('获取组信息失败'),
+    ready: Boolean(groupId),
+    onError: () => toast.error('获取组信息失败'),
   })
-
   const { data: members, loading: membersLoading } = useRequest(
     () => groupApi.getMembers(groupId!),
-    {
-      ready: !!groupId,
-    }
+    { ready: Boolean(groupId) }
   )
-
-  // 获取该组作为主体的关系列表
-  const { data: relationships, loading: relLoading } = useRequest(
+  const { data: relationships, loading: relationsLoading } = useRequest(
     () => relationshipApi.getList({ subject_type: 'group', subject_id: groupId }),
-    {
-      ready: !!groupId,
-    }
+    { ready: Boolean(groupId) }
   )
-
-  const relationColumns: ColumnsType<Relationship> = [
+  const memberRows = members?.members ?? []
+  const relationRows = relationships?.items ?? []
+  const columns: DataTableColumn<Relationship>[] = [
     {
-      title: '服务',
-      dataIndex: 'service_id',
-      key: 'service_id',
-      width: 120,
-      render: value => <Tag variant="filled">{value}</Tag>,
+      key: 'service',
+      header: '服务',
+      width: 140,
+      render: relation => <Badge variant="outline">{relation.service_id}</Badge>,
     },
     {
-      title: '关系',
-      dataIndex: 'relation',
       key: 'relation',
-      width: 100,
-      render: value => (
-        <Tag color="processing" variant="filled">
-          {value}
-        </Tag>
-      ),
+      header: '关系',
+      width: 120,
+      render: relation => <Badge>{relation.relation}</Badge>,
     },
     {
-      title: '对象',
       key: 'object',
-      width: 200,
-      render: (_, record) => (
+      header: '对象',
+      render: relation => (
         <div className={styles.entityCell}>
-          <Tag variant="filled">{record.object_type}</Tag>
-          <Tooltip title={record.object_id}>
-            <Text ellipsis style={{ maxWidth: 120 }}>
-              {record.object_id}
-            </Text>
-          </Tooltip>
+          <Badge variant="secondary">{relation.object_type}</Badge>
+          <span className="max-w-40 truncate" title={relation.object_id}>
+            {relation.object_id}
+          </span>
         </div>
       ),
     },
     {
-      title: '过期时间',
-      dataIndex: 'expires_at',
-      key: 'expires_at',
-      width: 140,
-      render: text => {
-        if (!text) return <Text type="secondary">永久</Text>
-        const expiring = isExpiringSoon(text)
-        return <Text type={expiring ? 'warning' : undefined}>{formatRelativeTime(text)}</Text>
-      },
+      key: 'expires',
+      header: '过期时间',
+      width: 150,
+      render: relation =>
+        relation.expires_at ? (
+          <span className={isExpiringSoon(relation.expires_at) ? 'text-amber-700' : undefined}>
+            {formatRelativeTime(relation.expires_at)}
+          </span>
+        ) : (
+          <span className="text-muted-foreground">永久</span>
+        ),
     },
   ]
-
-  if (loading) {
+  if (loading)
     return (
       <div className={styles.loading}>
-        <Spin size="large" />
+        <Spinner className="size-7" />
       </div>
     )
-  }
-
   if (!data) return null
-
-  const memberList: string[] = members?.members || []
-
-  const tabItems = [
-    {
-      key: 'info',
-      label: (
-        <span>
-          <InfoCircleOutlined />
-          基本信息
-        </span>
-      ),
-      children: (
-        <Descriptions column={2} className={styles.descriptions}>
-          <Descriptions.Item label="组ID">{data.group_id}</Descriptions.Item>
-          <Descriptions.Item label="名称">{data.name}</Descriptions.Item>
-          <Descriptions.Item label="描述" span={2}>
-            {data.description || <Text type="secondary">-</Text>}
-          </Descriptions.Item>
-          <Descriptions.Item label="创建时间">{formatDateTime(data.created_at)}</Descriptions.Item>
-          <Descriptions.Item label="更新时间">{formatDateTime(data.updated_at)}</Descriptions.Item>
-        </Descriptions>
-      ),
-    },
-    {
-      key: 'members',
-      label: (
-        <span>
-          <TeamOutlined />
-          成员列表
-          {memberList.length > 0 && (
-            <Tag variant="filled" className={styles.tabBadge}>
-              {memberList.length}
-            </Tag>
-          )}
-        </span>
-      ),
-      children: (
-        <div className={styles.membersTab}>
-          <div className={styles.tabHeader}>
-            <Text type="secondary">该组包含的用户成员</Text>
-          </div>
-          {membersLoading ? (
-            <div className={styles.loading}>
-              <Spin />
-            </div>
-          ) : memberList.length > 0 ? (
-            <List
-              grid={{ gutter: 16, xs: 2, sm: 3, md: 4, lg: 5, xl: 6 }}
-              dataSource={memberList}
-              renderItem={userId => (
-                <List.Item>
-                  <div className={styles.memberCard}>
-                    <Avatar icon={<UserOutlined />} />
-                    <Tooltip title={userId}>
-                      <Text ellipsis className={styles.memberName}>
-                        {userId}
-                      </Text>
-                    </Tooltip>
-                  </div>
-                </List.Item>
-              )}
-            />
-          ) : (
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无成员" />
-          )}
-        </div>
-      ),
-    },
-    {
-      key: 'relationships',
-      label: (
-        <span>
-          <ShareAltOutlined />
-          授权关系
-          {relationships?.items && relationships.items.length > 0 && (
-            <Tag variant="filled" className={styles.tabBadge}>
-              {relationships.items.length}
-            </Tag>
-          )}
-        </span>
-      ),
-      children: (
-        <div className={styles.relationshipsTab}>
-          <div className={styles.tabHeader}>
-            <Text type="secondary">该组作为主体的授权关系</Text>
-            <Button icon={<NodeIndexOutlined />} onClick={() => navigate('/relationships/graph')}>
-              在图谱中查看
-            </Button>
-          </div>
-          <Table
-            columns={relationColumns}
-            dataSource={relationships?.items ?? []}
-            loading={relLoading}
-            rowKey={r => `${r.service_id}:${r.subject_id}:${r.relation}:${r.object_id}`}
-            size="small"
-            pagination={{ pageSize: 10 }}
-            locale={{
-              emptyText: <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无授权关系" />,
-            }}
-          />
-        </div>
-      ),
-    },
-  ]
-
   return (
     <div className={styles.container}>
       <PageHeader
         title={data.name || '组详情'}
         onBack={() => navigate('/groups')}
-        extra={
-          <Button type="primary" onClick={() => navigate(`/groups/${groupId}/edit`)}>
-            编辑组
-          </Button>
-        }
+        extra={<Button onClick={() => navigate(`/groups/${groupId}/edit`)}>编辑组</Button>}
       />
       <div className={styles.content}>
-        <Card variant="borderless" className={styles.mainCard}>
-          <Tabs items={tabItems} className={styles.tabs} />
+        <Card className={styles.mainCard}>
+          <CardContent>
+            <Tabs defaultValue="info" className={styles.tabs}>
+              <TabsList>
+                <TabsTrigger value="info">
+                  <Info />
+                  基本信息
+                </TabsTrigger>
+                <TabsTrigger value="members">
+                  <Users />
+                  成员列表
+                  {memberRows.length ? (
+                    <Badge variant="secondary">{memberRows.length}</Badge>
+                  ) : null}
+                </TabsTrigger>
+                <TabsTrigger value="relationships">
+                  <Share2 />
+                  授权关系
+                  {relationRows.length ? (
+                    <Badge variant="secondary">{relationRows.length}</Badge>
+                  ) : null}
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="info">
+                <DescriptionList
+                  className={styles.descriptions}
+                  items={[
+                    { label: '组 ID', value: <code>{data.group_id}</code> },
+                    { label: '名称', value: data.name },
+                    {
+                      label: '描述',
+                      value: data.description || <span className="text-muted-foreground">—</span>,
+                      wide: true,
+                    },
+                    { label: '创建时间', value: formatDateTime(data.created_at) },
+                    { label: '更新时间', value: formatDateTime(data.updated_at) },
+                  ]}
+                />
+              </TabsContent>
+              <TabsContent value="members">
+                <div className={styles.membersTab}>
+                  <div className={styles.tabHeader}>
+                    <span className="text-sm text-muted-foreground">该组包含的用户成员</span>
+                  </div>
+                  {membersLoading ? (
+                    <div className={styles.loading}>
+                      <Spinner />
+                    </div>
+                  ) : memberRows.length ? (
+                    <ul className="grid gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+                      {memberRows.map(userId => (
+                        <li key={userId} className={styles.memberCard}>
+                          <span className="flex size-8 items-center justify-center rounded-full bg-muted">
+                            <User className="size-4" />
+                          </span>
+                          <span className={styles.memberName} title={userId}>
+                            {userId}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <EmptyState title="暂无成员" />
+                  )}
+                </div>
+              </TabsContent>
+              <TabsContent value="relationships">
+                <div className={styles.relationshipsTab}>
+                  <div className={styles.tabHeader}>
+                    <span className="text-sm text-muted-foreground">该组作为主体的授权关系</span>
+                    <Button variant="outline" onClick={() => navigate('/relationships/graph')}>
+                      <GitBranch />
+                      在图谱中查看
+                    </Button>
+                  </div>
+                  {relationsLoading ? (
+                    <div className={styles.loading}>
+                      <Spinner />
+                    </div>
+                  ) : relationRows.length ? (
+                    <DataTable
+                      columns={columns}
+                      data={relationRows}
+                      rowKey={relation =>
+                        `${relation.service_id}:${relation.subject_id}:${relation.relation}:${relation.object_id}`
+                      }
+                    />
+                  ) : (
+                    <EmptyState title="暂无授权关系" />
+                  )}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
         </Card>
       </div>
     </div>

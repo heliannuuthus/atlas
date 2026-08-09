@@ -1,89 +1,125 @@
 import { useRequest } from 'ahooks'
-import { Form, Input, InputNumber, Card, message, Spin } from 'antd'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
+import { z } from 'zod'
+import { Card, CardContent } from '@atlas/ui/card'
+import { Input } from '@atlas/ui/input'
+import { Spinner } from '@atlas/ui/spinner'
+import { Textarea } from '@atlas/ui/textarea'
+import { toast } from '@atlas/ui/toast'
+import { PageHeader } from '@atlas/shared'
+import { FormActions } from '@/components/forms/FormActions'
+import { FormField } from '@/components/forms/FormField'
 import { useAppNavigate, useDomainId } from '@/contexts/DomainContext'
 import { serviceApi } from '@/services'
-import { PageHeader, FormActions } from '@atlas/shared'
 import styles from './index.module.scss'
 
-const { TextArea } = Input
+const schema = z.object({
+  name: z.string().trim().min(1, '请输入名称'),
+  description: z.string().trim().optional(),
+  access_token_expires_in: z.number().int().positive('必须大于 0'),
+  refresh_token_expires_in: z.number().int().positive('必须大于 0'),
+})
+type Values = z.infer<typeof schema>
 
 export function Edit() {
   const { serviceId } = useParams<{ serviceId: string }>()
   const domainId = useDomainId()
   const navigate = useAppNavigate()
-  const [form] = Form.useForm()
-
-  const { data: _data, loading: detailLoading } = useRequest(
-    () => serviceApi.getDetail(domainId!, serviceId!),
-    {
-      ready: !!domainId && !!serviceId,
-      onSuccess: _data => {
-        form.setFieldsValue({
-          name: _data.name,
-          description: _data.description,
-          access_token_expires_in: _data.access_token_expires_in,
-          refresh_token_expires_in: _data.refresh_token_expires_in,
-        })
-      },
-      onError: () => {
-        message.error('获取服务信息失败')
-      },
-    }
-  )
-
-  const { run: handleSubmit, loading } = useRequest(
-    async (values: Record<string, unknown>) => {
-      await serviceApi.update(domainId!, serviceId!, {
-        name: values.name as string | undefined,
-        description: values.description as string | undefined,
-        access_token_expires_in: values.access_token_expires_in as number | undefined,
-        refresh_token_expires_in: values.refresh_token_expires_in as number | undefined,
-      })
-      message.success('更新成功')
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<Values>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      name: '',
+      description: '',
+      access_token_expires_in: 7200,
+      refresh_token_expires_in: 604800,
+    },
+  })
+  const { loading: detailLoading } = useRequest(() => serviceApi.getDetail(domainId!, serviceId!), {
+    ready: Boolean(domainId && serviceId),
+    onSuccess: data =>
+      reset({
+        name: data.name,
+        description: data.description ?? '',
+        access_token_expires_in: data.access_token_expires_in,
+        refresh_token_expires_in: data.refresh_token_expires_in,
+      }),
+    onError: () => toast.error('获取服务信息失败'),
+  })
+  const { run: submit, loading } = useRequest(
+    async (values: Values) => {
+      await serviceApi.update(domainId!, serviceId!, values)
+      toast.success('更新成功')
       navigate(`/services/${serviceId}`)
     },
-    {
-      manual: true,
-      onError: () => {
-        message.error('更新失败')
-      },
-    }
+    { manual: true, onError: () => toast.error('更新失败') }
   )
 
-  if (detailLoading) {
-    return <Spin size="large" />
-  }
-
+  if (detailLoading)
+    return (
+      <div className="flex min-h-56 items-center justify-center">
+        <Spinner className="size-7" />
+      </div>
+    )
   return (
     <div className={styles.container}>
       <PageHeader title="编辑服务" onBack={() => navigate(`/services/${serviceId}`)} />
-      <Card variant="borderless">
-        <Form form={form} layout="vertical" onFinish={handleSubmit} className={styles.form}>
-          <Form.Item name="name" label="名称" rules={[{ required: true, message: '请输入名称' }]}>
-            <Input placeholder="请输入名称" />
-          </Form.Item>
-
-          <Form.Item name="description" label="描述">
-            <TextArea rows={4} placeholder="请输入描述" />
-          </Form.Item>
-
-          <Form.Item name="access_token_expires_in" label="Access Token 过期时间（秒）">
-            <InputNumber min={1} style={{ width: '100%' }} />
-          </Form.Item>
-
-          <Form.Item name="refresh_token_expires_in" label="Refresh Token 过期时间（秒）">
-            <InputNumber min={1} style={{ width: '100%' }} />
-          </Form.Item>
-
-          <Form.Item>
+      <Card>
+        <CardContent>
+          <form
+            onSubmit={handleSubmit(values => submit(values))}
+            className={styles.form}
+            noValidate
+          >
+            <FormField label="名称" htmlFor="service-name" required error={errors.name?.message}>
+              <Input id="service-name" {...register('name')} />
+            </FormField>
+            <FormField
+              label="描述"
+              htmlFor="service-description"
+              error={errors.description?.message}
+            >
+              <Textarea id="service-description" rows={4} {...register('description')} />
+            </FormField>
+            <FormField
+              label="Access Token 过期时间（秒）"
+              htmlFor="access-token-expiry"
+              required
+              error={errors.access_token_expires_in?.message}
+            >
+              <Input
+                id="access-token-expiry"
+                type="number"
+                min={1}
+                {...register('access_token_expires_in', { valueAsNumber: true })}
+              />
+            </FormField>
+            <FormField
+              label="Refresh Token 过期时间（秒）"
+              htmlFor="refresh-token-expiry"
+              required
+              error={errors.refresh_token_expires_in?.message}
+            >
+              <Input
+                id="refresh-token-expiry"
+                type="number"
+                min={1}
+                {...register('refresh_token_expires_in', { valueAsNumber: true })}
+              />
+            </FormField>
             <FormActions
-              loading={loading}
+              submitting={loading}
               submitText="保存"
-              cancelPath={`/services/${serviceId}`}
+              onCancel={() => navigate(`/services/${serviceId}`)}
             />
-          </Form.Item>
-        </Form>
+          </form>
+        </CardContent>
       </Card>
     </div>
   )

@@ -1,4 +1,3 @@
-import { Button, Space } from 'antd'
 import { useNavigate } from 'react-router-dom'
 
 interface FormActionsProps {
@@ -27,11 +26,37 @@ export function FormActions({
   }
 
   return (
-    <Space>
-      <Button type="primary" htmlType="submit" loading={loading}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <button
+        type="submit"
+        disabled={loading}
+        style={{
+          minHeight: 36,
+          padding: '0 16px',
+          border: 0,
+          borderRadius: 6,
+          background: '#b94e20',
+          color: '#fff',
+          fontWeight: 600,
+        }}
+      >
         {submitText}
-      </Button>
-      <Button onClick={handleCancel}>{cancelText}</Button>
-    </Space>
+      </button>
+      <button
+        type="button"
+        onClick={handleCancel}
+        style={{
+          minHeight: 36,
+          padding: '0 16px',
+          border: '1px solid #e4e4e7',
+          borderRadius: 6,
+          background: '#fff',
+          color: '#3f3f46',
+          fontWeight: 600,
+        }}
+      >
+        {cancelText}
+      </button>
+    </div>
   )
 }

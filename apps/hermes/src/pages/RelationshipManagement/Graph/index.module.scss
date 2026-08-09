@@ -196,7 +196,9 @@
   border: 1.5px solid #e5e5e5;
   border-radius: 8px;
   font-size: 13px;
-  transition: all 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 
   &:hover {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -230,7 +232,7 @@
   height: 20px;
 
   &:hover {
-    color: #dc2626 !important;
+    color: var(--destructive);
   }
 }
 
@@ -251,9 +253,9 @@
 
 // Handle 样式
 .handle {
-  width: 10px !important;
-  height: 10px !important;
-  border: 2px solid #fff !important;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--card);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
@@ -290,7 +292,7 @@
   transition: opacity 0.2s;
 
   &:hover {
-    color: #dc2626 !important;
+    color: var(--destructive);
   }
 }
 

@@ -100,7 +100,7 @@ export function FileManagement() {
 
           <Dragger {...uploadProps} className={styles.dragger}>
             <p className="ant-upload-drag-icon">
-              <CloudUploadOutlined style={{ fontSize: 48, color: '#d97706' }} />
+              <CloudUploadOutlined style={{ fontSize: 48, color: '#545d6b' }} />
             </p>
             <p className="ant-upload-text">点击或拖拽文件到此区域上传</p>
             <p className="ant-upload-hint">支持单个或批量上传，文件将上传到 Cloudflare R2</p>

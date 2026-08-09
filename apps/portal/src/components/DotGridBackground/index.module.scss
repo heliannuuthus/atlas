@@ -1,0 +1,11 @@
+.background {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+
+  canvas {
+    display: block;
+  }
+}

@@ -1,151 +1,168 @@
-import { Typography } from 'antd'
+import { useMemo } from 'react'
+import { useOutletContext } from 'react-router-dom'
 import {
-  ApartmentOutlined,
-  CloudServerOutlined,
-  AppstoreAddOutlined,
-  TeamOutlined,
-  ShareAltOutlined,
-  MailOutlined,
-  FileTextOutlined,
-  CloudUploadOutlined,
-  BookOutlined,
-  HeartOutlined,
-  FireOutlined,
-  TagsOutlined,
+  AppstoreOutlined,
   ArrowRightOutlined,
+  ClockCircleOutlined,
+  DeploymentUnitOutlined,
+  ExportOutlined,
+  SearchOutlined,
 } from '@ant-design/icons'
+import type { PortalOutletContext } from '@/layouts'
+import {
+  atlasApps,
+  getRecentLaunches,
+  getTargetByKey,
+  recordLaunchTarget,
+  type AtlasLaunchTarget,
+} from '@/config/apps'
 import styles from './index.module.scss'
 
-const { Title, Paragraph } = Typography
-
-const services = [
-  {
-    key: 'hermes',
-    name: 'Hermes',
-    description: '身份与访问管理',
-    color: '#059669',
-    origin: 'https://hermes.heliannuuthus.com',
-    icon: (
-      <svg viewBox="0 0 32 32" fill="none">
-        <rect width="32" height="32" rx="8" fill="#059669" />
-        <path d="M8 12h16M8 16h16M8 20h10" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-      </svg>
-    ),
-    modules: [
-      { icon: <ApartmentOutlined />, title: '域管理', path: '/domains' },
-      { icon: <CloudServerOutlined />, title: '服务管理', path: '/services' },
-      { icon: <AppstoreAddOutlined />, title: '应用管理', path: '/applications' },
-      { icon: <ShareAltOutlined />, title: '关系管理', path: '/relationships' },
-      { icon: <TeamOutlined />, title: '组管理', path: '/groups' },
-    ],
-  },
-  {
-    key: 'chaos',
-    name: 'Chaos',
-    description: '消息与文件服务',
-    color: '#d97706',
-    origin: 'https://chaos.heliannuuthus.com',
-    icon: (
-      <svg viewBox="0 0 32 32" fill="none">
-        <rect width="32" height="32" rx="8" fill="#d97706" />
-        <path d="M10 10l12 12M22 10l-12 12" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-      </svg>
-    ),
-    modules: [
-      { icon: <FileTextOutlined />, title: '邮件模板', path: '/templates' },
-      { icon: <MailOutlined />, title: '邮件发送', path: '/sending' },
-      { icon: <CloudUploadOutlined />, title: '文件管理', path: '/files' },
-    ],
-  },
-  {
-    key: 'zwei',
-    name: 'Zwei',
-    description: '菜谱业务平台',
-    color: '#ea580c',
-    origin: 'https://zwei.heliannuuthus.com',
-    icon: (
-      <svg viewBox="0 0 32 32" fill="none">
-        <rect width="32" height="32" rx="8" fill="#ea580c" />
-        <circle cx="16" cy="13" r="5" stroke="#fff" strokeWidth="2" fill="none" />
-        <path
-          d="M9 24c0-3.87 3.13-7 7-7s7 3.13 7 7"
-          stroke="#fff"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-      </svg>
-    ),
-    modules: [
-      { icon: <BookOutlined />, title: '菜谱管理', path: '/recipes' },
-      { icon: <HeartOutlined />, title: '收藏管理', path: '/favorites' },
-      { icon: <FireOutlined />, title: '推荐系统', path: '/recommend' },
-      { icon: <TagsOutlined />, title: '标签管理', path: '/tags' },
-    ],
-  },
-]
-
 export function Home() {
+  const { openLauncher, openSystems } = useOutletContext<PortalOutletContext>()
+  const capabilityCount = atlasApps.reduce((count, app) => count + app.capabilities.length, 0)
+  const recentTargets = useMemo(
+    () =>
+      getRecentLaunches()
+        .map(item => getTargetByKey(item.key))
+        .filter((target): target is AtlasLaunchTarget => Boolean(target)),
+    []
+  )
+
   return (
-    <div className={styles.container}>
-      <section className={styles.hero}>
-        <div className={styles.heroInner}>
-          <div className={styles.heroLogo}>
-            <svg viewBox="0 0 48 48" fill="none">
-              <rect x="4" y="4" width="17" height="17" rx="5" fill="#18181b" opacity="0.9" />
-              <rect x="27" y="4" width="17" height="17" rx="5" fill="#18181b" opacity="0.4" />
-              <rect x="4" y="27" width="17" height="17" rx="5" fill="#18181b" opacity="0.4" />
-              <rect x="27" y="27" width="17" height="17" rx="5" fill="#18181b" opacity="0.15" />
-            </svg>
-          </div>
-          <Title level={2} className={styles.heroTitle}>
-            Atlas
-          </Title>
-          <Paragraph className={styles.heroDesc}>统一管控平台</Paragraph>
+    <div className={styles.page}>
+      <div className={styles.pageHeading}>
+        <div>
+          <span>工作台</span>
+          <h1>统一业务平台</h1>
+          <p>查看平台接入信息，并从顶部系统入口进入业务系统。</p>
         </div>
-      </section>
 
-      <section className={styles.grid}>
-        {services.map(svc => (
-          <div key={svc.key} className={styles.card}>
-            <div className={styles.cardHeader}>
-              <a
-                href={svc.origin}
-                className={styles.cardLogoLink}
-                onClick={e => {
-                  e.preventDefault()
-                  window.location.href = svc.origin
-                }}
-              >
-                <div className={styles.cardLogo}>{svc.icon}</div>
-                <div className={styles.cardInfo}>
-                  <span className={styles.cardName}>{svc.name}</span>
-                  <span className={styles.cardDesc}>{svc.description}</span>
-                </div>
-                <ArrowRightOutlined className={styles.cardArrow} />
-              </a>
+        <div className={styles.headingActions}>
+          <button type="button" onClick={openSystems}>
+            <AppstoreOutlined aria-hidden="true" />
+            打开系统菜单
+          </button>
+          <button type="button" className={styles.primaryAction} onClick={openLauncher}>
+            <SearchOutlined aria-hidden="true" />
+            搜索功能
+          </button>
+        </div>
+      </div>
+
+      <dl className={styles.metrics} aria-label="统一业务平台概况">
+        <div>
+          <span className={styles.metricIcon}>
+            <AppstoreOutlined aria-hidden="true" />
+          </span>
+          <dt>已接入系统</dt>
+          <dd>{atlasApps.length}</dd>
+        </div>
+        <div>
+          <span className={styles.metricIcon}>
+            <DeploymentUnitOutlined aria-hidden="true" />
+          </span>
+          <dt>功能入口</dt>
+          <dd>{capabilityCount}</dd>
+        </div>
+        <div>
+          <span className={styles.metricIcon}>
+            <ClockCircleOutlined aria-hidden="true" />
+          </span>
+          <dt>最近访问</dt>
+          <dd>{recentTargets.length}</dd>
+        </div>
+      </dl>
+
+      <div className={styles.contentGrid}>
+        <section className={styles.panel} aria-labelledby="recent-title">
+          <header className={styles.panelHeader}>
+            <div>
+              <h2 id="recent-title">最近访问</h2>
+              <p>保存在当前浏览器中的系统与功能入口。</p>
             </div>
+            {recentTargets.length > 0 && (
+              <button type="button" onClick={openLauncher}>
+                查看全部
+                <ArrowRightOutlined aria-hidden="true" />
+              </button>
+            )}
+          </header>
 
-            <div className={styles.modules}>
-              {svc.modules.map(mod => (
-                <a
-                  key={mod.path}
-                  href={`${svc.origin}${mod.path}`}
-                  className={styles.module}
-                  onClick={e => {
-                    e.preventDefault()
-                    window.location.href = `${svc.origin}${mod.path}`
-                  }}
-                >
-                  <span className={styles.moduleIcon} style={{ color: svc.color }}>
-                    {mod.icon}
+          {recentTargets.length > 0 ? (
+            <div className={styles.recentList}>
+              {recentTargets.map(target => (
+                <a key={target.key} href={target.href} onClick={() => recordLaunchTarget(target)}>
+                  {target.icon ? (
+                    <span
+                      className={styles.recentIcon}
+                      style={{ color: target.color, background: target.tint }}
+                    >
+                      {target.icon}
+                    </span>
+                  ) : (
+                    <span
+                      className={styles.recentAccent}
+                      style={{ backgroundColor: target.color }}
+                      aria-hidden="true"
+                    />
+                  )}
+                  <span className={styles.recentCopy}>
+                    <strong>{target.name}</strong>
+                    <small>{target.appName}</small>
                   </span>
-                  <span className={styles.moduleTitle}>{mod.title}</span>
+                  <ExportOutlined aria-hidden="true" />
                 </a>
               ))}
             </div>
+          ) : (
+            <div className={styles.emptyRecent}>
+              <ClockCircleOutlined aria-hidden="true" />
+              <strong>暂无访问记录</strong>
+              <span>从左上角打开系统，访问记录会显示在这里。</span>
+              <button type="button" onClick={openSystems}>
+                选择系统
+              </button>
+            </div>
+          )}
+        </section>
+
+        <aside className={styles.panel} aria-labelledby="platform-title">
+          <header className={styles.panelHeader}>
+            <div>
+              <h2 id="platform-title">平台信息</h2>
+              <p>当前 Portal 的接入方式。</p>
+            </div>
+          </header>
+
+          <dl className={styles.platformFacts}>
+            <div>
+              <dt>系统注册</dt>
+              <dd>Manifest</dd>
+            </div>
+            <div>
+              <dt>系统边界</dt>
+              <dd>独立部署</dd>
+            </div>
+            <div>
+              <dt>打开方式</dt>
+              <dd>当前标签页</dd>
+            </div>
+            <div>
+              <dt>快捷搜索</dt>
+              <dd>Cmd / Ctrl + K</dd>
+            </div>
+          </dl>
+
+          <div className={styles.platformHint}>
+            <span aria-hidden="true" />
+            <p>
+              <strong>系统入口位于左上角</strong>
+              <small>点击菜单按钮可查看所有已接入系统。</small>
+            </p>
           </div>
-        ))}
-      </section>
+        </aside>
+      </div>
     </div>
   )
 }

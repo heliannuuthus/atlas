@@ -1,7 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Breadcrumb as AntBreadcrumb } from 'antd'
-import type { BreadcrumbProps } from 'antd'
-import { RightOutlined } from '@ant-design/icons'
+import type { ReactNode } from 'react'
+import { ChevronRight } from 'lucide-react'
 import styles from './index.module.scss'
 
 interface BreadcrumbConfig {
@@ -28,7 +27,7 @@ export function Breadcrumb({ config }: AppBreadcrumbProps) {
   const location = useLocation()
   const routeNameMap = { ...defaultRouteNames, ...config.routeNameMap }
 
-  const generateBreadcrumbs = (): BreadcrumbProps['items'] => {
+  const generateBreadcrumbs = (): { title: ReactNode; onClick?: () => void }[] => {
     const basePath = config.basePath ?? ''
     const pathForBreadcrumb = basePath
       ? location.pathname === basePath
@@ -53,7 +52,7 @@ export function Breadcrumb({ config }: AppBreadcrumbProps) {
       ]
     }
 
-    const items: BreadcrumbProps['items'] = [
+    const items: { title: React.ReactNode; onClick?: () => void }[] = [
       {
         title: (
           <span className={`${styles.breadcrumbItem} ${styles.moduleRoot}`}>{config.appName}</span>
@@ -64,6 +63,7 @@ export function Breadcrumb({ config }: AppBreadcrumbProps) {
     let currentPath = basePath
     pathSegments.forEach((segment, index) => {
       currentPath += (currentPath.endsWith('/') ? '' : '/') + segment
+      const targetPath = currentPath
       const isLast = index === pathSegments.length - 1
       const title = routeNameMap[segment] || segment
 
@@ -71,7 +71,7 @@ export function Breadcrumb({ config }: AppBreadcrumbProps) {
         title: (
           <span className={`${styles.breadcrumbItem} ${isLast ? styles.active : ''}`}>{title}</span>
         ),
-        onClick: isLast ? undefined : () => navigate(currentPath),
+        onClick: isLast ? undefined : () => navigate(targetPath),
       })
     })
 
@@ -82,11 +82,22 @@ export function Breadcrumb({ config }: AppBreadcrumbProps) {
   if (!breadcrumbItems || breadcrumbItems.length === 0) return null
 
   return (
-    <div className={styles.breadcrumb}>
-      <AntBreadcrumb
-        separator={<RightOutlined className={styles.separator} />}
-        items={breadcrumbItems}
-      />
-    </div>
+    <nav className={styles.breadcrumb} aria-label="面包屑">
+      <ol className={styles.list}>
+        {breadcrumbItems.map((item, index) => (
+          <li key={index} className={styles.listItem}>
+            {index > 0 ? <ChevronRight className={styles.separator} aria-hidden="true" /> : null}
+            <button
+              type="button"
+              className={styles.itemButton}
+              onClick={item.onClick}
+              disabled={!item.onClick}
+            >
+              {item.title}
+            </button>
+          </li>
+        ))}
+      </ol>
+    </nav>
   )
 }

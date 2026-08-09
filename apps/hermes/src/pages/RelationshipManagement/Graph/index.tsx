@@ -16,10 +16,20 @@ import ReactFlow, {
   type EdgeTypes,
 } from 'reactflow'
 import 'reactflow/dist/style.css'
-import { message, Table, Card, Popconfirm, Button, Spin, ConfigProvider } from 'antd'
-import type { ColumnsType } from 'antd/es/table'
-import type { ThemeConfig } from 'antd'
-import { DeleteOutlined } from '@ant-design/icons'
+import { Button } from '@atlas/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@atlas/ui/card'
+import { DataTable, type DataTableColumn } from '@atlas/ui/table'
+import { Spinner } from '@atlas/ui/spinner'
+import { toast } from '@atlas/ui/toast'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@atlas/ui/dialog'
+import { Trash2 } from 'lucide-react'
 import { serviceApi, applicationApi, groupApi, relationshipApi } from '@/services'
 import { useDomainId } from '@/contexts/DomainContext'
 import type { Relationship } from '@/types'
@@ -73,6 +83,8 @@ function GraphCanvas() {
 
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [pendingDelete, setPendingDelete] = useState<Relationship | null>(null)
+  const [deleting, setDeleting] = useState(false)
 
   // 创建关系对话框
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -196,7 +208,7 @@ function GraphCanvas() {
       // 检查节点是否已存在
       const existingNode = nodes.find(n => n.id === nodeId)
       if (existingNode) {
-        message.warning('该节点已存在于画布中')
+        toast.warning('该节点已存在于画布中')
         return
       }
 
@@ -233,7 +245,7 @@ function GraphCanvas() {
     (connection: Connection) => {
       if (!connection.source || !connection.target) return
       if (!selectedServiceId) {
-        message.warning('请先选择服务')
+        toast.warning('请先选择服务')
         return
       }
 
@@ -293,7 +305,7 @@ function GraphCanvas() {
   // 保存更改
   const handleSave = useCallback(async () => {
     if (!selectedServiceId) {
-      message.warning('请先选择服务')
+      toast.warning('请先选择服务')
       return
     }
 
@@ -312,11 +324,11 @@ function GraphCanvas() {
         })
       }
 
-      message.success('保存成功')
+      toast.success('保存成功')
       resetChanges()
       refreshRelationships()
     } catch {
-      message.error('保存失败')
+      toast.error('保存失败')
     } finally {
       setSaving(false)
     }
@@ -345,63 +357,74 @@ function GraphCanvas() {
           object_type: rel.object_type,
           object_id: rel.object_id,
         })
-        message.success('删除成功')
+        toast.success('删除成功')
         refreshRelationships()
       } catch {
-        message.error('删除失败')
+        toast.error('删除失败')
       }
     },
     [refreshRelationships]
   )
 
   // 表格列定义
-  const columns: ColumnsType<Relationship> = [
-    { title: '主体类型', dataIndex: 'subject_type', width: 100 },
-    { title: '主体ID', dataIndex: 'subject_id', width: 150, ellipsis: true },
-    { title: '关系', dataIndex: 'relation', width: 100 },
-    { title: '对象类型', dataIndex: 'object_type', width: 100 },
-    { title: '对象ID', dataIndex: 'object_id', width: 150, ellipsis: true },
+  const columns: DataTableColumn<Relationship>[] = [
+    { key: 'subject_type', header: '主体类型', width: 100, render: row => row.subject_type },
     {
-      title: '过期时间',
-      dataIndex: 'expires_at',
+      key: 'subject_id',
+      header: '主体 ID',
+      width: 150,
+      render: row => (
+        <code className="block max-w-40 truncate" title={row.subject_id}>
+          {row.subject_id}
+        </code>
+      ),
+    },
+    { key: 'relation', header: '关系', width: 100, render: row => row.relation },
+    { key: 'object_type', header: '对象类型', width: 100, render: row => row.object_type },
+    {
+      key: 'object_id',
+      header: '对象 ID',
+      width: 150,
+      render: row => (
+        <code className="block max-w-40 truncate" title={row.object_id}>
+          {row.object_id}
+        </code>
+      ),
+    },
+    {
+      key: 'expires_at',
+      header: '过期时间',
       width: 160,
-      render: text => {
-        if (!text) return '-'
-        const expiring = isExpiringSoon(text)
+      render: row => {
+        if (!row.expires_at) return '—'
+        const expiring = isExpiringSoon(row.expires_at)
         return (
-          <span style={{ color: expiring ? '#faad14' : undefined }}>{formatDateTime(text)}</span>
+          <span className={expiring ? 'text-amber-600' : undefined}>
+            {formatDateTime(row.expires_at)}
+          </span>
         )
       },
     },
     {
-      title: '操作',
+      key: 'actions',
+      header: '操作',
       width: 80,
-      render: (_, record) => (
-        <Popconfirm title="确定要删除吗？" onConfirm={() => handleDeleteRelation(record)}>
-          <Button type="link" size="small" danger icon={<DeleteOutlined />}>
-            删除
-          </Button>
-        </Popconfirm>
+      render: row => (
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="text-destructive hover:text-destructive"
+          onClick={() => setPendingDelete(row)}
+        >
+          <Trash2 />
+          删除
+        </Button>
       ),
     },
   ]
 
   const loading = servicesLoading || applicationsLoading || groupsLoading
-
-  const tableCardTheme: ThemeConfig = useMemo(
-    () => ({
-      components: {
-        Card: {
-          paddingLG: 0,
-        },
-        Table: {
-          headerBg: '#fafafa',
-          fontSize: 13,
-        },
-      },
-    }),
-    []
-  )
 
   return (
     <div className={`${styles.graphPage} ${isFullscreen ? styles.fullscreen : ''}`}>
@@ -424,7 +447,7 @@ function GraphCanvas() {
         <div className={styles.sidePanel}>
           {loading ? (
             <div className={styles.loading}>
-              <Spin />
+              <Spinner />
             </div>
           ) : (
             <AddNodes
@@ -461,19 +484,24 @@ function GraphCanvas() {
       </div>
 
       {/* 下方数据表格 */}
-      <ConfigProvider theme={tableCardTheme}>
-        <Card className={styles.tableCard} title={null} size="small">
-          <Table
-            columns={columns}
-            dataSource={relationshipItems}
-            loading={relationshipsLoading}
-            rowKey={r => `${r.service_id}:${r.subject_id}:${r.relation}:${r.object_id}`}
-            size="small"
-            pagination={{ pageSize: 5 }}
-            scroll={{ x: 900 }}
-          />
-        </Card>
-      </ConfigProvider>
+      <Card className={styles.tableCard}>
+        <CardHeader>
+          <CardTitle className="text-base">关系明细</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {relationshipsLoading ? (
+            <div className="flex min-h-32 items-center justify-center">
+              <Spinner />
+            </div>
+          ) : (
+            <DataTable
+              columns={columns}
+              data={relationshipItems}
+              rowKey={r => `${r.service_id}:${r.subject_id}:${r.relation}:${r.object_id}`}
+            />
+          )}
+        </CardContent>
+      </Card>
 
       {/* 创建关系对话框 */}
       <CreateRelationDialog
@@ -487,6 +515,37 @@ function GraphCanvas() {
           setPendingConnection(null)
         }}
       />
+      <Dialog open={pendingDelete !== null} onOpenChange={open => !open && setPendingDelete(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>删除关系</DialogTitle>
+            <DialogDescription>
+              确定删除 {pendingDelete?.subject_id} → {pendingDelete?.object_id} 的“
+              {pendingDelete?.relation}”关系？
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setPendingDelete(null)}>
+              取消
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              disabled={deleting}
+              onClick={async () => {
+                if (!pendingDelete) return
+                setDeleting(true)
+                await handleDeleteRelation(pendingDelete)
+                setDeleting(false)
+                setPendingDelete(null)
+              }}
+            >
+              <Trash2 />
+              删除
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

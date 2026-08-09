@@ -1,94 +1,81 @@
 import { useRequest } from 'ahooks'
-import { Card, Table, Button, Space, Empty, Typography } from 'antd'
-import type { ColumnsType } from 'antd/es/table'
-import { PlusOutlined, EditOutlined, EyeOutlined, TeamOutlined } from '@ant-design/icons'
+import { Eye, Pencil, Plus, Users } from 'lucide-react'
+import { Button } from '@atlas/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@atlas/ui/card'
+import { EmptyState } from '@atlas/ui/empty-state'
+import { Spinner } from '@atlas/ui/spinner'
+import { DataTable, type DataTableColumn } from '@atlas/ui/table'
 import { useAppNavigate } from '@/contexts/DomainContext'
 import { groupApi } from '@/services'
 import type { Group } from '@/types'
 import styles from './index.module.scss'
 
-const { Text } = Typography
-
 export function List() {
   const navigate = useAppNavigate()
-
   const { data, loading } = useRequest(() => groupApi.getList())
-
-  const tableData = data?.items ?? []
-
-  const columns: ColumnsType<Group> = [
-    { title: '组ID', dataIndex: 'group_id', key: 'group_id', width: 180, ellipsis: true },
-    { title: '名称', dataIndex: 'name', key: 'name', width: 180 },
+  const groups = data?.items ?? []
+  const columns: DataTableColumn<Group>[] = [
     {
-      title: '描述',
-      dataIndex: 'description',
+      key: 'group_id',
+      header: '组 ID',
+      width: 180,
+      render: group => <code>{group.group_id}</code>,
+    },
+    { key: 'name', header: '名称', width: 180, render: group => group.name },
+    {
       key: 'description',
-      ellipsis: true,
-      render: text => text || <Text type="secondary">-</Text>,
+      header: '描述',
+      render: group => group.description || <span className="text-muted-foreground">—</span>,
     },
     {
-      title: '操作',
       key: 'action',
-      width: 140,
-      fixed: 'right',
-      render: (_, record) => (
-        <Space size={0}>
-          <Button
-            type="link"
-            size="small"
-            icon={<EyeOutlined />}
-            onClick={() => navigate(`/groups/${record.group_id}`)}
-          >
+      header: '操作',
+      width: 170,
+      render: group => (
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="sm" onClick={() => navigate(`/groups/${group.group_id}`)}>
+            <Eye />
             查看
           </Button>
           <Button
-            type="link"
-            size="small"
-            icon={<EditOutlined />}
-            onClick={() => navigate(`/groups/${record.group_id}/edit`)}
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(`/groups/${group.group_id}/edit`)}
           >
+            <Pencil />
             编辑
           </Button>
-        </Space>
+        </div>
       ),
     },
   ]
-
-  // 空状态组件
-  const emptyState = (
-    <Empty
-      image={<TeamOutlined style={{ fontSize: 48, color: '#d9d9d9' }} />}
-      imageStyle={{ height: 60 }}
-      description="暂无组数据"
-    >
-      <Button type="primary" onClick={() => navigate('/groups/create')}>
-        创建第一个组
-      </Button>
-    </Empty>
+  const create = (
+    <Button onClick={() => navigate('/groups/create')}>
+      <Plus />
+      创建组
+    </Button>
   )
-
   return (
     <div className={styles.container}>
       <Card>
-        <div className={styles.header}>
-          <div className={styles.headerLeft}>
-            <div className={styles.title}>组</div>
-            <Typography.Text type="secondary" className={styles.headerDesc}>
-              组用于将多个用户或身份聚合，在关系中可将组作为主体或对象，便于批量授权与维护。
-            </Typography.Text>
+        <CardHeader className="flex-row items-start justify-between">
+          <div className="grid gap-1.5">
+            <CardTitle>组</CardTitle>
+            <p className={styles.headerDesc}>组用于聚合用户或身份，并作为关系中的主体或对象。</p>
           </div>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/groups/create')}>
-            创建组
-          </Button>
-        </div>
-        <Table
-          columns={columns}
-          dataSource={tableData}
-          loading={loading}
-          rowKey="group_id"
-          scroll={{ x: 600 }}
-          locale={{ emptyText: emptyState }}
-        />
+          {create}
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="flex min-h-40 items-center justify-center">
+              <Spinner />
+            </div>
+          ) : groups.length ? (
+            <DataTable columns={columns} data={groups} rowKey="group_id" />
+          ) : (
+            <EmptyState title="暂无组数据" icon={<Users className="size-8" />} action={create} />
+          )}
+        </CardContent>
       </Card>
     </div>
   )

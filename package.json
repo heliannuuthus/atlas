@@ -2,7 +2,11 @@
   "name": "atlas-monorepo",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "packageManager": "pnpm@10.28.1",
+  "engines": {
+    "node": "24.13.x"
+  },
   "scripts": {
     "dev": "turbo dev",
     "dev:portal": "turbo dev --filter=@atlas/portal",
@@ -10,6 +14,8 @@
     "dev:zwei": "turbo dev --filter=@atlas/zwei",
     "dev:chaos": "turbo dev --filter=@atlas/chaos",
     "build": "turbo build",
+    "css:check": "node scripts/check-css-policy.mjs",
+    "css:check:all": "node scripts/check-css-policy.mjs apps packages",
     "lint": "turbo lint",
     "type-check": "turbo type-check",
     "format": "prettier --write \"**/*.{ts,tsx,scss,css,json}\" --ignore-path .gitignore",

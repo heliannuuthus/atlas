@@ -1,0 +1,207 @@
+.trigger {
+  height: 36px;
+  max-width: min(280px, 44vw);
+  padding: 0 10px;
+  border: 0;
+  border-radius: 8px;
+  box-shadow: none;
+  color: var(--foreground);
+  gap: 6px;
+
+  &:hover,
+  &[data-state='open'] {
+    background: var(--muted);
+  }
+
+  &:focus-visible {
+    border-color: transparent;
+    outline: 0;
+    box-shadow: none;
+    background: var(--muted);
+  }
+}
+
+.triggerName {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevron {
+  width: 15px;
+  height: 15px;
+  color: var(--muted-foreground);
+  transition: transform 160ms ease;
+
+  .trigger[data-state='open'] & {
+    transform: rotate(180deg);
+  }
+}
+
+.menu {
+  width: 292px;
+  padding: 0;
+  overflow: hidden;
+  transition: width 180ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  &[data-managing='true'] {
+    width: min(392px, calc(100vw - 32px));
+  }
+}
+
+.switchPanel {
+  min-width: 0;
+  min-height: 324px;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 66px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+
+  > div:first-child {
+    display: grid;
+    min-width: 0;
+    gap: 3px;
+  }
+
+  strong {
+    font-size: 14px;
+    line-height: 1.2;
+  }
+
+  span {
+    color: var(--muted-foreground);
+    font-size: 11px;
+  }
+}
+
+.headerAction,
+.domainAction {
+  flex: 0 0 auto;
+  min-height: 30px;
+  padding: 5px 8px;
+  color: var(--muted-foreground);
+  font-size: 12px;
+
+  &:focus {
+    color: var(--foreground);
+  }
+}
+
+.manageActions,
+.domainActions {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 2px;
+}
+
+.domainList {
+  max-height: 326px;
+  padding: 7px;
+  overflow-y: auto;
+}
+
+.domainItem {
+  justify-content: space-between;
+  min-height: 54px;
+  padding: 8px 10px;
+
+  &[data-current='true'] {
+    background: var(--accent);
+  }
+}
+
+.manageDomainItem {
+  display: flex;
+  align-items: center;
+  border-radius: 16px;
+  gap: 12px;
+}
+
+.domainIdentity {
+  display: grid;
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: 2px;
+}
+
+.domainName,
+.domainId {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.domainName {
+  color: var(--foreground);
+  font-weight: 600;
+}
+
+.domainId {
+  color: var(--muted-foreground);
+  font-size: 11px;
+}
+
+.domainAction {
+  color: var(--muted-foreground);
+}
+
+.currentIcon {
+  color: var(--primary);
+}
+
+.loading,
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+
+.spinner {
+  animation: spin 800ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 520px) {
+  .menu[data-managing='true'] {
+    width: min(340px, calc(100vw - 24px));
+  }
+
+  .domainItem {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .domainAction {
+    padding-right: 6px;
+    padding-left: 6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu,
+  .chevron,
+  .spinner {
+    transition-duration: 1ms;
+    animation-duration: 1ms;
+  }
+}

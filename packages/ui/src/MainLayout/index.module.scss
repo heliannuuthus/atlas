@@ -1,33 +1,122 @@
 .layout {
+  display: flex;
   height: 100vh;
   overflow: hidden;
-  background: #f8f8fa;
+  background: var(--background);
 }
 
 .innerLayout {
-  background: transparent !important;
+  flex: 1;
+  min-width: 0;
+  background: transparent;
 }
 
 .siderWrapper {
   position: relative;
   display: flex;
   align-items: center;
+
+  &:hover .collapseButton,
+  &:focus-within .collapseButton {
+    opacity: 1;
+  }
 }
 
 .sider {
-  background: #fff !important;
+  flex-shrink: 0;
   height: 100%;
+  background: var(--card);
   overflow-x: visible;
   overflow-y: hidden;
-  border-right: none !important;
+  border-right: 0;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.collapseButton {
+  position: absolute;
+  top: 50%;
+  right: -14px;
+  z-index: 101;
+  width: 20px;
+  height: 40px;
+  padding: 0;
+  transform: translateY(-50%);
+  border: 1px solid var(--border);
+  border-left: 0;
+  border-radius: 0 6px 6px 0;
+  background: var(--card);
+  color: var(--muted-foreground);
+  opacity: 0;
+  transition: opacity 160ms ease;
+
+  &:focus-visible {
+    opacity: 1;
+  }
 }
 
 .content {
   margin-top: 72px;
-  padding: 20px 24px;
-  background: transparent;
-  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow-y: auto;
-  overflow-x: hidden;
   height: calc(100vh - 72px);
+  padding: 12px;
+  background: var(--background);
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.contentSurface {
+  width: 80%;
+  min-height: calc(100vh - 142px);
+  margin-inline: auto;
+}
+
+.contentSurfaceStandalone {
+  min-height: calc(100vh - 96px);
+}
+
+.contentHeader {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 46px;
+  padding: 0 24px;
+}
+
+.contentBody {
+  padding: 20px 24px;
+}
+
+@media (max-width: 1024px) {
+  .contentSurface {
+    width: 100%;
+  }
+}
+
+@media (max-width: 720px) {
+  .content {
+    padding: 8px;
+  }
+
+  .contentSurface {
+    min-height: calc(100vh - 134px);
+  }
+
+  .contentSurfaceStandalone {
+    min-height: calc(100vh - 88px);
+  }
+
+  .contentHeader {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .contentBody {
+    padding: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sider,
+  .collapseButton {
+    transition-duration: 1ms;
+  }
 }

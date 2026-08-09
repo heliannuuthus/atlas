@@ -1,167 +1,474 @@
-.container {
-  max-width: 1080px;
+.page {
+  width: 90%;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 34px 0 72px;
+  color: var(--atlas-ink);
 }
 
-// ─── Hero ───
-.hero {
-  padding: 64px 0 48px;
-}
-
-.heroInner {
+.pageHeading {
+  min-height: 108px;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+  padding-bottom: 24px;
 
-.heroLogo {
-  width: 48px;
-  height: 48px;
-  margin-bottom: 20px;
+  > div:first-child > span {
+    color: #657287;
+    font-size: 12px;
+  }
 
-  svg {
-    width: 100%;
-    height: 100%;
+  h1 {
+    margin: 8px 0 0;
+    color: #1f2733;
+    font: 700 30px/1.15 var(--atlas-display);
+    letter-spacing: -0.025em;
+  }
+
+  p {
+    margin: 9px 0 0;
+    color: #657287;
+    font-size: 13px;
+    line-height: 1.6;
   }
 }
 
-.heroTitle {
-  font-size: 32px !important;
-  font-weight: 800 !important;
-  color: #18181b !important;
-  margin: 0 0 4px 0 !important;
-  letter-spacing: -0.5px;
-}
+.headingActions {
+  display: flex;
+  gap: 10px;
 
-.heroDesc {
-  font-size: 15px;
-  color: #71717a;
-  margin: 0;
-}
+  button {
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 15px;
+    border: 1px solid #cbd5e2;
+    border-radius: 12px;
+    background: #fff;
+    color: #344156;
+    font-size: 12px;
+    font-weight: 650;
+    cursor: pointer;
+    transition:
+      border-color 140ms ease,
+      color 140ms ease,
+      background-color 140ms ease,
+      transform 150ms ease;
 
-// ─── Grid ───
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 16px;
-  padding-bottom: 64px;
-}
+    &:hover {
+      border-color: #69a8ff;
+      color: #0958d9;
+    }
 
-.card {
-  background: #fff;
-  border: 1px solid #e4e4e7;
-  border-radius: 14px;
-  overflow: hidden;
-  transition:
-    box-shadow 0.2s ease,
-    border-color 0.2s ease;
+    &:active {
+      transform: scale(0.98);
+    }
 
-  &:hover {
-    border-color: #d4d4d8;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    &:focus-visible {
+      outline: 3px solid rgba(22, 119, 255, 0.2);
+      outline-offset: 2px;
+    }
+  }
 
-    .cardArrow {
-      opacity: 1;
-      transform: translateX(0);
+  .primaryAction {
+    border-color: #1677ff;
+    background: #1677ff;
+    color: #fff;
+
+    &:hover {
+      border-color: #0958d9;
+      background: #0958d9;
+      color: #fff;
     }
   }
 }
 
-.cardHeader {
-  padding: 0;
-}
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0 0 20px;
+  overflow: hidden;
+  border: 1px solid rgba(45, 61, 82, 0.08);
+  border-radius: 24px;
+  background: #fff;
+  box-shadow:
+    0 8px 24px rgba(42, 61, 89, 0.055),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 
-.cardLogoLink {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 20px 20px 16px;
-  text-decoration: none;
-  color: inherit;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
+  > div {
+    position: relative;
+    min-height: 104px;
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    grid-template-rows: auto auto;
+    align-content: center;
+    gap: 5px 14px;
+    padding: 20px 26px;
 
-  &:hover {
-    background: #fafafa;
+    & + div {
+      border-left: 1px solid #e6eaf0;
+    }
+  }
+
+  dt {
+    align-self: end;
+    color: #657287;
+    font-size: 11px;
+  }
+
+  dd {
+    align-self: start;
+    margin: 0;
+    color: #1f2733;
+    font: 700 24px/1 var(--atlas-mono);
   }
 }
 
-.cardLogo {
-  width: 40px;
-  height: 40px;
-  flex-shrink: 0;
+.metricIcon {
+  grid-row: 1 / 3;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  border-radius: 14px;
+  background: #eaf3ff;
+  color: #1677ff;
+  font-size: 19px;
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(300px, 0.85fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.panel {
+  overflow: hidden;
+  border: 1px solid rgba(45, 61, 82, 0.08);
+  border-radius: 24px;
+  background: #fff;
+  box-shadow:
+    0 8px 24px rgba(42, 61, 89, 0.055),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.panelHeader {
+  min-height: 74px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 15px 20px;
+  border-bottom: 1px solid #e6eaf0;
+
+  h2 {
+    margin: 0;
+    color: #1f2733;
+    font-size: 15px;
+    font-weight: 680;
+  }
+
+  p {
+    margin: 5px 0 0;
+    color: #657287;
+    font-size: 11px;
+  }
+
+  button {
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 0 7px;
+    border: 0;
+    background: transparent;
+    color: #1677ff;
+    font-size: 11px;
+    font-weight: 650;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 3px solid rgba(22, 119, 255, 0.2);
+      outline-offset: 1px;
+    }
+  }
+}
+
+.recentList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 8px;
+
+  > a {
+    min-width: 0;
+    min-height: 68px;
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1px solid transparent;
+    border-radius: 14px;
+    color: #263246;
+    text-decoration: none;
+    transition:
+      border-color 140ms ease,
+      background-color 140ms ease;
+
+    &:hover {
+      border-color: #d6e6fb;
+      background: #f6faff;
+
+      > :global(.anticon) {
+        color: #1677ff;
+        transform: translateX(2px);
+      }
+    }
+
+    &:focus-visible {
+      outline: 3px solid rgba(22, 119, 255, 0.2);
+      outline-offset: 1px;
+    }
+
+    > :global(.anticon) {
+      color: #8a96a8;
+      font-size: 11px;
+      transition:
+        color 140ms ease,
+        transform 160ms ease;
+    }
+  }
+}
+
+.recentIcon {
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
 
   svg {
     width: 100%;
     height: 100%;
   }
+
+  > :global(.anticon) {
+    width: auto;
+    height: auto;
+    font-size: 16px;
+  }
 }
 
-.cardInfo {
-  flex: 1;
+.recentAccent {
+  width: 4px;
+  height: 34px;
+  margin: 0 17px;
+  border-radius: 999px;
+}
+
+.recentCopy {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
+
+  strong,
+  small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  strong {
+    font-size: 12px;
+    font-weight: 650;
+  }
+
+  small {
+    color: #657287;
+    font-size: 10px;
+  }
 }
 
-.cardName {
-  font-size: 16px;
-  font-weight: 700;
-  color: #18181b;
-  letter-spacing: -0.2px;
-}
-
-.cardDesc {
-  font-size: 13px;
-  color: #a1a1aa;
-}
-
-.cardArrow {
-  font-size: 14px;
-  color: #a1a1aa;
-  opacity: 0;
-  transform: translateX(-4px);
-  transition: all 0.2s ease;
-}
-
-// ─── Modules ───
-.modules {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  gap: 2px;
-  padding: 0 8px 8px;
-}
-
-.module {
+.emptyRecent {
+  min-height: 244px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 14px 8px;
-  border-radius: 10px;
-  cursor: pointer;
-  text-decoration: none;
-  color: inherit;
-  transition: background-color 0.15s ease;
-
-  &:hover {
-    background: #f4f4f5;
-  }
-
-  &:active {
-    background: #e4e4e7;
-  }
-}
-
-.moduleIcon {
-  font-size: 20px;
-}
-
-.moduleTitle {
-  font-size: 12px;
-  font-weight: 500;
-  color: #52525b;
+  justify-content: center;
+  padding: 30px;
+  color: #657287;
   text-align: center;
+
+  > :global(.anticon) {
+    margin-bottom: 14px;
+    color: #91a4bd;
+    font-size: 28px;
+  }
+
+  strong {
+    color: #344156;
+    font-size: 13px;
+  }
+
+  span {
+    margin-top: 6px;
+    font-size: 11px;
+  }
+
+  button {
+    min-height: 36px;
+    margin-top: 16px;
+    padding: 0 14px;
+    border: 1px solid #9ec5fa;
+    border-radius: 10px;
+    background: #fff;
+    color: #0958d9;
+    font-size: 11px;
+    font-weight: 650;
+    cursor: pointer;
+
+    &:hover {
+      border-color: #1677ff;
+      background: #f6faff;
+    }
+
+    &:focus-visible {
+      outline: 3px solid rgba(22, 119, 255, 0.2);
+      outline-offset: 2px;
+    }
+  }
+}
+
+.platformFacts {
+  margin: 0;
+  padding: 8px 20px;
+
+  div {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    & + div {
+      border-top: 1px solid #edf0f4;
+    }
+  }
+
+  dt {
+    color: #657287;
+    font-size: 11px;
+  }
+
+  dd {
+    margin: 0;
+    color: #344156;
+    font: 600 11px/1.4 var(--atlas-mono);
+  }
+}
+
+.platformHint {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 4px 20px 20px;
+  padding: 12px;
+  border-left: 3px solid #1677ff;
+  border-radius: 14px;
+  background: #f3f8ff;
+
+  > span {
+    width: 7px;
+    height: 7px;
+    flex: none;
+    margin-top: 5px;
+    border-radius: 50%;
+    background: #1677ff;
+  }
+
+  p {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+  }
+
+  strong {
+    color: #274261;
+    font-size: 11px;
+    font-weight: 650;
+  }
+
+  small {
+    color: #657287;
+    font-size: 10px;
+    line-height: 1.5;
+  }
+}
+
+@media (max-width: 900px) {
+  .contentGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .page {
+    width: calc(100% - 28px);
+    padding: 24px 0 48px;
+  }
+
+  .pageHeading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .headingActions {
+    width: 100%;
+
+    button {
+      flex: 1;
+    }
+  }
+
+  .metrics {
+    grid-template-columns: 1fr;
+
+    > div {
+      min-height: 88px;
+
+      & + div {
+        border-top: 1px solid #e6eaf0;
+        border-left: 0;
+      }
+    }
+  }
+
+  .recentList {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 420px) {
+  .headingActions {
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .headingActions button,
+  .panelHeader button,
+  .recentList > a,
+  .recentList > a > :global(.anticon),
+  .emptyRecent button {
+    transition: none;
+  }
 }

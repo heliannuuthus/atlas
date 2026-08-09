@@ -1,12 +1,12 @@
-import { useMemo } from 'react'
-import { Menu, ConfigProvider } from 'antd'
-import type { MenuProps, ThemeConfig } from 'antd'
+import { useMemo, type CSSProperties, type ReactNode } from 'react'
+import { ChevronRight } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipTrigger } from '../../components/tooltip'
 import styles from './index.module.scss'
 
 export interface SidebarMenuItem {
   key: string
   label: string
-  icon?: React.ReactNode
+  icon?: ReactNode
   path: string
   section?: string
   badge?: number
@@ -17,50 +17,26 @@ export interface SidebarMenuItem {
 export interface SidebarProps {
   collapsed: boolean
   menus: SidebarMenuItem[]
-  logo: { icon: React.ReactNode; text: string }
+  logo: { icon?: ReactNode; text: string }
   brandColor?: string
   envLabel?: string
+  logoActive?: boolean
   onLogoClick: () => void
   selectedKeys: string[]
   onMenuClick: (key: string) => void
-}
-
-type MenuItem = Required<MenuProps>['items'][number]
-
-function toAntdMenuItems(menus: SidebarMenuItem[]): MenuItem[] {
-  return menus.map(menu => ({
-    key: menu.path,
-    icon: menu.icon,
-    label: (
-      <span className={styles.menuLabel}>
-        {menu.label}
-        {menu.badge ? (
-          <span className={styles.badge}>{menu.badge > 99 ? '99+' : menu.badge}</span>
-        ) : null}
-      </span>
-    ),
-    children: menu.children?.map(child => ({
-      key: child.path,
-      icon: child.icon,
-      label: child.label,
-    })),
-  }))
 }
 
 export function Sidebar({
   collapsed,
   menus,
   logo,
-  brandColor = '#7c3aed',
+  brandColor = '#2557d6',
   envLabel,
+  logoActive = false,
   onLogoClick,
   selectedKeys,
   onMenuClick,
 }: SidebarProps) {
-  const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
-    onMenuClick(key as string)
-  }
-
   const mainMenus = menus.filter(m => !m.bottom)
   const bottomMenus = menus.filter(m => m.bottom)
 
@@ -86,76 +62,79 @@ export function Sidebar({
     return groups
   }, [mainMenus])
 
-  const menuTheme: ThemeConfig = useMemo(
-    () => ({
-      components: {
-        Menu: {
-          itemMarginInline: collapsed ? 4 : 8,
-          itemBorderRadius: 8,
-          itemSelectedBg: `${brandColor}0d`,
-          itemSelectedColor: brandColor,
-          itemHoverBg: 'rgba(0, 0, 0, 0.03)',
-          subMenuItemBg: 'transparent',
-          activeBarBorderWidth: 0,
-          ...(collapsed && {
-            itemPaddingInline: 20,
-            iconSize: 18,
-          }),
-        },
-      },
-    }),
-    [collapsed, brandColor]
-  )
+  const renderItem = (item: SidebarMenuItem, nested = false) => {
+    const active = selectedKeys.includes(item.path)
+    const content = (
+      <button
+        type="button"
+        className={`${styles.menuItem} ${active ? styles.menuItemActive : ''} ${nested ? styles.menuItemNested : ''}`}
+        style={{ '--brand': brandColor } as CSSProperties}
+        onClick={() => onMenuClick(item.path)}
+        aria-current={active ? 'page' : undefined}
+      >
+        {item.icon ? <span className={styles.menuIcon}>{item.icon}</span> : null}
+        {!collapsed ? <span className={styles.menuLabel}>{item.label}</span> : null}
+        {!collapsed && item.badge ? (
+          <span className={styles.badge}>{item.badge > 99 ? '99+' : item.badge}</span>
+        ) : null}
+        {!collapsed && item.children?.length ? <ChevronRight className={styles.chevron} /> : null}
+      </button>
+    )
+    return (
+      <div key={item.key}>
+        {collapsed ? (
+          <Tooltip>
+            <TooltipTrigger asChild>{content}</TooltipTrigger>
+            <TooltipContent side="right">{item.label}</TooltipContent>
+          </Tooltip>
+        ) : (
+          content
+        )}
+        {!collapsed ? item.children?.map(child => renderItem(child, true)) : null}
+      </div>
+    )
+  }
 
   return (
     <div className={styles.sidebar}>
-      <div className={styles.logo} onClick={onLogoClick}>
-        <div className={styles.logoIcon} style={{ '--brand': brandColor } as React.CSSProperties}>
-          {logo.icon}
-        </div>
-        {!collapsed && (
-          <div className={styles.logoContent}>
-            <span className={styles.logoMain}>{logo.text}</span>
-            {envLabel && <span className={styles.envBadge}>{envLabel}</span>}
-          </div>
-        )}
-      </div>
+      {(logo.icon || !collapsed) && (
+        <button
+          type="button"
+          className={`${styles.logo} ${logoActive ? styles.logoActive : ''}`}
+          style={{ '--brand': brandColor } as CSSProperties}
+          onClick={onLogoClick}
+          aria-current={logoActive ? 'page' : undefined}
+          aria-label={`打开${logo.text}`}
+        >
+          {logo.icon && <span className={styles.logoIcon}>{logo.icon}</span>}
+          {!collapsed && (
+            <span className={styles.logoContent}>
+              <span className={styles.logoMain}>{logo.text}</span>
+              {envLabel && <span className={styles.envBadge}>{envLabel}</span>}
+            </span>
+          )}
+        </button>
+      )}
 
       <div className={styles.navArea}>
-        <ConfigProvider theme={menuTheme}>
-          {sections.map((group, i) => (
-            <div key={i} className={styles.section}>
-              {group.section && !collapsed && (
-                <div className={styles.sectionTitle}>{group.section}</div>
-              )}
-              {collapsed && group.section && i > 0 && <div className={styles.sectionDivider} />}
-              <Menu
-                mode="inline"
-                selectedKeys={selectedKeys}
-                items={toAntdMenuItems(group.items)}
-                onClick={handleMenuClick}
-                inlineCollapsed={collapsed}
-                triggerSubMenuAction="hover"
-                className={styles.menu}
-              />
-            </div>
-          ))}
-        </ConfigProvider>
+        {sections.map((group, i) => (
+          <div key={`${group.section ?? 'main'}-${i}`} className={styles.section}>
+            {group.section && !collapsed && (
+              <div className={styles.sectionTitle}>{group.section}</div>
+            )}
+            {collapsed && group.section && i > 0 && <div className={styles.sectionDivider} />}
+            <nav className={styles.menu} aria-label={group.section ?? '主导航'}>
+              {group.items.map(item => renderItem(item))}
+            </nav>
+          </div>
+        ))}
       </div>
 
       {bottomMenus.length > 0 && (
         <div className={styles.bottomArea}>
-          <ConfigProvider theme={menuTheme}>
-            <Menu
-              mode="inline"
-              selectedKeys={selectedKeys}
-              items={toAntdMenuItems(bottomMenus)}
-              onClick={handleMenuClick}
-              inlineCollapsed={collapsed}
-              triggerSubMenuAction="hover"
-              className={styles.menu}
-            />
-          </ConfigProvider>
+          <nav className={styles.menu} aria-label="辅助导航">
+            {bottomMenus.map(item => renderItem(item))}
+          </nav>
         </div>
       )}
     </div>

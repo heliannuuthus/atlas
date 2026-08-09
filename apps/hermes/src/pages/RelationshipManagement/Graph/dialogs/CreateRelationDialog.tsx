@@ -1,32 +1,48 @@
-import { useState, useEffect } from 'react'
-import { Modal, Form, Input, Select, DatePicker } from 'antd'
-import type { Dayjs } from 'dayjs'
+import { useState } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Controller, useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { Badge } from '@atlas/ui/badge'
+import { Button } from '@atlas/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@atlas/ui/dialog'
+import { Input } from '@atlas/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@atlas/ui/select'
+import { FormField } from '@/components/forms/FormField'
 
+interface NodeRef {
+  type: string
+  id: string
+}
 interface CreateRelationDialogProps {
   open: boolean
-  sourceNode: {
-    type: string
-    id: string
-  } | null
-  targetNode: {
-    type: string
-    id: string
-  } | null
+  sourceNode: NodeRef | null
+  targetNode: NodeRef | null
   serviceId: string
   onConfirm: (data: { relation: string; expiresAt?: string }) => void
   onCancel: () => void
 }
 
-// 常用关系类型选项
 const relationOptions = [
-  { value: 'owner', label: 'owner - 所有者' },
-  { value: 'admin', label: 'admin - 管理员' },
-  { value: 'member', label: 'member - 成员' },
-  { value: 'viewer', label: 'viewer - 查看者' },
-  { value: 'editor', label: 'editor - 编辑者' },
-  { value: 'reader', label: 'reader - 读取者' },
-  { value: 'writer', label: 'writer - 写入者' },
-]
+  ['owner', 'owner - 所有者'],
+  ['admin', 'admin - 管理员'],
+  ['member', 'member - 成员'],
+  ['viewer', 'viewer - 查看者'],
+  ['editor', 'editor - 编辑者'],
+  ['reader', 'reader - 读取者'],
+  ['writer', 'writer - 写入者'],
+] as const
+const schema = z.object({
+  relation: z.string().trim().min(1, '请选择或输入关系类型'),
+  expiresAt: z.string(),
+})
+type Values = z.infer<typeof schema>
 
 export function CreateRelationDialog({
   open,
@@ -36,119 +52,122 @@ export function CreateRelationDialog({
   onConfirm,
   onCancel,
 }: CreateRelationDialogProps) {
-  const [form] = Form.useForm()
-  const [customRelation, setCustomRelation] = useState(false)
-
-  useEffect(() => {
-    if (open) {
-      form.resetFields()
-      queueMicrotask(() => setCustomRelation(false))
-    }
-  }, [open, form])
-
-  const handleOk = async () => {
-    try {
-      const values = await form.validateFields()
-      onConfirm({
-        relation: values.relation,
-        expiresAt: values.expiresAt ? (values.expiresAt as Dayjs).toISOString() : undefined,
-      })
-    } catch {
-      // 表单验证失败
-    }
+  const [custom, setCustom] = useState(false)
+  const form = useForm<Values>({
+    resolver: zodResolver(schema),
+    defaultValues: { relation: '', expiresAt: '' },
+  })
+  const close = () => {
+    form.reset()
+    setCustom(false)
+    onCancel()
   }
+  const submit = form.handleSubmit(values => {
+    onConfirm({
+      relation: values.relation.trim(),
+      expiresAt: values.expiresAt ? new Date(values.expiresAt).toISOString() : undefined,
+    })
+    form.reset()
+    setCustom(false)
+  })
 
   return (
-    <Modal
-      title="创建关系"
+    <Dialog
       open={open}
-      onOk={handleOk}
-      onCancel={onCancel}
-      okText="创建"
-      cancelText="取消"
-      destroyOnHidden
+      onOpenChange={next => {
+        if (!next) close()
+      }}
     >
-      <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
-        {/* 显示关系信息 */}
-        <div
-          style={{
-            padding: '12px 16px',
-            background: '#fafafa',
-            borderRadius: 6,
-            marginBottom: 16,
-            fontSize: 13,
-          }}
-        >
-          <div style={{ marginBottom: 8 }}>
-            <span style={{ color: '#a3a3a3' }}>服务: </span>
-            <span style={{ fontWeight: 500 }}>{serviceId || '未选择'}</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span
-              style={{
-                padding: '2px 8px',
-                background: '#e6f4ff',
-                borderRadius: 4,
-                fontSize: 12,
-              }}
-            >
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>创建关系</DialogTitle>
+          <DialogDescription>为两个节点建立当前服务下的授权关系。</DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-2 rounded-lg border bg-muted/35 p-4 text-sm">
+          <span className="text-muted-foreground">
+            服务：<strong className="text-foreground">{serviceId || '未选择'}</strong>
+          </span>
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="secondary">
               {sourceNode?.type}:{sourceNode?.id}
-            </span>
-            <span style={{ color: '#a3a3a3' }}>→</span>
-            <span
-              style={{
-                padding: '2px 8px',
-                background: '#f6ffed',
-                borderRadius: 4,
-                fontSize: 12,
-              }}
-            >
+            </Badge>
+            <span aria-hidden>→</span>
+            <Badge variant="outline">
               {targetNode?.type}:{targetNode?.id}
-            </span>
+            </Badge>
           </div>
         </div>
-
-        {/* 关系类型 */}
-        <Form.Item
-          name="relation"
-          label="关系类型"
-          rules={[{ required: true, message: '请选择或输入关系类型' }]}
-        >
-          {customRelation ? (
-            <Input
-              placeholder="输入自定义关系类型"
-              suffix={
-                <a onClick={() => setCustomRelation(false)} style={{ fontSize: 12 }}>
-                  选择预设
-                </a>
-              }
-            />
-          ) : (
-            <Select
-              placeholder="选择关系类型"
-              options={relationOptions}
-              dropdownRender={menu => (
-                <>
-                  {menu}
-                  <div
-                    style={{
-                      padding: '8px 12px',
-                      borderTop: '1px solid #f0f0f0',
-                    }}
-                  >
-                    <a onClick={() => setCustomRelation(true)}>自定义关系类型</a>
+        <form className="grid gap-5" onSubmit={submit} noValidate>
+          <Controller
+            name="relation"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <FormField
+                label="关系类型"
+                htmlFor="relation-type"
+                required
+                error={fieldState.error?.message}
+              >
+                {custom ? (
+                  <div className="flex gap-2">
+                    <Input
+                      id="relation-type"
+                      autoFocus
+                      placeholder="输入自定义关系类型"
+                      {...field}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setCustom(false)
+                        field.onChange('')
+                      }}
+                    >
+                      选择预设
+                    </Button>
                   </div>
-                </>
-              )}
-            />
-          )}
-        </Form.Item>
-
-        {/* 过期时间（可选） */}
-        <Form.Item name="expiresAt" label="过期时间（可选）">
-          <DatePicker showTime style={{ width: '100%' }} placeholder="选择过期时间" />
-        </Form.Item>
-      </Form>
-    </Modal>
+                ) : (
+                  <div className="grid gap-2">
+                    <Select value={field.value || undefined} onValueChange={field.onChange}>
+                      <SelectTrigger id="relation-type">
+                        <SelectValue placeholder="选择关系类型" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {relationOptions.map(([value, label]) => (
+                          <SelectItem key={value} value={value}>
+                            {label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      type="button"
+                      variant="link"
+                      className="h-auto justify-start p-0"
+                      onClick={() => {
+                        setCustom(true)
+                        field.onChange('')
+                      }}
+                    >
+                      使用自定义关系类型
+                    </Button>
+                  </div>
+                )}
+              </FormField>
+            )}
+          />
+          <FormField label="过期时间（可选）" htmlFor="relation-expires">
+            <Input id="relation-expires" type="datetime-local" {...form.register('expiresAt')} />
+          </FormField>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={close}>
+              取消
+            </Button>
+            <Button type="submit">创建</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   )
 }

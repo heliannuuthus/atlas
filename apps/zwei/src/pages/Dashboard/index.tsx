@@ -53,7 +53,7 @@ export function Dashboard() {
               title="标签数量"
               value={0}
               prefix={<TagsOutlined />}
-              valueStyle={{ color: '#ea580c' }}
+              valueStyle={{ color: '#b83f37' }}
             />
           </Card>
         </Col>

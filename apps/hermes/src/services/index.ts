@@ -2,6 +2,8 @@ import { hermesRequest as request, type FilterSpec, listParams } from '@atlas/sh
 import type {
   Items,
   Domain,
+  DomainCreateRequest,
+  DomainUpdateRequest,
   DomainIDP,
   Service,
   Application,
@@ -27,6 +29,10 @@ import type {
 export const domainApi = {
   getList: () => request.get<Domain[]>('/domains'),
   getDetail: (domainId: string) => request.get<Domain>(`/domains/${domainId}`),
+  create: (data: DomainCreateRequest) => request.post<Domain>('/domains', data),
+  update: (domainId: string, data: DomainUpdateRequest) =>
+    request.patch<Domain>(`/domains/${domainId}`, data),
+  delete: (domainId: string) => request.delete(`/domains/${domainId}`),
   getIDPs: (domainId: string) => request.get<DomainIDP[]>(`/domains/${domainId}/idps`),
 }
 

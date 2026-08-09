@@ -1,13 +1,16 @@
-import { Avatar, Button, Tooltip, Dropdown, Typography } from 'antd'
-import type { MenuProps } from 'antd'
-import {
-  UserOutlined,
-  SettingOutlined,
-  LogoutOutlined,
-  BellOutlined,
-  BookOutlined,
-} from '@ant-design/icons'
+import * as AvatarPrimitive from '@radix-ui/react-avatar'
+import { useRef } from 'react'
+import { Bell, BookOpen, Copy, LogOut, Settings, UserRound } from 'lucide-react'
 import { useAtlasAuth } from '@atlas/shared'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '../../../components/dropdown-menu'
+import { Tooltip, TooltipContent, TooltipTrigger } from '../../../components/tooltip'
+import { toast } from '../../../components/toast'
 import styles from './index.module.scss'
 
 const getUserInitials = (name?: string) => {
@@ -24,80 +27,212 @@ const truncateOpenId = (openId: string, head = 8, tail = 4) => {
   return `${openId.slice(0, head)}…${openId.slice(-tail)}`
 }
 
+function UserAvatar({
+  src,
+  name,
+  size,
+  brandColor,
+}: {
+  src?: string | null
+  name?: string
+  size: number
+  brandColor: string
+}) {
+  return (
+    <AvatarPrimitive.Root className={styles.avatar} style={{ width: size, height: size }}>
+      <AvatarPrimitive.Image src={src ?? undefined} alt="" className={styles.avatarImage} />
+      <AvatarPrimitive.Fallback
+        className={styles.avatarFallback}
+        style={{ backgroundColor: brandColor }}
+      >
+        {getUserInitials(name)}
+      </AvatarPrimitive.Fallback>
+    </AvatarPrimitive.Root>
+  )
+}
+
 interface UserMenuProps {
   brandColor?: string
   docUrl?: string
+  showDocs?: boolean
+  documentBadge?: boolean
+  compact?: boolean
+  showNotifications?: boolean
+  notificationBadge?: boolean
+  variant?: 'default' | 'floating'
+  onProfile?: () => void
+  onSettings?: () => void
 }
 
-export function UserMenu({ brandColor = '#7c3aed', docUrl }: UserMenuProps) {
+export function UserMenu({
+  brandColor = '#2557d6',
+  docUrl,
+  showDocs = false,
+  documentBadge = false,
+  compact = false,
+  showNotifications = true,
+  notificationBadge = false,
+  variant = 'default',
+  onProfile,
+  onSettings,
+}: UserMenuProps) {
   const { logout, user } = useAtlasAuth()
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const pointerInteractionRef = useRef(false)
   const userName = user?.nic
   const userAvatar = user?.pic ?? null
 
-  const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
-    switch (key) {
-      case 'profile':
-        break
-      case 'settings':
-        break
-      case 'logout':
-        logout()
-        break
-    }
+  const copyOpenId = async () => {
+    if (!user?.sub) return
+    await navigator.clipboard.writeText(user.sub)
+    toast.success('OpenID 已复制')
   }
-
-  const menuItems: MenuProps['items'] = [
-    { key: 'profile', icon: <UserOutlined />, label: '个人中心' },
-    { key: 'settings', icon: <SettingOutlined />, label: '设置' },
-    { type: 'divider' },
-    { key: 'logout', icon: <LogoutOutlined />, label: '退出登录', danger: true },
-  ]
 
   return (
     <div className={styles.actions}>
-      {docUrl && (
-        <Tooltip title="文档" placement="bottom">
-          <a href={docUrl} target="_blank" rel="noopener noreferrer" className={styles.iconBtn}>
-            <BookOutlined />
-          </a>
+      {showDocs ? (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className={styles.badgeAnchor}>
+              {docUrl ? (
+                <a
+                  href={docUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.iconBtn}
+                  aria-label="打开文档"
+                >
+                  <BookOpen aria-hidden="true" />
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  className={`${styles.iconBtn} ${styles.iconBtnDisabled}`}
+                  aria-label="文档即将开放"
+                  aria-disabled="true"
+                  disabled
+                >
+                  <BookOpen aria-hidden="true" />
+                </button>
+              )}
+              {documentBadge ? (
+                <span className={styles.documentDot} style={{ backgroundColor: brandColor }} />
+              ) : null}
+            </span>
+          </TooltipTrigger>
+          <TooltipContent>{docUrl ? '文档' : '文档（即将开放）'}</TooltipContent>
         </Tooltip>
-      )}
+      ) : null}
 
-      <Tooltip title="通知" placement="bottom">
-        <Button type="text" className={styles.iconBtn} icon={<BellOutlined />} />
-      </Tooltip>
-
-      <Dropdown
-        menu={{ items: menuItems, onClick: handleMenuClick }}
-        placement="bottomRight"
-        trigger={['hover', 'click']}
-        mouseEnterDelay={0.15}
-        mouseLeaveDelay={0.15}
-        styles={{ root: { minWidth: 160, width: 'auto', maxWidth: 220 } }}
-      >
-        <div className={styles.userTrigger} role="button" tabIndex={0}>
-          <Avatar
-            src={userAvatar ?? undefined}
-            size={32}
-            className={styles.userTriggerAvatar}
-            style={!userAvatar ? { backgroundColor: brandColor, fontSize: 14 } : undefined}
-          >
-            {!userAvatar ? getUserInitials(userName) : null}
-          </Avatar>
-          <div className={styles.userTriggerText}>
-            <span className={styles.userTriggerName}>{userName || '用户'}</span>
-            {user?.sub && (
-              <Typography.Text
-                className={styles.userTriggerOpenid}
-                copyable={{ text: user.sub, tooltips: ['复制 OpenID', '已复制'] }}
-                onClick={e => e.stopPropagation()}
+      {showNotifications ? (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className={styles.badgeAnchor}>
+              <button
+                type="button"
+                className={styles.iconBtn}
+                aria-label={notificationBadge ? '查看未读通知' : '查看通知'}
               >
-                {truncateOpenId(user.sub)}
-              </Typography.Text>
-            )}
+                <Bell aria-hidden="true" />
+              </button>
+              {notificationBadge ? <span className={styles.notificationDot} /> : null}
+            </span>
+          </TooltipTrigger>
+          <TooltipContent>通知</TooltipContent>
+        </Tooltip>
+      ) : null}
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button
+            ref={triggerRef}
+            type="button"
+            className={`${styles.userTrigger} ${compact ? styles.compact : ''} ${variant === 'floating' ? styles.floating : ''}`}
+            aria-label="打开用户菜单"
+            onPointerDown={() => {
+              pointerInteractionRef.current = true
+            }}
+            onKeyDown={() => {
+              pointerInteractionRef.current = false
+            }}
+          >
+            <UserAvatar src={userAvatar} name={userName} size={32} brandColor={brandColor} />
+            {!compact ? (
+              <span className={styles.userTriggerText}>
+                <span className={styles.userTriggerName}>{userName || '用户'}</span>
+                {user?.sub ? (
+                  <span className={styles.userTriggerOpenid}>{truncateOpenId(user.sub)}</span>
+                ) : null}
+              </span>
+            ) : null}
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="end"
+          collisionPadding={12}
+          className={`${styles.menuPopup} ${variant === 'floating' ? styles.menuPopupFloating : ''}`}
+          onPointerDownCapture={() => {
+            pointerInteractionRef.current = true
+          }}
+          onKeyDownCapture={() => {
+            pointerInteractionRef.current = false
+          }}
+          onCloseAutoFocus={event => {
+            if (pointerInteractionRef.current) {
+              event.preventDefault()
+              triggerRef.current?.blur()
+            }
+            pointerInteractionRef.current = false
+          }}
+        >
+          <div className={styles.userSummary}>
+            <UserAvatar src={userAvatar} name={userName} size={38} brandColor={brandColor} />
+            <div className={styles.userSummaryText}>
+              <strong>{userName || '用户'}</strong>
+              {user?.sub ? (
+                <span className={styles.userId} translate="no">
+                  {truncateOpenId(user.sub, 12, 6)}
+                </span>
+              ) : (
+                <span className={styles.userId}>尚未登录</span>
+              )}
+            </div>
+            {user?.sub ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    className={styles.copyButton}
+                    onClick={() => void copyOpenId()}
+                    aria-label="复制 OpenID"
+                  >
+                    <Copy aria-hidden="true" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>复制 OpenID</TooltipContent>
+              </Tooltip>
+            ) : null}
           </div>
-        </div>
-      </Dropdown>
+          <DropdownMenuSeparator />
+          {onProfile ? (
+            <DropdownMenuItem onSelect={onProfile}>
+              <UserRound aria-hidden="true" />
+              个人中心
+            </DropdownMenuItem>
+          ) : null}
+          {onSettings ? (
+            <DropdownMenuItem onSelect={onSettings}>
+              <Settings aria-hidden="true" />
+              设置
+            </DropdownMenuItem>
+          ) : null}
+          {onProfile || onSettings ? <DropdownMenuSeparator /> : null}
+          <DropdownMenuItem onSelect={logout} className={styles.logoutItem}>
+            <LogOut aria-hidden="true" />
+            退出登录
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   )
 }

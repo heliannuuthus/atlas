@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { getBezierPath, EdgeLabelRenderer, type EdgeProps } from 'reactflow'
-import { Button, Tooltip } from 'antd'
-import { CloseOutlined, ClockCircleOutlined } from '@ant-design/icons'
+import { Button } from '@atlas/ui/button'
+import { X, Clock } from 'lucide-react'
 import { useGraphContext } from '../context/GraphContext'
 import { isExpiringSoon } from '@atlas/shared'
 import styles from '../index.module.scss'
@@ -75,24 +75,22 @@ function RelationEdgeComponent({
               backgroundColor: isPending ? '#f5f5f5' : '#fff',
             }}
           >
-            {isExpiring && (
-              <Tooltip title="即将过期">
-                <ClockCircleOutlined style={{ color: '#d97706', marginRight: 4 }} />
-              </Tooltip>
-            )}
+            {isExpiring && <Clock className="mr-1 size-3 text-amber-600" aria-label="即将过期" />}
             <span>{data?.relation || 'relation'}</span>
-            <Tooltip title="删除关系">
-              <Button
-                type="text"
-                size="small"
-                icon={<CloseOutlined />}
-                className={styles.edgeDeleteBtn}
-                onClick={e => {
-                  e.stopPropagation()
-                  deleteEdge(id)
-                }}
-              />
-            </Tooltip>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              title="删除关系"
+              aria-label="删除关系"
+              className={styles.edgeDeleteBtn}
+              onClick={e => {
+                e.stopPropagation()
+                deleteEdge(id)
+              }}
+            >
+              <X />
+            </Button>
           </div>
         </div>
       </EdgeLabelRenderer>

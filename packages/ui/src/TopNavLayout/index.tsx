@@ -10,7 +10,7 @@ export interface TopNavMenuItem {
 }
 
 export interface TopNavLayoutProps {
-  logo: { icon: ReactNode; text: string }
+  logo: { icon?: ReactNode; text: string }
   menus: TopNavMenuItem[]
   selectedKey?: string
   onLogoClick?: () => void
@@ -25,7 +25,7 @@ export function TopNavLayout({
   onLogoClick,
   onMenuClick,
   right,
-  brandColor = '#059669',
+  brandColor = '#b94e20',
 }: TopNavLayoutProps) {
   const location = useLocation()
 
@@ -56,7 +56,7 @@ export function TopNavLayout({
               role="button"
               tabIndex={0}
             >
-              <span className={styles.logoIcon}>{logo.icon}</span>
+              {logo.icon && <span className={styles.logoIcon}>{logo.icon}</span>}
               <span className={styles.logoText}>{logo.text}</span>
             </div>
           </div>

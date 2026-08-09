@@ -11,6 +11,17 @@ export interface Domain {
   description?: string
 }
 
+export interface DomainCreateRequest {
+  domain_id: string
+  name: string
+  description?: string
+}
+
+export interface DomainUpdateRequest {
+  name?: string
+  description?: string | null
+}
+
 export interface Service {
   service_id: string
   domain_id: string
