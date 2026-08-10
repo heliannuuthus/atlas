@@ -25,7 +25,7 @@ import type {
   GroupMemberRequest,
 } from '@/types'
 
-// hermesRequest 的 baseURL 已指向 hermes 服务根（如 .../api 经网关到 /hermes），路径不要再加 /hermes，否则会变成 /hermes/hermes/domains
+// hermesRequest 的 baseURL 已指向网关公开的 /api 根路径，业务请求只传资源路径。
 export const domainApi = {
   getList: () => request.get<Domain[]>('/domains'),
   getDetail: (domainId: string) => request.get<Domain>(`/domains/${domainId}`),

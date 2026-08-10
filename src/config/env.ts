@@ -10,7 +10,7 @@ export type ServiceName = keyof typeof apiEndpoints
 
 /**
  * 根据路径前缀获取对应的服务基础 URL
- * @param path 请求路径，如 /hermes/users, /zwei/orders, /auth/login
+ * @param path 带服务选择器的兼容路径，如 /hermes/users
  * @returns 完整的 URL
  */
 export function getServiceUrl(path: string): { baseUrl: string; servicePath: string } {
