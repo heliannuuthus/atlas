@@ -99,7 +99,8 @@ export function PortalLayout() {
             </button>
 
             <a href="/" className={styles.brand} aria-label="返回工作台">
-              <strong>统一业务平台</strong>
+              <img src="/atlas.svg" alt="" aria-hidden="true" />
+              <strong>Atlas</strong>
             </a>
           </div>
 

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="atlas-title">
+  <title id="atlas-title">Atlas mark</title>
+  <g fill="none" stroke="#111827" stroke-width="16" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="128" cy="128" r="82"/>
+  <ellipse cx="128" cy="128" rx="36" ry="82"/>
+  <path d="M48 128h160"/>
+  <path d="M62 86c42 18 90 18 132 0"/>
+  <path d="M62 170c42-18 90-18 132 0"/>
+  <path d="M42 166c50-48 104-76 174-74"/>
+  <circle cx="42" cy="166" r="10" fill="#111827" stroke="none"/>
+  <circle cx="216" cy="92" r="10" fill="#111827" stroke="none"/>
+  </g>
+</svg>

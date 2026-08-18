@@ -63,11 +63,9 @@ export function SystemDrawer({ open, onClose }: SystemDrawerProps) {
                 } as React.CSSProperties
               }
             >
-              <span
-                className={styles.systemAccent}
-                style={{ backgroundColor: app.color }}
-                aria-hidden="true"
-              />
+              <span className={styles.systemMark} aria-hidden="true">
+                <img src={app.logo} alt="" />
+              </span>
               <span className={styles.systemCopy}>
                 <span className={styles.systemTitle}>
                   <strong>{app.name}</strong>
