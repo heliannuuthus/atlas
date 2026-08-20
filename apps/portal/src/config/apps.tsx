@@ -27,6 +27,7 @@ export interface AtlasAppManifest {
   category: string
   mood: string
   description: string
+  logo: string
   origin: string
   homePath: string
   color: string
@@ -59,6 +60,7 @@ export const atlasApps: AtlasAppManifest[] = [
     category: '身份与权限',
     mood: '秩序、信任与边界',
     description: '管理身份、应用、服务与访问关系',
+    logo: '/hermes.svg',
     origin: 'https://hermes.heliannuuthus.com',
     homePath: '/',
     color: PRODUCT_BRAND_COLORS.hermes,
@@ -86,6 +88,7 @@ export const atlasApps: AtlasAppManifest[] = [
     category: '消息与文件',
     mood: '在混乱中建立结构',
     description: '集中处理消息模板、发送任务与文件',
+    logo: '/chaos.svg',
     origin: 'https://chaos.heliannuuthus.com',
     homePath: '/dashboard',
     color: PRODUCT_BRAND_COLORS.chaos,
@@ -101,6 +104,7 @@ export const atlasApps: AtlasAppManifest[] = [
     category: '内容与推荐',
     mood: '温暖、鲜活、有食欲',
     description: '运营菜谱、内容标签与个性化推荐',
+    logo: '/zwei.svg',
     origin: 'https://zwei.heliannuuthus.com',
     homePath: '/',
     color: PRODUCT_BRAND_COLORS.zwei,

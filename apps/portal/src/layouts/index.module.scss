@@ -194,6 +194,12 @@
   color: #172033;
   text-decoration: none;
 
+  img {
+    width: 28px;
+    height: 28px;
+    flex: 0 0 auto;
+  }
+
   strong {
     font: 680 14px/1 var(--atlas-display);
     letter-spacing: -0.01em;
