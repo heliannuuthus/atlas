@@ -1,0 +1,14 @@
+[
+  {
+    "image": "ghcr.io/heliantheon/atlas-portal",
+    "context": ".",
+    "dockerfile": "Dockerfile",
+    "buildArgs": "APP=portal"
+  },
+  {
+    "image": "ghcr.io/heliantheon/atlas-hermes",
+    "context": ".",
+    "dockerfile": "Dockerfile",
+    "buildArgs": "APP=hermes"
+  }
+]
